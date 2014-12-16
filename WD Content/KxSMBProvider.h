@@ -70,12 +70,15 @@ typedef enum {
     
 } KxSMBItemType;
 
+@class KxSMBItem;
+
 typedef void (^KxSMBBlock)(id result);
+typedef void (^KxSMBBlockProgress)(KxSMBItem *item, long transferred);
 
 @interface KxSMBItemStat : NSObject
 @property(readonly, nonatomic, strong) NSDate *lastModified;
 @property(readonly, nonatomic, strong) NSDate *lastAccess;
-@property(readonly, nonatomic) uint64_t size;
+@property(readonly, nonatomic) long size;
 @property(readonly, nonatomic) long mode;
 @end
 
@@ -157,12 +160,27 @@ typedef void (^KxSMBBlock)(id result);
              overwrite:(BOOL)overwrite
                  block:(KxSMBBlock)block;
 
+- (void) copySMBPath:(NSString *)smbPath
+           localPath:(NSString *)localPath
+           overwrite:(BOOL)overwrite
+            progress:(KxSMBBlockProgress)progress
+               block:(KxSMBBlock)block;
+
+- (void) copyLocalPath:(NSString *)localPath
+               smbPath:(NSString *)smbPath
+             overwrite:(BOOL)overwrite
+              progress:(KxSMBBlockProgress)progress
+                 block:(KxSMBBlock)block;
+
 - (void) removeFolderAtPath:(NSString *) path
                       block:(KxSMBBlock)block;
 
 - (void) renameAtPath:(NSString *)oldPath
               newPath:(NSString *)newPath
                 block:(KxSMBBlock)block;
+
+// sets smb timeout if value > 0 and returns the current timeout
++ (NSUInteger) smbTimeout:(NSUInteger)value;
 
 @end
 

@@ -22,6 +22,7 @@
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
 @property (strong, nonatomic) NSArray* nodes;
+@property (nonatomic) int errorCount;
 
 @end
 
@@ -210,6 +211,7 @@ NSString* hostFromPath(NSString *path)
 			[_tableView reloadData];
 		}
 	} else {
+		_errorCount = 0;
 		[self addNodesForRoot];
 	}
 }
@@ -222,6 +224,7 @@ NSString* hostFromPath(NSString *path)
 				[self updateData];
 				break;
 			case 2:
+				_errorCount = 0;
 				[self addNodesForRoot];
 				break;
 			default:
@@ -275,12 +278,17 @@ NSString* hostFromPath(NSString *path)
 		if ([result isKindOfClass:[NSError class]]) {
 			dispatch_async(dispatch_get_main_queue(), ^{
 				[MBProgressHUD hideHUDForView:self.view animated:YES];
-				UIAlertView* alert = [[UIAlertView alloc] initWithTitle:_rootNode.path
-																message:@"Error connect. Retry?"
-															   delegate:self
-													  cancelButtonTitle:@"No" otherButtonTitles:@"Yes", nil];
-				alert.tag = 2;
-				[alert show];
+				if (_errorCount < 3) {
+					_errorCount++;
+					[self addNodesForRoot];
+				} else {
+					UIAlertView* alert = [[UIAlertView alloc] initWithTitle:_rootNode.path
+																	message:@"Error connect. Retry?"
+																   delegate:self
+														  cancelButtonTitle:@"No" otherButtonTitles:@"Yes", nil];
+					alert.tag = 2;
+					[alert show];
+				}
 			});
 			return;
 		} else {
