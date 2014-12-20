@@ -26,6 +26,7 @@
 
 #import "MainVC.h"
 #import "UIColor+CreateMethods.h"
+#import "DataModel.h"
 
 @interface MainVC ()
 
@@ -36,57 +37,26 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+	self.isInitialStart = NO;
 }
 
 /*----------------------------------------------------*/
 #pragma mark - Overriden Methods -
 /*----------------------------------------------------*/
-/*
+
+- (NSIndexPath*)initialIndexPathForLeftMenu
+{
+	return [DataModel lastIndex];
+}
+
 - (NSString *)segueIdentifierForIndexPathInLeftMenu:(NSIndexPath *)indexPath
 {
-    NSString *identifier = @"";
-    switch (indexPath.row) {
-        case 0:
-            identifier = @"firstRow";
-            break;
-        case 1:
-            identifier = @"secondRow";
-            break;
-    }
-    
-    return identifier;
+    return indexPath.section ? @"Content" : @"Devices";
 }
-*/
-/**
- * NOTE! If you override this method, then segueIdentifierForIndexPathInLeftMenu will be ignored
- * Return instantiated navigation controller that will opened
- * when cell at indexPath will be selected from left menu
- * @param indexPath of left menu table
- * @return UINavigationController instance for input indexPath
- */
-
-- (UINavigationController *)navigationControllerForIndexPathInLeftMenu:(NSIndexPath *)indexPath
-{
-    NSString *storyboardId = @"";
-    
-    switch (indexPath.row) {
-        case 0:
-            storyboardId = @"Devices";
-            break;
-        case 1:
-            storyboardId = @"Content";
-            break;
-    }
-    
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
-    UINavigationController *nc = [storyboard instantiateViewControllerWithIdentifier:storyboardId];
-    return nc;
-}
-
 
 - (CGFloat)leftMenuWidth
 {
-	return 250;
+	return 260;
 }
 
 - (void)configureLeftMenuButton:(UIButton *)button

@@ -28,6 +28,8 @@
 #import "DataModel.h"
 #import "Notifications.h"
 #import "CollectionViewController.h"
+#import	"AMSlideMenuMainViewController.h"
+#import "AMSlideMenuLeftMenuSegue.h"
 
 @interface LeftMenuVC()
 
@@ -45,6 +47,7 @@
     {
         self.tableView.contentInset = UIEdgeInsetsMake(20, 0, 0, 0);
     }
+
 	_rows = [NSMutableArray new];
 	[_rows addObjectsFromArray:[[DataModel sharedInstance] nodesByRoot:nil]];
 	
@@ -104,21 +107,19 @@
 	return cell;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-	if (indexPath.section) {
-		[self performSegueWithIdentifier:@"Content" sender:indexPath];
-	} else  {
-		[self performSegueWithIdentifier:@"Devices" sender:nil];
-	}
-}
-
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
 	if ([[segue identifier] isEqualToString:@"Content"])
 	{
 		UINavigationController *vc = [segue destinationViewController];
-		NSIndexPath* indexPath = (NSIndexPath*)sender;
+		NSIndexPath* indexPath = [self.tableView indexPathForSelectedRow];
+		if (indexPath) {
+			[DataModel setLastIndex:indexPath];
+		} else {
+			AMSlideMenuLeftMenuSegue* seq = (AMSlideMenuLeftMenuSegue*)sender;
+			AMSlideMenuMainViewController* mainVC = seq.sourceViewController;
+			indexPath = mainVC.initialIndexPathForLeftMenu;
+		}
 		Node* node = [_rows objectAtIndex:indexPath.row];
 		CollectionViewController* collection = (CollectionViewController*)vc.topViewController;
 		collection.rootNode = node;

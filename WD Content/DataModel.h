@@ -50,4 +50,7 @@ extern NSString * const DataModelDidChangeNotification;
 + (void)removeHost:(NSDictionary*)host;
 + (void)setHost:(NSMutableDictionary*)host;
 
++ (NSIndexPath*)lastIndex;
++ (void)setLastIndex:(NSIndexPath*)index;
+
 @end

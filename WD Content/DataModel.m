@@ -368,6 +368,28 @@ NSString * const kDataManagerSQLiteName = @"ContentModel.sqlite";
 	[DataModel setAuth:allHosts];
 }
 
++ (NSIndexPath*)lastIndex
+{
+	NSInteger index = [[NSUserDefaults standardUserDefaults] integerForKey:@"initialIndex"];
+	if (index > 0) {
+		return [NSIndexPath indexPathForRow:(index-1) inSection:1];
+	} else {
+		return [NSIndexPath indexPathForRow:0 inSection:0];
+	}
+}
+
++ (void)setLastIndex:(NSIndexPath*)index
+{
+	if (index) {
+		if (index.section) {
+			[[NSUserDefaults standardUserDefaults] setInteger:(index.row + 1) forKey:@"initialIndex"];
+		} else {
+			[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"initialIndex"];
+		}
+		[[NSUserDefaults standardUserDefaults] synchronize];
+	}
+}
+
 #pragma mark - KxSmbProvider delegate
 
 - (KxSMBAuth *)smbAuthForServer:(NSString*)server withShare:(NSString*)share

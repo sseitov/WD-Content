@@ -14,8 +14,6 @@
 		2C125EB41848C74B00406FC3 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2C125EB21848C74B00406FC3 /* InfoPlist.strings */; };
 		2C125EB61848C74B00406FC3 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C125EB51848C74B00406FC3 /* main.m */; };
 		2C125EBA1848C74B00406FC3 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C125EB91848C74B00406FC3 /* AppDelegate.m */; };
-		2C125EBD1848C74B00406FC3 /* Main_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2C125EBB1848C74B00406FC3 /* Main_iPhone.storyboard */; };
-		2C125EC01848C74B00406FC3 /* Main_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2C125EBE1848C74B00406FC3 /* Main_iPad.storyboard */; };
 		2C125EC31848C74B00406FC3 /* CollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C125EC21848C74B00406FC3 /* CollectionViewController.m */; };
 		2C125EC51848C74B00406FC3 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2C125EC41848C74B00406FC3 /* Images.xcassets */; };
 		2C17010B1848F68200A37516 /* Cell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C17010A1848F68200A37516 /* Cell.m */; };
@@ -55,10 +53,6 @@
 		2CA95DC4184B2B4600927138 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA95DC3184B2B4600927138 /* SettingsViewController.m */; };
 		2CA95DC7184B2CB700927138 /* SettingsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA95DC6184B2CB700927138 /* SettingsCell.m */; };
 		2CAEE6D419C8C7C000B5DDD7 /* Node.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CAEE6D319C8C7C000B5DDD7 /* Node.m */; };
-		2CDF099C19C58AE700A1B3B9 /* tabDisk.png in Resources */ = {isa = PBXBuildFile; fileRef = 2CDF099819C58AE700A1B3B9 /* tabDisk.png */; };
-		2CDF099D19C58AE700A1B3B9 /* tabDisk@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2CDF099919C58AE700A1B3B9 /* tabDisk@2x.png */; };
-		2CDF099E19C58AE700A1B3B9 /* tabMovie.png in Resources */ = {isa = PBXBuildFile; fileRef = 2CDF099A19C58AE700A1B3B9 /* tabMovie.png */; };
-		2CDF099F19C58AE700A1B3B9 /* tabMovie@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2CDF099B19C58AE700A1B3B9 /* tabMovie@2x.png */; };
 		ED04A5C619D172C00079C787 /* MetaInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = ED04A5C519D172C00079C787 /* MetaInfo.m */; };
 		ED2194A119C9A9690053C8B3 /* TMDB.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2194A019C9A9690053C8B3 /* TMDB.m */; };
 		ED2194B619C9AA800053C8B3 /* AFHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2194A419C9AA800053C8B3 /* AFHTTPRequestOperation.m */; };
@@ -86,8 +80,6 @@
 		2C125EB71848C74B00406FC3 /* WD Content-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "WD Content-Prefix.pch"; sourceTree = "<group>"; };
 		2C125EB81848C74B00406FC3 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		2C125EB91848C74B00406FC3 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		2C125EBC1848C74B00406FC3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPhone.storyboard; sourceTree = "<group>"; };
-		2C125EBF1848C74B00406FC3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPad.storyboard; sourceTree = "<group>"; };
 		2C125EC11848C74B00406FC3 /* CollectionViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CollectionViewController.h; path = "WD Content/CollectionViewController.h"; sourceTree = "<group>"; };
 		2C125EC21848C74B00406FC3 /* CollectionViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = CollectionViewController.m; path = "WD Content/CollectionViewController.m"; sourceTree = "<group>"; };
 		2C125EC41848C74B00406FC3 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = "WD Content/Images.xcassets"; sourceTree = "<group>"; };
@@ -151,10 +143,6 @@
 		2CA95DC6184B2CB700927138 /* SettingsCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsCell.m; sourceTree = "<group>"; };
 		2CAEE6D219C8C7C000B5DDD7 /* Node.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Node.h; sourceTree = "<group>"; };
 		2CAEE6D319C8C7C000B5DDD7 /* Node.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Node.m; sourceTree = "<group>"; };
-		2CDF099819C58AE700A1B3B9 /* tabDisk.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tabDisk.png; sourceTree = "<group>"; };
-		2CDF099919C58AE700A1B3B9 /* tabDisk@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tabDisk@2x.png"; sourceTree = "<group>"; };
-		2CDF099A19C58AE700A1B3B9 /* tabMovie.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tabMovie.png; sourceTree = "<group>"; };
-		2CDF099B19C58AE700A1B3B9 /* tabMovie@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tabMovie@2x.png"; sourceTree = "<group>"; };
 		ED04A5C419D172C00079C787 /* MetaInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MetaInfo.h; sourceTree = "<group>"; };
 		ED04A5C519D172C00079C787 /* MetaInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MetaInfo.m; sourceTree = "<group>"; };
 		ED21949F19C9A9690053C8B3 /* TMDB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TMDB.h; sourceTree = "<group>"; };
@@ -286,8 +274,6 @@
 			children = (
 				2CDF099719C58AD000A1B3B9 /* Images */,
 				2CA6BA0D1A45BF9700AFF041 /* default.css */,
-				2C125EBB1848C74B00406FC3 /* Main_iPhone.storyboard */,
-				2C125EBE1848C74B00406FC3 /* Main_iPad.storyboard */,
 				2CA6BA031A4569B900AFF041 /* Main.storyboard */,
 				2C125EC41848C74B00406FC3 /* Images.xcassets */,
 			);
@@ -384,10 +370,6 @@
 				2C378CE719EA802D00C69ADA /* collection.png */,
 				2C378CE819EA802D00C69ADA /* list.png */,
 				2C378CE919EA802D00C69ADA /* refresh.png */,
-				2CDF099819C58AE700A1B3B9 /* tabDisk.png */,
-				2CDF099919C58AE700A1B3B9 /* tabDisk@2x.png */,
-				2CDF099A19C58AE700A1B3B9 /* tabMovie.png */,
-				2CDF099B19C58AE700A1B3B9 /* tabMovie@2x.png */,
 			);
 			name = Images;
 			sourceTree = "<group>";
@@ -494,16 +476,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				2C378CEC19EA802D00C69ADA /* refresh.png in Resources */,
-				2C125EC01848C74B00406FC3 /* Main_iPad.storyboard in Resources */,
 				2C125EC51848C74B00406FC3 /* Images.xcassets in Resources */,
-				2CDF099F19C58AE700A1B3B9 /* tabMovie@2x.png in Resources */,
-				2C125EBD1848C74B00406FC3 /* Main_iPhone.storyboard in Resources */,
-				2CDF099C19C58AE700A1B3B9 /* tabDisk.png in Resources */,
 				2CA6BA011A4569B900AFF041 /* Main.storyboard in Resources */,
-				2CDF099D19C58AE700A1B3B9 /* tabDisk@2x.png in Resources */,
 				2C378CEA19EA802D00C69ADA /* collection.png in Resources */,
 				2C125EB41848C74B00406FC3 /* InfoPlist.strings in Resources */,
-				2CDF099E19C58AE700A1B3B9 /* tabMovie.png in Resources */,
 				2C378CEB19EA802D00C69ADA /* list.png in Resources */,
 				2CA6BA0E1A45BF9700AFF041 /* default.css in Resources */,
 			);
@@ -564,24 +540,6 @@
 				2C125EB31848C74B00406FC3 /* en */,
 			);
 			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
-		2C125EBB1848C74B00406FC3 /* Main_iPhone.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				2C125EBC1848C74B00406FC3 /* Base */,
-			);
-			name = Main_iPhone.storyboard;
-			path = "WD Content";
-			sourceTree = "<group>";
-		};
-		2C125EBE1848C74B00406FC3 /* Main_iPad.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				2C125EBF1848C74B00406FC3 /* Base */,
-			);
-			name = Main_iPad.storyboard;
-			path = "WD Content";
 			sourceTree = "<group>";
 		};
 		2CA6BA031A4569B900AFF041 /* Main.storyboard */ = {

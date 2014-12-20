@@ -201,7 +201,7 @@
                                     </collectionViewCell>
                                 </cells>
                                 <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="my_view" id="bW1-bg-yIB">
-                                    <rect key="frame" x="0.0" y="64" width="320" height="22"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="600" height="22"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </collectionReusableView>
                                 <connections>

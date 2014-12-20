@@ -42,12 +42,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	
-//	if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7.0 && ![UIApplication sharedApplication].isStatusBarHidden)
-//	{
-		self.tableView.contentInset = UIEdgeInsetsMake(20, 0, 0, 0);
-		self.collectionView.contentInset = UIEdgeInsetsMake(20, 0, 0, 0);
-//	}
 
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateInfoNotification:)
 												 name:UpdateInfoNotification
@@ -284,6 +278,7 @@
 	}
 	cell.textLabel.numberOfLines = 0;
 	cell.textLabel.text = node.name;
+	cell.textLabel.backgroundColor = [UIColor clearColor];
 	if ([node.isFile boolValue] == NO) {
 		cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 		cell.textLabel.font = [UIFont fontWithName:@"HelveticaNeue-Medium" size:17];
@@ -293,6 +288,7 @@
 		if (node.info) {
 			cell.detailTextLabel.font = [UIFont fontWithName:@"HelveticaNeue" size:12];
 			cell.detailTextLabel.text = node.info.release_date;
+			cell.detailTextLabel.backgroundColor = [UIColor clearColor];
 		}
 	}
 	cell.selectionStyle = UITableViewCellSelectionStyleNone;
