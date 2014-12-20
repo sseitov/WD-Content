@@ -13,6 +13,7 @@
 #import "MBProgressHUD.h"
 #import "SharesTableViewController.h"
 #import "SearchInfoTableViewController.h"
+#import "AppDelegate.h"
 
 #define IS_PAD ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
 
@@ -183,8 +184,10 @@ NSString* hostFromPath(NSString *path)
 
 - (void)updateData
 {
+//	AppDelegate* app = [[UIApplication sharedApplication] delegate];
+//	[app sync:self];
 	if (!_rootNode) {
-		NSMutableSet* authHosts = [NSMutableSet setWithArray:[DataModel auth].allKeys];
+		NSMutableSet* authHosts = [NSMutableSet setWithArray:[DataModel auth]];
 		for (int i=0; i<_nodes.count; i++) {
 			Node* node = [_nodes objectAtIndex:i];
 			NSString* host = hostFromPath(node.path);

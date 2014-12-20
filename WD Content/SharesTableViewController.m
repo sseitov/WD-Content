@@ -45,9 +45,9 @@
 	[MBProgressHUD showHUDAddedTo:self.tableView animated:YES];
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0), ^{
-		NSArray* hosts = [DataModel auth].allKeys;
-		for (NSString* host in hosts) {
-			id result = [[DataModel sharedInstance].provider fetchAtPath:[NSString stringWithFormat:@"smb://%@", host]];
+		NSArray* hosts = [DataModel auth];
+		for (NSDictionary* host in hosts) {
+			id result = [[DataModel sharedInstance].provider fetchAtPath:[NSString stringWithFormat:@"smb://%@", [host objectForKey:@"host"]]];
 			if ([result isKindOfClass:[NSError class]]) {
 				NSLog(@"ERROR: %@", result);
 			} else {
@@ -60,6 +60,8 @@
 					[_nodes addObject:[NSMutableDictionary dictionaryWithObjectsAndKeys:item, @"item", [_sharesDelegate hasNodeWithPath:item.path], @"checked", nil]];
 				}
 			}
+		}
+		for (NSString* host in hosts) {
 		}
 		dispatch_async(dispatch_get_main_queue(), ^{
 			[MBProgressHUD hideHUDForView:self.tableView animated:YES];

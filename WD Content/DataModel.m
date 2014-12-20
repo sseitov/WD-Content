@@ -129,8 +129,23 @@ NSString * const kDataManagerSQLiteName = @"ContentModel.sqlite";
 		NSLog(@"Error while saving: %@\n%@", [error localizedDescription], [error userInfo]);
 		return NO;
 	} else {
+		[[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:@"LastModified"];
 		return YES;
 	}
+}
+
+- (NSDate*)lastModified
+{
+	NSDate* d = [[NSUserDefaults standardUserDefaults] objectForKey:@"LastModified"];
+	if (!d) {
+		d = [NSDate date];
+	}
+	return d;
+}
+
+- (BOOL)updateDBFile:(NSData*)data
+{
+	return YES;
 }
 
 - (NSString*)sharedDocumentsPath
@@ -310,30 +325,49 @@ NSString * const kDataManagerSQLiteName = @"ContentModel.sqlite";
 	}
 }
 
-+ (NSDictionary*)auth
++ (NSArray*)auth
 {
 	return [[NSUserDefaults standardUserDefaults] objectForKey:@"auth"];
 }
 
 + (void)setAuth:(NSArray*)authArray
 {
-	NSMutableDictionary *newAuth = [NSMutableDictionary dictionary];
-	for (NSDictionary *item in authArray) {
-		[newAuth setObject:[item objectForKey:@"auth"] forKey:[item objectForKey:@"host"]];
-	}
-	[[NSUserDefaults standardUserDefaults] setObject:newAuth forKey:@"auth"];
+	[[NSUserDefaults standardUserDefaults] setObject:authArray forKey:@"auth"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
++ (void)removeHost:(NSDictionary*)host
+{
+	NSMutableArray* allHosts = [NSMutableArray arrayWithArray:[DataModel auth]];
+	for (NSDictionary* h in allHosts) {
+		if ([[h objectForKey:@"host"] isEqual:[host objectForKey:@"host"]]) {
+			[allHosts removeObject:h];
+			break;
+		}
+	}
+	[DataModel setAuth:allHosts];
+}
+
++ (void)setHost:(NSDictionary*)host
+{
+	NSMutableArray* allHosts = [NSMutableArray arrayWithArray:[DataModel auth]];
+	for (NSInteger index=0; index<allHosts.count; index++) {
+		NSDictionary* h = [allHosts objectAtIndex:index];
+		if ([[h objectForKey:@"host"] isEqual:[host objectForKey:@"host"]]) {
+			[allHosts replaceObjectAtIndex:index withObject:host];
+			break;
+		}
+	}
+	[DataModel setAuth:allHosts];
+}
 
 #pragma mark - KxSmbProvider delegate
 
 - (KxSMBAuth *)smbAuthForServer:(NSString*)server withShare:(NSString*)share
 {
-	NSDictionary *auth = [[NSUserDefaults standardUserDefaults] objectForKey:@"auth"];
-	if (auth) {
-		NSDictionary *host = [auth objectForKey:server];
-		if (host) {
+	NSArray *auth = [[NSUserDefaults standardUserDefaults] objectForKey:@"auth"];
+	for (NSDictionary *host in auth) {
+		if ([[host objectForKey:@"host"] isEqual:server]) {
 			return [KxSMBAuth smbAuthWorkgroup:[host valueForKey:@"workgroup"]
 									  username:[host valueForKey:@"user"]
 									  password:[host valueForKey:@"password"]];

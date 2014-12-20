@@ -31,6 +31,10 @@ extern NSString * const DataModelDidChangeNotification;
 - (BOOL)save;
 - (NSManagedObjectContext*)managedObjectContext;
 
+- (NSString*)sharedDocumentsPath;
+- (BOOL)updateDBFile:(NSData*)data;
+- (NSDate*)lastModified;
+
 - (Node*)nodeByPath:(NSString*)path;
 - (NSArray*)nodesByRoot:(Node*)root;
 
@@ -41,7 +45,9 @@ extern NSString * const DataModelDidChangeNotification;
 
 - (KxSMBProvider*)provider;
 
-+ (NSDictionary*)auth;
++ (NSArray*)auth;
 + (void)setAuth:(NSArray*)authArray;
++ (void)removeHost:(NSDictionary*)host;
++ (void)setHost:(NSDictionary*)host;
 
 @end

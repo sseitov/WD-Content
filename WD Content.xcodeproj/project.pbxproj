@@ -32,8 +32,22 @@
 		2C378CEA19EA802D00C69ADA /* collection.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C378CE719EA802D00C69ADA /* collection.png */; };
 		2C378CEB19EA802D00C69ADA /* list.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C378CE819EA802D00C69ADA /* list.png */; };
 		2C378CEC19EA802D00C69ADA /* refresh.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C378CE919EA802D00C69ADA /* refresh.png */; };
+		2C3E5BDF1A4421990046AFC4 /* libc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C3E5BDE1A4421990046AFC4 /* libc++.dylib */; };
 		2C6E746B19C75ECA001D9971 /* SharesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C6E746A19C75ECA001D9971 /* SharesTableViewController.m */; };
 		2CA1D7191854A78800276C67 /* InfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA1D7181854A78800276C67 /* InfoViewController.m */; };
+		2CA6B9E11A45664800AFF041 /* Dropbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CA6B9E01A45664800AFF041 /* Dropbox.framework */; };
+		2CA6B9F21A4567B800AFF041 /* AMSlideMenuContentSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA6B9E41A4567B800AFF041 /* AMSlideMenuContentSegue.m */; };
+		2CA6B9F31A4567B800AFF041 /* AMSlideMenuLeftMenuSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA6B9E61A4567B800AFF041 /* AMSlideMenuLeftMenuSegue.m */; };
+		2CA6B9F41A4567B800AFF041 /* AMSlideMenuLeftTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA6B9E81A4567B800AFF041 /* AMSlideMenuLeftTableViewController.m */; };
+		2CA6B9F51A4567B800AFF041 /* AMSlideMenuMainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA6B9EA1A4567B800AFF041 /* AMSlideMenuMainViewController.m */; };
+		2CA6B9F61A4567B800AFF041 /* AMSlideMenuRightMenuSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA6B9ED1A4567B800AFF041 /* AMSlideMenuRightMenuSegue.m */; };
+		2CA6B9F71A4567B800AFF041 /* AMSlideMenuRightTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA6B9EF1A4567B800AFF041 /* AMSlideMenuRightTableViewController.m */; };
+		2CA6B9F81A4567B800AFF041 /* UIViewController+AMSlideMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA6B9F11A4567B800AFF041 /* UIViewController+AMSlideMenu.m */; };
+		2CA6B9FD1A4567DD00AFF041 /* LeftMenuVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA6B9FA1A4567DD00AFF041 /* LeftMenuVC.m */; };
+		2CA6B9FE1A4567DD00AFF041 /* MainVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA6B9FC1A4567DD00AFF041 /* MainVC.m */; };
+		2CA6BA011A4569B900AFF041 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2CA6BA031A4569B900AFF041 /* Main.storyboard */; };
+		2CA6BA071A456A1A00AFF041 /* UIColor+CreateMethods.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA6BA061A456A1A00AFF041 /* UIColor+CreateMethods.m */; };
+		2CA6BA0A1A45B72D00AFF041 /* Notifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA6BA091A45B72D00AFF041 /* Notifications.m */; };
 		2CA88715187EA87F0074B73E /* ContentModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2CA88713187EA87F0074B73E /* ContentModel.xcdatamodeld */; };
 		2CA8871C187EA9AA0074B73E /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CA8871B187EA9AA0074B73E /* CoreData.framework */; };
 		2CA8871F187EAEDE0074B73E /* DataModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA8871E187EAEDE0074B73E /* DataModel.m */; };
@@ -96,10 +110,36 @@
 		2C378CE719EA802D00C69ADA /* collection.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = collection.png; sourceTree = "<group>"; };
 		2C378CE819EA802D00C69ADA /* list.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = list.png; sourceTree = "<group>"; };
 		2C378CE919EA802D00C69ADA /* refresh.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = refresh.png; sourceTree = "<group>"; };
+		2C3E5BDE1A4421990046AFC4 /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "usr/lib/libc++.dylib"; sourceTree = SDKROOT; };
 		2C6E746919C75ECA001D9971 /* SharesTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SharesTableViewController.h; path = "WD Content/SharesTableViewController.h"; sourceTree = "<group>"; };
 		2C6E746A19C75ECA001D9971 /* SharesTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SharesTableViewController.m; path = "WD Content/SharesTableViewController.m"; sourceTree = "<group>"; };
 		2CA1D7171854A78800276C67 /* InfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InfoViewController.h; path = "WD Content/InfoViewController.h"; sourceTree = "<group>"; };
 		2CA1D7181854A78800276C67 /* InfoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = InfoViewController.m; path = "WD Content/InfoViewController.m"; sourceTree = "<group>"; };
+		2CA6B9E01A45664800AFF041 /* Dropbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Dropbox.framework; path = "../../../../Users/sseitov/Documents/SDK/dropbox-ios-sync-sdk-3.1.2/Dropbox.framework"; sourceTree = "<group>"; };
+		2CA6B9E31A4567B800AFF041 /* AMSlideMenuContentSegue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AMSlideMenuContentSegue.h; path = "WD Content/AMSlideMenu/AMSlideMenuContentSegue.h"; sourceTree = "<group>"; };
+		2CA6B9E41A4567B800AFF041 /* AMSlideMenuContentSegue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AMSlideMenuContentSegue.m; path = "WD Content/AMSlideMenu/AMSlideMenuContentSegue.m"; sourceTree = "<group>"; };
+		2CA6B9E51A4567B800AFF041 /* AMSlideMenuLeftMenuSegue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AMSlideMenuLeftMenuSegue.h; path = "WD Content/AMSlideMenu/AMSlideMenuLeftMenuSegue.h"; sourceTree = "<group>"; };
+		2CA6B9E61A4567B800AFF041 /* AMSlideMenuLeftMenuSegue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AMSlideMenuLeftMenuSegue.m; path = "WD Content/AMSlideMenu/AMSlideMenuLeftMenuSegue.m"; sourceTree = "<group>"; };
+		2CA6B9E71A4567B800AFF041 /* AMSlideMenuLeftTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AMSlideMenuLeftTableViewController.h; path = "WD Content/AMSlideMenu/AMSlideMenuLeftTableViewController.h"; sourceTree = "<group>"; };
+		2CA6B9E81A4567B800AFF041 /* AMSlideMenuLeftTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AMSlideMenuLeftTableViewController.m; path = "WD Content/AMSlideMenu/AMSlideMenuLeftTableViewController.m"; sourceTree = "<group>"; };
+		2CA6B9E91A4567B800AFF041 /* AMSlideMenuMainViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AMSlideMenuMainViewController.h; path = "WD Content/AMSlideMenu/AMSlideMenuMainViewController.h"; sourceTree = "<group>"; };
+		2CA6B9EA1A4567B800AFF041 /* AMSlideMenuMainViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AMSlideMenuMainViewController.m; path = "WD Content/AMSlideMenu/AMSlideMenuMainViewController.m"; sourceTree = "<group>"; };
+		2CA6B9EB1A4567B800AFF041 /* AMSlideMenuProtocols.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AMSlideMenuProtocols.h; path = "WD Content/AMSlideMenu/AMSlideMenuProtocols.h"; sourceTree = "<group>"; };
+		2CA6B9EC1A4567B800AFF041 /* AMSlideMenuRightMenuSegue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AMSlideMenuRightMenuSegue.h; path = "WD Content/AMSlideMenu/AMSlideMenuRightMenuSegue.h"; sourceTree = "<group>"; };
+		2CA6B9ED1A4567B800AFF041 /* AMSlideMenuRightMenuSegue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AMSlideMenuRightMenuSegue.m; path = "WD Content/AMSlideMenu/AMSlideMenuRightMenuSegue.m"; sourceTree = "<group>"; };
+		2CA6B9EE1A4567B800AFF041 /* AMSlideMenuRightTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AMSlideMenuRightTableViewController.h; path = "WD Content/AMSlideMenu/AMSlideMenuRightTableViewController.h"; sourceTree = "<group>"; };
+		2CA6B9EF1A4567B800AFF041 /* AMSlideMenuRightTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AMSlideMenuRightTableViewController.m; path = "WD Content/AMSlideMenu/AMSlideMenuRightTableViewController.m"; sourceTree = "<group>"; };
+		2CA6B9F01A4567B800AFF041 /* UIViewController+AMSlideMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIViewController+AMSlideMenu.h"; path = "WD Content/AMSlideMenu/UIViewController+AMSlideMenu.h"; sourceTree = "<group>"; };
+		2CA6B9F11A4567B800AFF041 /* UIViewController+AMSlideMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIViewController+AMSlideMenu.m"; path = "WD Content/AMSlideMenu/UIViewController+AMSlideMenu.m"; sourceTree = "<group>"; };
+		2CA6B9F91A4567DD00AFF041 /* LeftMenuVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LeftMenuVC.h; sourceTree = "<group>"; };
+		2CA6B9FA1A4567DD00AFF041 /* LeftMenuVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LeftMenuVC.m; sourceTree = "<group>"; };
+		2CA6B9FB1A4567DD00AFF041 /* MainVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainVC.h; sourceTree = "<group>"; };
+		2CA6B9FC1A4567DD00AFF041 /* MainVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainVC.m; sourceTree = "<group>"; };
+		2CA6BA021A4569B900AFF041 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		2CA6BA051A456A1A00AFF041 /* UIColor+CreateMethods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIColor+CreateMethods.h"; path = "WD Content/AMSlideMenu/Categories/UIColor+CreateMethods.h"; sourceTree = "<group>"; };
+		2CA6BA061A456A1A00AFF041 /* UIColor+CreateMethods.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIColor+CreateMethods.m"; path = "WD Content/AMSlideMenu/Categories/UIColor+CreateMethods.m"; sourceTree = "<group>"; };
+		2CA6BA081A45B72D00AFF041 /* Notifications.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Notifications.h; sourceTree = "<group>"; };
+		2CA6BA091A45B72D00AFF041 /* Notifications.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Notifications.m; sourceTree = "<group>"; };
 		2CA88714187EA87F0074B73E /* ContentModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ContentModel.xcdatamodel; sourceTree = "<group>"; };
 		2CA8871B187EA9AA0074B73E /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		2CA8871D187EAEDE0074B73E /* DataModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataModel.h; sourceTree = "<group>"; };
@@ -147,9 +187,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2C3E5BDF1A4421990046AFC4 /* libc++.dylib in Frameworks */,
 				2C1701271849271A00A37516 /* libz.dylib in Frameworks */,
 				2C1701251849270200A37516 /* libiconv.dylib in Frameworks */,
 				2C170123184926EF00A37516 /* libresolv.dylib in Frameworks */,
+				2CA6B9E11A45664800AFF041 /* Dropbox.framework in Frameworks */,
 				2C1701201849266700A37516 /* libtevent.a in Frameworks */,
 				2C17011F1849266700A37516 /* libtdb.a in Frameworks */,
 				2C1701211849266700A37516 /* libwbclient.a in Frameworks */,
@@ -168,6 +210,7 @@
 		2C125E9D1848C74B00406FC3 = {
 			isa = PBXGroup;
 			children = (
+				2CA6B9E21A45679F00AFF041 /* AMSlideMenu */,
 				2C1701141849261800A37516 /* Samba */,
 				2C125EAF1848C74B00406FC3 /* WD Content */,
 				2C1701101849251D00A37516 /* Resources */,
@@ -190,9 +233,11 @@
 		2C125EA81848C74B00406FC3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				2C3E5BDE1A4421990046AFC4 /* libc++.dylib */,
 				2C1701261849271A00A37516 /* libz.dylib */,
 				2C1701241849270200A37516 /* libiconv.dylib */,
 				2C170122184926EF00A37516 /* libresolv.dylib */,
+				2CA6B9E01A45664800AFF041 /* Dropbox.framework */,
 				2CA8871B187EA9AA0074B73E /* CoreData.framework */,
 				2C125EA91848C74B00406FC3 /* Foundation.framework */,
 				2C125EAB1848C74B00406FC3 /* CoreGraphics.framework */,
@@ -208,8 +253,14 @@
 				2CA88716187EA88C0074B73E /* CoreData */,
 				2CA88711187EA8080074B73E /* Settings */,
 				EDDC271719C6EA85004D5F14 /* Content */,
+				2CA6B9F91A4567DD00AFF041 /* LeftMenuVC.h */,
+				2CA6B9FA1A4567DD00AFF041 /* LeftMenuVC.m */,
+				2CA6B9FB1A4567DD00AFF041 /* MainVC.h */,
+				2CA6B9FC1A4567DD00AFF041 /* MainVC.m */,
 				2C125EB81848C74B00406FC3 /* AppDelegate.h */,
 				2C125EB91848C74B00406FC3 /* AppDelegate.m */,
+				2CA6BA081A45B72D00AFF041 /* Notifications.h */,
+				2CA6BA091A45B72D00AFF041 /* Notifications.m */,
 			);
 			path = "WD Content";
 			sourceTree = "<group>";
@@ -232,6 +283,7 @@
 				2CDF099719C58AD000A1B3B9 /* Images */,
 				2C125EBB1848C74B00406FC3 /* Main_iPhone.storyboard */,
 				2C125EBE1848C74B00406FC3 /* Main_iPad.storyboard */,
+				2CA6BA031A4569B900AFF041 /* Main.storyboard */,
 				2C125EC41848C74B00406FC3 /* Images.xcassets */,
 			);
 			name = Resources;
@@ -250,6 +302,38 @@
 				2C17011A1849266700A37516 /* libwbclient.a */,
 			);
 			name = Samba;
+			sourceTree = "<group>";
+		};
+		2CA6B9E21A45679F00AFF041 /* AMSlideMenu */ = {
+			isa = PBXGroup;
+			children = (
+				2CA6BA041A456A0600AFF041 /* Categories */,
+				2CA6B9E31A4567B800AFF041 /* AMSlideMenuContentSegue.h */,
+				2CA6B9E41A4567B800AFF041 /* AMSlideMenuContentSegue.m */,
+				2CA6B9E51A4567B800AFF041 /* AMSlideMenuLeftMenuSegue.h */,
+				2CA6B9E61A4567B800AFF041 /* AMSlideMenuLeftMenuSegue.m */,
+				2CA6B9E71A4567B800AFF041 /* AMSlideMenuLeftTableViewController.h */,
+				2CA6B9E81A4567B800AFF041 /* AMSlideMenuLeftTableViewController.m */,
+				2CA6B9E91A4567B800AFF041 /* AMSlideMenuMainViewController.h */,
+				2CA6B9EA1A4567B800AFF041 /* AMSlideMenuMainViewController.m */,
+				2CA6B9EB1A4567B800AFF041 /* AMSlideMenuProtocols.h */,
+				2CA6B9EC1A4567B800AFF041 /* AMSlideMenuRightMenuSegue.h */,
+				2CA6B9ED1A4567B800AFF041 /* AMSlideMenuRightMenuSegue.m */,
+				2CA6B9EE1A4567B800AFF041 /* AMSlideMenuRightTableViewController.h */,
+				2CA6B9EF1A4567B800AFF041 /* AMSlideMenuRightTableViewController.m */,
+				2CA6B9F01A4567B800AFF041 /* UIViewController+AMSlideMenu.h */,
+				2CA6B9F11A4567B800AFF041 /* UIViewController+AMSlideMenu.m */,
+			);
+			name = AMSlideMenu;
+			sourceTree = "<group>";
+		};
+		2CA6BA041A456A0600AFF041 /* Categories */ = {
+			isa = PBXGroup;
+			children = (
+				2CA6BA051A456A1A00AFF041 /* UIColor+CreateMethods.h */,
+				2CA6BA061A456A1A00AFF041 /* UIColor+CreateMethods.m */,
+			);
+			name = Categories;
 			sourceTree = "<group>";
 		};
 		2CA88710187EA7CB0074B73E /* Network */ = {
@@ -415,6 +499,7 @@
 				2CDF099F19C58AE700A1B3B9 /* tabMovie@2x.png in Resources */,
 				2C125EBD1848C74B00406FC3 /* Main_iPhone.storyboard in Resources */,
 				2CDF099C19C58AE700A1B3B9 /* tabDisk.png in Resources */,
+				2CA6BA011A4569B900AFF041 /* Main.storyboard in Resources */,
 				2CDF099D19C58AE700A1B3B9 /* tabDisk@2x.png in Resources */,
 				2C378CEA19EA802D00C69ADA /* collection.png in Resources */,
 				2C125EB41848C74B00406FC3 /* InfoPlist.strings in Resources */,
@@ -436,26 +521,37 @@
 				2C6E746B19C75ECA001D9971 /* SharesTableViewController.m in Sources */,
 				ED2194B819C9AA800053C8B3 /* AFHTTPSessionManager.m in Sources */,
 				2C125EC31848C74B00406FC3 /* CollectionViewController.m in Sources */,
+				2CA6B9FE1A4567DD00AFF041 /* MainVC.m in Sources */,
 				ED2194B919C9AA800053C8B3 /* AFNetworkReachabilityManager.m in Sources */,
+				2CA6B9F61A4567B800AFF041 /* AMSlideMenuRightMenuSegue.m in Sources */,
 				ED2194B619C9AA800053C8B3 /* AFHTTPRequestOperation.m in Sources */,
 				ED2194BC19C9AA800053C8B3 /* AFURLRequestSerialization.m in Sources */,
 				ED2194BB19C9AA800053C8B3 /* AFURLConnectionOperation.m in Sources */,
 				ED2194BE19C9AA800053C8B3 /* AFURLSessionManager.m in Sources */,
+				2CA6B9F51A4567B800AFF041 /* AMSlideMenuMainViewController.m in Sources */,
+				2CA6B9FD1A4567DD00AFF041 /* LeftMenuVC.m in Sources */,
 				2C170113184925F800A37516 /* KxSMBProvider.m in Sources */,
 				2CA88715187EA87F0074B73E /* ContentModel.xcdatamodeld in Sources */,
 				2C17010B1848F68200A37516 /* Cell.m in Sources */,
+				2CA6B9F71A4567B800AFF041 /* AMSlideMenuRightTableViewController.m in Sources */,
 				2CA8871F187EAEDE0074B73E /* DataModel.m in Sources */,
 				2CAEE6D419C8C7C000B5DDD7 /* Node.m in Sources */,
 				2CA95DC4184B2B4600927138 /* SettingsViewController.m in Sources */,
 				2C125EBA1848C74B00406FC3 /* AppDelegate.m in Sources */,
 				2CA1D7191854A78800276C67 /* InfoViewController.m in Sources */,
+				2CA6B9F81A4567B800AFF041 /* UIViewController+AMSlideMenu.m in Sources */,
 				2C125EB61848C74B00406FC3 /* main.m in Sources */,
+				2CA6B9F31A4567B800AFF041 /* AMSlideMenuLeftMenuSegue.m in Sources */,
 				ED2194BA19C9AA800053C8B3 /* AFSecurityPolicy.m in Sources */,
 				ED2194B719C9AA800053C8B3 /* AFHTTPRequestOperationManager.m in Sources */,
+				2CA6BA0A1A45B72D00AFF041 /* Notifications.m in Sources */,
 				EDDC271A19C6F051004D5F14 /* MBProgressHUD.m in Sources */,
 				2C0644F119CD9867002F5F49 /* SearchInfoTableViewController.m in Sources */,
 				ED04A5C619D172C00079C787 /* MetaInfo.m in Sources */,
+				2CA6B9F41A4567B800AFF041 /* AMSlideMenuLeftTableViewController.m in Sources */,
+				2CA6B9F21A4567B800AFF041 /* AMSlideMenuContentSegue.m in Sources */,
 				ED2194BD19C9AA800053C8B3 /* AFURLResponseSerialization.m in Sources */,
+				2CA6BA071A456A1A00AFF041 /* UIColor+CreateMethods.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -485,6 +581,15 @@
 				2C125EBF1848C74B00406FC3 /* Base */,
 			);
 			name = Main_iPad.storyboard;
+			path = "WD Content";
+			sourceTree = "<group>";
+		};
+		2CA6BA031A4569B900AFF041 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				2CA6BA021A4569B900AFF041 /* Base */,
+			);
+			name = Main.storyboard;
 			path = "WD Content";
 			sourceTree = "<group>";
 		};
@@ -586,6 +691,11 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"/Users/sseitov/Documents/dropbox-ios-sync-sdk-3.1.2",
+					"/Users/sseitov/Documents/SDK/dropbox-ios-sync-sdk-3.1.2",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "WD Content/WD Content-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
@@ -614,6 +724,11 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"/Users/sseitov/Documents/dropbox-ios-sync-sdk-3.1.2",
+					"/Users/sseitov/Documents/SDK/dropbox-ios-sync-sdk-3.1.2",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "WD Content/WD Content-Prefix.pch";
 				HEADER_SEARCH_PATHS = (

@@ -8,6 +8,8 @@
 
 #import "SettingsViewController.h"
 #import "DataModel.h"
+#import "MBProgressHUD.h"
+#import "Notifications.h"
 
 @interface SettingsViewController ()
 
@@ -26,15 +28,7 @@
 {
     [super viewDidLoad];
 	_authContainer = [[NSMutableArray alloc] init];
-	NSDictionary *auth = [[NSUserDefaults standardUserDefaults] objectForKey:@"auth"];
-	if (auth) {
-		for (NSString *host in auth.allKeys) {
-			NSDictionary *server = [NSDictionary dictionaryWithObjectsAndKeys:
-									host, @"host",
-									[NSMutableDictionary dictionaryWithDictionary:[auth objectForKey:host]], @"auth", nil];
-			[_authContainer addObject:server];
-		}
-	}
+	[self loadContainer];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -45,7 +39,7 @@
 		[self.navigationItem setRightBarButtonItem:[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done)] animated:YES];
 	} else {
 		[self setEditing:NO animated:YES];
-		[self.navigationItem setRightBarButtonItem:[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:@selector(edit)] animated:YES];
+		[self.navigationItem setRightBarButtonItem:[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose target:self action:@selector(edit)] animated:YES];
 	}
 	[self.tableView reloadData];
 }
@@ -54,8 +48,15 @@
 {
 	[super viewDidDisappear:animated];
 	[self setEditing:NO animated:YES];
-	[self.tableView reloadData];
-	[DataModel setAuth:_authContainer];
+}
+
+- (void)loadContainer
+{
+	[_authContainer removeAllObjects];
+	NSArray *auth = [DataModel auth];
+	if (auth.count > 0) {
+		[_authContainer addObjectsFromArray:auth];
+	}
 }
 
 - (void)edit
@@ -65,11 +66,82 @@
 	[self.tableView reloadData];
 }
 
+- (void)refreshHosts:(void (^)(NSArray*))result
+{
+	[DataModel setAuth:_authContainer];
+	NSMutableArray* errors = [NSMutableArray new];
+	for (NSMutableDictionary* host in _authContainer) {
+		[self updateHost:host error:^(NSString* err) {
+			if (err) {
+				[DataModel removeHost:host];
+				[errors addObject:err];
+			} else {
+				[DataModel setHost:host];
+			}
+			if ([host isEqual:[_authContainer lastObject]]) {
+				result(errors);
+			}
+		}];
+	}
+}
+
 - (void)done
 {
-	[self.navigationItem setRightBarButtonItem:[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:@selector(edit)] animated:YES];
-	[self setEditing:NO animated:YES];
-	[self.tableView reloadData];
+	[self refreshHosts:^(NSArray* errors) {
+		if (errors.count > 0) {
+			NSString* error = errors.count > 1 ? @"Error connect to some hosts!" : [errors objectAtIndex:0];
+			UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Error"
+															message:error
+														   delegate:nil
+												  cancelButtonTitle:@"Ok"
+												  otherButtonTitles:nil, nil];
+			[alert show];
+		}
+		[self loadContainer];
+		
+		[[NSNotificationCenter defaultCenter] postNotificationName:UpdateMenuNotification object:self];
+
+		if (_authContainer.count > 0) {
+			[self.navigationItem setRightBarButtonItem:[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose target:self action:@selector(edit)] animated:YES];
+			[self setEditing:NO animated:YES];
+		} else if (errors.count == 0) {
+			UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Error"
+															message:@"It is necessary to add at least one device!"
+														   delegate:nil
+												  cancelButtonTitle:@"Ok"
+												  otherButtonTitles:nil, nil];
+			[alert show];
+		}
+		[self.tableView reloadData];
+	}];
+	
+}
+
+- (void)updateHost:(NSMutableDictionary*)host error:(void (^)(NSString*))error
+{
+	[MBProgressHUD showHUDAddedTo:self.view animated:YES];
+	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0), ^{
+		id result = [[DataModel sharedInstance].provider fetchAtPath:[NSString stringWithFormat:@"smb://%@", [host objectForKey:@"host"]]];
+		NSString* err = nil;
+		if ([result isKindOfClass:[NSError class]]) {
+			err = [NSString stringWithFormat:@"Error connect to %@", [host objectForKey:@"host"]];
+		} else {
+			NSMutableArray* folders = [NSMutableArray new];
+			if ([result isKindOfClass:[NSArray class]]) {
+				for (KxSMBItem* item in result) {
+					[folders addObject:item.path];
+				}
+			} else if ([result isKindOfClass:[KxSMBItem class]]) {
+				KxSMBItem* item = (KxSMBItem*)result;
+				[folders addObject:item.path];
+			}
+			[host setObject:folders forKey:@"folders"];
+		}
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[MBProgressHUD hideHUDForView:self.view animated:YES];
+			error(err);
+		});
+	});
 }
 
 #pragma mark - Table view data source
@@ -127,7 +199,7 @@
 	
 	SettingsCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
 	if (indexPath.section < _authContainer.count && _authContainer.count > 0) {
-		cell.authorization = [[_authContainer objectAtIndex:indexPath.section] objectForKey:@"auth"];
+		cell.authorization = [_authContainer objectAtIndex:indexPath.section];
 	} else {
 		cell.authorization = nil;
 	}
@@ -151,8 +223,8 @@
 	if (buttonIndex) {
 		UITextField *addr = [alertView textFieldAtIndex:0];
 		
-		NSMutableDictionary *auth = [NSMutableDictionary dictionaryWithObjectsAndKeys:@"WORKGROUP", @"workgroup", @"guest", @"user", @"", @"password", nil];
-		[_authContainer addObject:[NSDictionary dictionaryWithObjectsAndKeys:addr.text, @"host", auth, @"auth", nil]];
+		NSMutableDictionary *auth = [NSMutableDictionary dictionaryWithObjectsAndKeys:addr.text, @"host", @"WORKGROUP", @"workgroup", @"guest", @"user", @"", @"password", nil];
+		[_authContainer addObject:auth];
 		[self.tableView reloadData];
 	}
 }

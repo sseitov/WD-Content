@@ -20,14 +20,23 @@
 	<string>2.31</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>db-3cujrb3xpbb7fuw</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>2.31</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIMainStoryboardFile</key>
-	<string>Main_iPhone</string>
+	<string>Main</string>
 	<key>UIMainStoryboardFile~ipad</key>
-	<string>Main_iPad</string>
+	<string>Main</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
