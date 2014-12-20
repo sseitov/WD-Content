@@ -48,6 +48,6 @@ extern NSString * const DataModelDidChangeNotification;
 + (NSArray*)auth;
 + (void)setAuth:(NSArray*)authArray;
 + (void)removeHost:(NSDictionary*)host;
-+ (void)setHost:(NSDictionary*)host;
++ (void)setHost:(NSMutableDictionary*)host;
 
 @end

@@ -132,22 +132,24 @@ NSString* const UpdateInfoNotification = @"UpdateInfoNotification";
 		CGSize maximumSize = CGSizeMake(tableView.frame.size.width, 800);
 		NSString *cellString = [_info objectForKey:[_fields objectAtIndex:indexPath.section]];
 		UIFont *font = [UIFont fontWithName:@"Helvetica" size:17];
-//		if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1) {
+		if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1) {
 			CGSize sz = [cellString sizeWithFont:font constrainedToSize:maximumSize];
 			return sz.height > 44 ? sz.height + 40 : 44;
-//		} else {
-/*			CGRect rect = [cellString boundingRectWithSize:maximumSize
+		} else {
+			CGRect rect = [cellString boundingRectWithSize:maximumSize
 												   options:NSStringDrawingUsesLineFragmentOrigin
 												attributes:[NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName]
 												   context:nil];
 			return rect.size.height > 44 ? rect.size.height : 44;
-		}*/
+		}
 	}
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:nil];
+	cell.backgroundColor = [UIColor clearColor];
+	cell.contentView.backgroundColor = [UIColor clearColor];
 	cell.textLabel.text = [_info objectForKey:[_fields objectAtIndex:indexPath.section]];
 	cell.textLabel.numberOfLines = 0;
 	cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;

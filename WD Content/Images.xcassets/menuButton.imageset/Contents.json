@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "simpleMenuButton.png"
+      "filename" : "reveal-icon.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "simpleMenuButton@2x.png"
+      "filename" : "reveal-icon@2x.png"
     },
     {
       "idiom" : "universal",

@@ -27,6 +27,7 @@
 #import "LeftMenuVC.h"
 #import "DataModel.h"
 #import "Notifications.h"
+#import "CollectionViewController.h"
 
 @interface LeftMenuVC()
 
@@ -45,30 +46,29 @@
         self.tableView.contentInset = UIEdgeInsetsMake(20, 0, 0, 0);
     }
 	_rows = [NSMutableArray new];
-	[self createFoldersList:[DataModel auth]];
+	[_rows addObjectsFromArray:[[DataModel sharedInstance] nodesByRoot:nil]];
 	
 	NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 	[nc addObserver:self selector:@selector(handleUpdateMenu:) name:UpdateMenuNotification object:nil];
 }
 
-- (void)createFoldersList:(NSArray*)auth
-{
-	[_rows removeAllObjects];
-	for (NSDictionary *host in auth) {
-		NSArray* folders = [host objectForKey:@"folders"];
-		if (folders.count > 0) {
-			[_rows addObjectsFromArray:folders];
-		}
-	}
-}
-
 - (void)handleUpdateMenu:(NSNotification*)note
 {
-	[self createFoldersList:[DataModel auth]];
+	[_rows removeAllObjects];
+	[_rows addObjectsFromArray:[[DataModel sharedInstance] nodesByRoot:nil]];
 	[self.tableView reloadData];
 }
 
 #pragma mark - UITableView delegate
+
+- (NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+	if (section) {
+		return @"Folders";
+	} else {
+		return @"Settings";
+	}
+}
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
@@ -92,10 +92,11 @@
 		cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Cell"];
 		cell.backgroundColor = [UIColor clearColor];
 		cell.contentView.backgroundColor = [UIColor clearColor];
-		cell.textLabel.textColor = [UIColor whiteColor];
 	}
 	if (indexPath.section) {
-		cell.textLabel.text = [_rows[indexPath.row] lastPathComponent];
+		Node* node = _rows[indexPath.row];
+		cell.textLabel.text = node.name;
+		cell.imageView.image = [UIImage imageWithData:node.image];
 	} else {
 		cell.textLabel.text = @"WD Devices";
 	}
@@ -109,6 +110,18 @@
 		[self performSegueWithIdentifier:@"Content" sender:indexPath];
 	} else  {
 		[self performSegueWithIdentifier:@"Devices" sender:nil];
+	}
+}
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+	if ([[segue identifier] isEqualToString:@"Content"])
+	{
+		UINavigationController *vc = [segue destinationViewController];
+		NSIndexPath* indexPath = (NSIndexPath*)sender;
+		Node* node = [_rows objectAtIndex:indexPath.row];
+		CollectionViewController* collection = (CollectionViewController*)vc.topViewController;
+		collection.rootNode = node;
 	}
 }
 

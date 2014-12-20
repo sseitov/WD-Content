@@ -17,13 +17,13 @@
 
 #define IS_PAD ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
 
-@interface CollectionViewController ()<SharesTableViewControllerDelegate>
+@interface CollectionViewController ()
 
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
 @property (strong, nonatomic) NSArray* nodes;
-@property (nonatomic) int errorCount;
+@property (readwrite, nonatomic) enum ViewMode viewMode;
 
 @end
 
@@ -43,15 +43,21 @@
 {
     [super viewDidLoad];
 	
+//	if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7.0 && ![UIApplication sharedApplication].isStatusBarHidden)
+//	{
+		self.tableView.contentInset = UIEdgeInsetsMake(20, 0, 0, 0);
+		self.collectionView.contentInset = UIEdgeInsetsMake(20, 0, 0, 0);
+//	}
+
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateInfoNotification:)
 												 name:UpdateInfoNotification
 											   object:nil];
 	
 	_nodes = [[DataModel sharedInstance] nodesByRoot:_rootNode];
-	
+
 	UIButton *btn = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 24, 24)];
 	[btn setImage:[UIImage imageNamed:@"refresh.png"] forState:UIControlStateNormal];
-	[btn addTarget:self action:@selector(updateData) forControlEvents:UIControlEventTouchDown];
+	[btn addTarget:self action:@selector(addNodesForRoot) forControlEvents:UIControlEventTouchDown];
 	UIBarButtonItem* refresh = [[UIBarButtonItem alloc] initWithCustomView:btn];
 	
 	btn = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 24, 24)];
@@ -68,14 +74,7 @@
 	NSArray* items = @[compose, refresh];
 	
 	[self.navigationItem setRightBarButtonItems:items];
-	if (_rootNode == nil) {
-		self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(selectShares)];
-	}
-	if (!_rootNode) {
-		self.title = @"WD Content";
-	} else {
-		self.title = _rootNode.name;
-	}
+	self.title = _rootNode.name;
 }
 
 - (void)switchMode:(UIButton*)sender
@@ -115,52 +114,8 @@
 {
 	[super viewDidAppear:animated];
 	if (_nodes.count == 0) {
-		[self updateData];
+		[self addNodesForRoot];
 	}
-}
-
-NSString* hostFromPath(NSString *path)
-{
-	NSRange startRange = [path rangeOfString:@"smb://"];
-	NSRange finishRange = {startRange.length, path.length-startRange.length};
-	finishRange = [path rangeOfString:@"/" options:NSCaseInsensitiveSearch range:finishRange];
-	if (finishRange.location != NSNotFound) {
-		NSRange resultRange = {startRange.length, finishRange.location-startRange.length};
-		return [path substringWithRange:resultRange];
-	} else {
-		NSRange resultRange = {startRange.length, path.length-startRange.length};
-		return [path substringWithRange:resultRange];
-	}
-}
-
-- (void)selectShares
-{
-	SharesTableViewController* shares = [[SharesTableViewController alloc] initWithDelegate:self];
-	UINavigationController* nav = [[UINavigationController alloc] initWithRootViewController:shares];
-	nav.navigationBar.barStyle = UIBarStyleBlack;
-	nav.modalPresentationStyle = UIModalPresentationFormSheet;
-	[self presentViewController:nav animated:YES completion:^(){}];
-}
-
-- (void)didSelectShares:(NSArray*)nodes
-{
-	for (NSDictionary* node in nodes) {
-		KxSMBItem* item = [node objectForKey:@"item"];
-		if ([[node objectForKey:@"checked"] boolValue]) {
-			NSLog(@"%@ checked", item.path);
-			if (![[self hasNodeWithPath:item.path] boolValue]) {
-				[[DataModel sharedInstance] newNodeForItem:item withParent:nil];
-			}
-		} else {
-			Node* node = [self nodeWithPath:item.path];
-			if (node) {
-				[[DataModel sharedInstance] deleteNode:node];
-			}
-		}
-	}
-	_nodes = [[DataModel sharedInstance] nodesByRoot:_rootNode];
-	[_collectionView reloadData];
-	[_tableView reloadData];
 }
 
 - (Node*)nodeWithPath:(NSString*)path
@@ -182,94 +137,11 @@ NSString* hostFromPath(NSString *path)
 	}
 }
 
-- (void)updateData
-{
-//	AppDelegate* app = [[UIApplication sharedApplication] delegate];
-//	[app sync:self];
-	if (!_rootNode) {
-		NSMutableSet* authHosts = [NSMutableSet setWithArray:[DataModel auth]];
-		for (int i=0; i<_nodes.count; i++) {
-			Node* node = [_nodes objectAtIndex:i];
-			NSString* host = hostFromPath(node.path);
-			if (![authHosts containsObject:host]) {
-				[[DataModel sharedInstance] deleteNode:node];
-			}
-		}
-		_nodes = [[DataModel sharedInstance] nodesByRoot:_rootNode];
-		[_collectionView reloadData];
-		[_tableView reloadData];
-		
-		NSMutableSet* nodesHosts = [NSMutableSet new];
-		for (Node* node in _nodes) {
-			NSString* path = hostFromPath(node.path);
-			if (path) {
-				[nodesHosts addObject:path];
-			}
-		}
-		[authHosts minusSet:nodesHosts];
-		if (authHosts.count > 0) {
-			[self addHosts:authHosts.allObjects];
-		} else {
-			[_collectionView reloadData];
-			[_tableView reloadData];
-		}
-	} else {
-		_errorCount = 0;
-		[self addNodesForRoot];
-	}
-}
-
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
 	if (buttonIndex) {
-		switch (alertView.tag) {
-			case 1:
-				[self updateData];
-				break;
-			case 2:
-				_errorCount = 0;
-				[self addNodesForRoot];
-				break;
-			default:
-				break;
-		}
+		[self addNodesForRoot];
 	}
-}
-
-- (void)addHosts:(NSArray*)hosts
-{
-    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0), ^{
-		for (NSString* host in hosts) {
-			id result = [[DataModel sharedInstance].provider fetchAtPath:[NSString stringWithFormat:@"smb://%@", host]];
-			if ([result isKindOfClass:[NSError class]]) {
-				dispatch_async(dispatch_get_main_queue(), ^{
-					[MBProgressHUD hideHUDForView:self.view animated:YES];
-					UIAlertView* alert = [[UIAlertView alloc] initWithTitle:_rootNode.path
-																	message:@"Error connect. Retry?"
-																   delegate:self
-														  cancelButtonTitle:@"No" otherButtonTitles:@"Yes", nil];
-					alert.tag = 1;
-					[alert show];
-				});
-				return;
-			} else {
-				if ([result isKindOfClass:[NSArray class]]) {
-					for (KxSMBItem* item in result) {
-						[[DataModel sharedInstance] newNodeForItem:item withParent:nil];
-					}
-				} else if ([result isKindOfClass:[KxSMBItem class]]) {
-					KxSMBItem* item = (KxSMBItem*)result;
-					[[DataModel sharedInstance] newNodeForItem:item withParent:nil];
-				}
-			}
-		}
-		_nodes = [[DataModel sharedInstance] nodesByRoot:_rootNode];
-		dispatch_async(dispatch_get_main_queue(), ^{
-			[MBProgressHUD hideHUDForView:self.view animated:YES];
-			[self.collectionView reloadData];
-		});
-	});
 }
 
 - (void)addNodesForRoot
@@ -281,17 +153,12 @@ NSString* hostFromPath(NSString *path)
 		if ([result isKindOfClass:[NSError class]]) {
 			dispatch_async(dispatch_get_main_queue(), ^{
 				[MBProgressHUD hideHUDForView:self.view animated:YES];
-				if (_errorCount < 3) {
-					_errorCount++;
-					[self addNodesForRoot];
-				} else {
-					UIAlertView* alert = [[UIAlertView alloc] initWithTitle:_rootNode.path
-																	message:@"Error connect. Retry?"
-																   delegate:self
-														  cancelButtonTitle:@"No" otherButtonTitles:@"Yes", nil];
-					alert.tag = 2;
-					[alert show];
-				}
+				UIAlertView* alert = [[UIAlertView alloc] initWithTitle:_rootNode.path
+																message:@"Error connect. Retry?"
+															   delegate:self
+													  cancelButtonTitle:@"No" otherButtonTitles:@"Yes", nil];
+				alert.tag = 2;
+				[alert show];
 			});
 			return;
 		} else {
@@ -306,6 +173,7 @@ NSString* hostFromPath(NSString *path)
 		// add new nodes
 		for (KxSMBItem* item in newItems) {
 			if (![self nodeWithPath:item.path]) {
+				NSLog(@"%@ - %ld", item.path, item.stat.mode);
 				[[DataModel sharedInstance] newNodeForItem:item withParent:_rootNode];
 			}
 		}
@@ -333,7 +201,10 @@ NSString* hostFromPath(NSString *path)
 			[list addObject:item];
 		}
 	} else {
-		[list addObject:item];
+		NSRange r = [item.path.lastPathComponent rangeOfString:@"."];
+		if (r.location == NSNotFound || r.location > 0) {
+			[list addObject:item];
+		}
 	}
 }
 
@@ -354,6 +225,7 @@ NSString* hostFromPath(NSString *path)
 		cell.image.image = [UIImage imageWithData:node.image];
 	}
 	cell.title.text = node.name;
+	cell.title.textColor = [UIColor blackColor];
     return cell;
 }
 
@@ -366,7 +238,7 @@ NSString* hostFromPath(NSString *path)
 - (void)selectNode:(Node*)node
 {
 	if ([node.isFile boolValue] == NO) {
-		UIStoryboard* storyboard = IS_PAD ? [UIStoryboard storyboardWithName:@"Main_iPad" bundle:nil] : [UIStoryboard storyboardWithName:@"Main_iPhone" bundle:nil];
+		UIStoryboard* storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
 		CollectionViewController *next = [storyboard instantiateViewControllerWithIdentifier:@"CollectionViewController"];
 		next.rootNode = node;
 		next.viewMode = _viewMode;
@@ -381,7 +253,7 @@ NSString* hostFromPath(NSString *path)
 			nav.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
 			[self presentViewController:nav animated:YES completion:^(){}];
 		} else {
-			UIStoryboard* storyboard = IS_PAD ? [UIStoryboard storyboardWithName:@"Main_iPad" bundle:nil] : [UIStoryboard storyboardWithName:@"Main_iPhone" bundle:nil];
+			UIStoryboard* storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
 			SearchInfoTableViewController *search = [storyboard instantiateViewControllerWithIdentifier:@"SearchInfoController"];
 			search.node = node;
 			UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:search];
@@ -410,10 +282,6 @@ NSString* hostFromPath(NSString *path)
 	} else {
 		cell.imageView.image = [UIImage imageWithData:node.image];
 	}
-	cell.backgroundColor = [UIColor blackColor];
-	cell.contentView.backgroundColor = [UIColor blackColor];
-	cell.textLabel.textColor = [UIColor whiteColor];
-	cell.detailTextLabel.textColor = [UIColor whiteColor];
 	cell.textLabel.numberOfLines = 0;
 	cell.textLabel.text = node.name;
 	if ([node.isFile boolValue] == NO) {

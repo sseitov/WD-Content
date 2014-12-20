@@ -80,6 +80,7 @@
 	} else {
 		NSDictionary* movie = [_searchResults objectAtIndex:indexPath.row];
 		cell.textLabel.text = [movie objectForKey:@"title"];
+		cell.textLabel.numberOfLines = 0;
 		cell.detailTextLabel.text = [movie objectForKey:@"release_date"];
 		cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 		if (movie[@"poster"] != [NSNull null]) {

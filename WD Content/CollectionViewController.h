@@ -20,6 +20,5 @@ enum ViewMode
 UITableViewDataSource, UITableViewDelegate>
 
 @property (strong, nonatomic) Node* rootNode;
-@property (readwrite, nonatomic) enum ViewMode viewMode;
 
 @end

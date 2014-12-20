@@ -66,23 +66,39 @@
 	[self.tableView reloadData];
 }
 
+#define WAIT(a) [a lock]; [a wait]; [a unlock]
+#define SIGNAL(a) [a lock]; [a signal]; [a unlock]
+
 - (void)refreshHosts:(void (^)(NSArray*))result
 {
-	[DataModel setAuth:_authContainer];
-	NSMutableArray* errors = [NSMutableArray new];
-	for (NSMutableDictionary* host in _authContainer) {
-		[self updateHost:host error:^(NSString* err) {
-			if (err) {
-				[DataModel removeHost:host];
-				[errors addObject:err];
-			} else {
-				[DataModel setHost:host];
+	[MBProgressHUD showHUDAddedTo:self.view animated:YES];
+	NSCondition* next = [[NSCondition alloc] init];
+	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0), ^{
+		[DataModel setAuth:_authContainer];
+		NSMutableArray* errors = [NSMutableArray new];
+		for (NSMutableDictionary* host in _authContainer) {
+			if ([[host objectForKey:@"validated"] boolValue] == NO) {
+				[self updateHost:host result:^(NSArray* items, NSString* err) {
+					if (err) {
+						[DataModel removeHost:host];
+						[errors addObject:err];
+					} else {
+						for (KxSMBItem *item in items) {
+							[[DataModel sharedInstance] newNodeForItem:item withParent:nil];
+						}
+						[DataModel setHost:host];
+					}
+					SIGNAL(next);
+				}];
+				WAIT(next);
 			}
-			if ([host isEqual:[_authContainer lastObject]]) {
-				result(errors);
-			}
-		}];
-	}
+		}
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[MBProgressHUD hideHUDForView:self.view animated:YES];
+			result(errors);
+		});
+
+	});
 }
 
 - (void)done
@@ -117,30 +133,31 @@
 	
 }
 
-- (void)updateHost:(NSMutableDictionary*)host error:(void (^)(NSString*))error
+- (void)updateHost:(NSMutableDictionary*)host result:(void (^)(NSArray*, NSString*))result
 {
-	[MBProgressHUD showHUDAddedTo:self.view animated:YES];
-	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0), ^{
-		id result = [[DataModel sharedInstance].provider fetchAtPath:[NSString stringWithFormat:@"smb://%@", [host objectForKey:@"host"]]];
-		NSString* err = nil;
-		if ([result isKindOfClass:[NSError class]]) {
-			err = [NSString stringWithFormat:@"Error connect to %@", [host objectForKey:@"host"]];
-		} else {
-			NSMutableArray* folders = [NSMutableArray new];
-			if ([result isKindOfClass:[NSArray class]]) {
-				for (KxSMBItem* item in result) {
-					[folders addObject:item.path];
-				}
-			} else if ([result isKindOfClass:[KxSMBItem class]]) {
-				KxSMBItem* item = (KxSMBItem*)result;
+	id res = [[DataModel sharedInstance].provider fetchAtPath:[NSString stringWithFormat:@"smb://%@", [host objectForKey:@"host"]]];
+	NSString* err = nil;
+	NSMutableArray* items = [NSMutableArray new];
+	NSMutableArray* folders = [NSMutableArray new];
+	if ([res isKindOfClass:[NSError class]]) {
+		err = [NSString stringWithFormat:@"Error connect to %@", [host objectForKey:@"host"]];
+	} else {
+		if ([res isKindOfClass:[NSArray class]]) {
+			for (KxSMBItem* item in res) {
+				[items addObject:item];
 				[folders addObject:item.path];
 			}
+		} else if ([res isKindOfClass:[KxSMBItem class]]) {
+			KxSMBItem* item = (KxSMBItem*)res;
+			[items addObject:item];
+			[folders addObject:item.path];
+		}
+	}
+	dispatch_async(dispatch_get_main_queue(), ^{
+		if (!err) {
 			[host setObject:folders forKey:@"folders"];
 		}
-		dispatch_async(dispatch_get_main_queue(), ^{
-			[MBProgressHUD hideHUDForView:self.view animated:YES];
-			error(err);
-		});
+		result(items, err);
 	});
 }
 
@@ -232,12 +249,16 @@
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
+		NSDictionary* host = [_authContainer objectAtIndex:indexPath.section];
+		[DataModel removeHost:host];
+		[[NSNotificationCenter defaultCenter] postNotificationName:UpdateMenuNotification object:self];
 		[_authContainer removeObjectAtIndex:indexPath.section];
         [tableView beginUpdates];
         [tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.section] withRowAnimation:UITableViewRowAnimationTop];
         [tableView endUpdates];
     } else if (editingStyle == UITableViewCellEditingStyleInsert) {
 		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Enter WD device IP address" message:@"xxx.xxx.xxx.xxx" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Add", nil];
+		alert.tag = 1;
 		alert.alertViewStyle = UIAlertViewStylePlainTextInput;
 		[alert show];
     }

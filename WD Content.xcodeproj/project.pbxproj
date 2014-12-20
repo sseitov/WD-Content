@@ -19,7 +19,6 @@
 		2C125EC31848C74B00406FC3 /* CollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C125EC21848C74B00406FC3 /* CollectionViewController.m */; };
 		2C125EC51848C74B00406FC3 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2C125EC41848C74B00406FC3 /* Images.xcassets */; };
 		2C17010B1848F68200A37516 /* Cell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C17010A1848F68200A37516 /* Cell.m */; };
-		2C17010D18491B8B00A37516 /* FolderIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C17010C18491B8B00A37516 /* FolderIcon.png */; };
 		2C170113184925F800A37516 /* KxSMBProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C170112184925F800A37516 /* KxSMBProvider.m */; };
 		2C17011D1849266700A37516 /* libsmbclient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C1701151849266700A37516 /* libsmbclient.a */; };
 		2C17011E1849266700A37516 /* libtalloc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C1701171849266700A37516 /* libtalloc.a */; };
@@ -48,13 +47,14 @@
 		2CA6BA011A4569B900AFF041 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2CA6BA031A4569B900AFF041 /* Main.storyboard */; };
 		2CA6BA071A456A1A00AFF041 /* UIColor+CreateMethods.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA6BA061A456A1A00AFF041 /* UIColor+CreateMethods.m */; };
 		2CA6BA0A1A45B72D00AFF041 /* Notifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA6BA091A45B72D00AFF041 /* Notifications.m */; };
+		2CA6BA0C1A45BE9A00AFF041 /* PixateFreestyle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CA6BA0B1A45BE9A00AFF041 /* PixateFreestyle.framework */; };
+		2CA6BA0E1A45BF9700AFF041 /* default.css in Resources */ = {isa = PBXBuildFile; fileRef = 2CA6BA0D1A45BF9700AFF041 /* default.css */; };
 		2CA88715187EA87F0074B73E /* ContentModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2CA88713187EA87F0074B73E /* ContentModel.xcdatamodeld */; };
 		2CA8871C187EA9AA0074B73E /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CA8871B187EA9AA0074B73E /* CoreData.framework */; };
 		2CA8871F187EAEDE0074B73E /* DataModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA8871E187EAEDE0074B73E /* DataModel.m */; };
 		2CA95DC4184B2B4600927138 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA95DC3184B2B4600927138 /* SettingsViewController.m */; };
 		2CA95DC7184B2CB700927138 /* SettingsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA95DC6184B2CB700927138 /* SettingsCell.m */; };
 		2CAEE6D419C8C7C000B5DDD7 /* Node.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CAEE6D319C8C7C000B5DDD7 /* Node.m */; };
-		2CC6660A18546B4500A051F9 /* FileIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 2CC6660918546B4500A051F9 /* FileIcon.png */; };
 		2CDF099C19C58AE700A1B3B9 /* tabDisk.png in Resources */ = {isa = PBXBuildFile; fileRef = 2CDF099819C58AE700A1B3B9 /* tabDisk.png */; };
 		2CDF099D19C58AE700A1B3B9 /* tabDisk@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2CDF099919C58AE700A1B3B9 /* tabDisk@2x.png */; };
 		2CDF099E19C58AE700A1B3B9 /* tabMovie.png in Resources */ = {isa = PBXBuildFile; fileRef = 2CDF099A19C58AE700A1B3B9 /* tabMovie.png */; };
@@ -93,7 +93,6 @@
 		2C125EC41848C74B00406FC3 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = "WD Content/Images.xcassets"; sourceTree = "<group>"; };
 		2C1701091848F68200A37516 /* Cell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Cell.h; path = "WD Content/Cell.h"; sourceTree = "<group>"; };
 		2C17010A1848F68200A37516 /* Cell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Cell.m; path = "WD Content/Cell.m"; sourceTree = "<group>"; };
-		2C17010C18491B8B00A37516 /* FolderIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FolderIcon.png; sourceTree = SOURCE_ROOT; };
 		2C170111184925F800A37516 /* KxSMBProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KxSMBProvider.h; sourceTree = "<group>"; };
 		2C170112184925F800A37516 /* KxSMBProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KxSMBProvider.m; sourceTree = "<group>"; };
 		2C1701151849266700A37516 /* libsmbclient.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsmbclient.a; path = libs/libsmbclient.a; sourceTree = "<group>"; };
@@ -140,6 +139,8 @@
 		2CA6BA061A456A1A00AFF041 /* UIColor+CreateMethods.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIColor+CreateMethods.m"; path = "WD Content/AMSlideMenu/Categories/UIColor+CreateMethods.m"; sourceTree = "<group>"; };
 		2CA6BA081A45B72D00AFF041 /* Notifications.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Notifications.h; sourceTree = "<group>"; };
 		2CA6BA091A45B72D00AFF041 /* Notifications.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Notifications.m; sourceTree = "<group>"; };
+		2CA6BA0B1A45BE9A00AFF041 /* PixateFreestyle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PixateFreestyle.framework; path = ../../../../Users/sseitov/Documents/SDK/PixateFreestyle/PixateFreestyle.framework; sourceTree = "<group>"; };
+		2CA6BA0D1A45BF9700AFF041 /* default.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = default.css; sourceTree = "<group>"; };
 		2CA88714187EA87F0074B73E /* ContentModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ContentModel.xcdatamodel; sourceTree = "<group>"; };
 		2CA8871B187EA9AA0074B73E /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		2CA8871D187EAEDE0074B73E /* DataModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataModel.h; sourceTree = "<group>"; };
@@ -150,7 +151,6 @@
 		2CA95DC6184B2CB700927138 /* SettingsCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsCell.m; sourceTree = "<group>"; };
 		2CAEE6D219C8C7C000B5DDD7 /* Node.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Node.h; sourceTree = "<group>"; };
 		2CAEE6D319C8C7C000B5DDD7 /* Node.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Node.m; sourceTree = "<group>"; };
-		2CC6660918546B4500A051F9 /* FileIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FileIcon.png; sourceTree = "<group>"; };
 		2CDF099819C58AE700A1B3B9 /* tabDisk.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tabDisk.png; sourceTree = "<group>"; };
 		2CDF099919C58AE700A1B3B9 /* tabDisk@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tabDisk@2x.png"; sourceTree = "<group>"; };
 		2CDF099A19C58AE700A1B3B9 /* tabMovie.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tabMovie.png; sourceTree = "<group>"; };
@@ -178,8 +178,8 @@
 		ED2194B319C9AA800053C8B3 /* AFURLResponseSerialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AFURLResponseSerialization.m; path = AFNetworking/AFURLResponseSerialization.m; sourceTree = "<group>"; };
 		ED2194B419C9AA800053C8B3 /* AFURLSessionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AFURLSessionManager.h; path = AFNetworking/AFURLSessionManager.h; sourceTree = "<group>"; };
 		ED2194B519C9AA800053C8B3 /* AFURLSessionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AFURLSessionManager.m; path = AFNetworking/AFURLSessionManager.m; sourceTree = "<group>"; };
-		EDDC271819C6F051004D5F14 /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MBProgressHUD.h; path = "WD Content/MBProgressHUD.h"; sourceTree = "<group>"; };
-		EDDC271919C6F051004D5F14 /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MBProgressHUD.m; path = "WD Content/MBProgressHUD.m"; sourceTree = "<group>"; };
+		EDDC271819C6F051004D5F14 /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
+		EDDC271919C6F051004D5F14 /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -191,6 +191,7 @@
 				2C1701271849271A00A37516 /* libz.dylib in Frameworks */,
 				2C1701251849270200A37516 /* libiconv.dylib in Frameworks */,
 				2C170123184926EF00A37516 /* libresolv.dylib in Frameworks */,
+				2CA6BA0C1A45BE9A00AFF041 /* PixateFreestyle.framework in Frameworks */,
 				2CA6B9E11A45664800AFF041 /* Dropbox.framework in Frameworks */,
 				2C1701201849266700A37516 /* libtevent.a in Frameworks */,
 				2C17011F1849266700A37516 /* libtdb.a in Frameworks */,
@@ -233,6 +234,7 @@
 		2C125EA81848C74B00406FC3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				2CA6BA0B1A45BE9A00AFF041 /* PixateFreestyle.framework */,
 				2C3E5BDE1A4421990046AFC4 /* libc++.dylib */,
 				2C1701261849271A00A37516 /* libz.dylib */,
 				2C1701241849270200A37516 /* libiconv.dylib */,
@@ -259,6 +261,8 @@
 				2CA6B9FC1A4567DD00AFF041 /* MainVC.m */,
 				2C125EB81848C74B00406FC3 /* AppDelegate.h */,
 				2C125EB91848C74B00406FC3 /* AppDelegate.m */,
+				EDDC271819C6F051004D5F14 /* MBProgressHUD.h */,
+				EDDC271919C6F051004D5F14 /* MBProgressHUD.m */,
 				2CA6BA081A45B72D00AFF041 /* Notifications.h */,
 				2CA6BA091A45B72D00AFF041 /* Notifications.m */,
 			);
@@ -281,6 +285,7 @@
 			isa = PBXGroup;
 			children = (
 				2CDF099719C58AD000A1B3B9 /* Images */,
+				2CA6BA0D1A45BF9700AFF041 /* default.css */,
 				2C125EBB1848C74B00406FC3 /* Main_iPhone.storyboard */,
 				2C125EBE1848C74B00406FC3 /* Main_iPad.storyboard */,
 				2CA6BA031A4569B900AFF041 /* Main.storyboard */,
@@ -383,8 +388,6 @@
 				2CDF099919C58AE700A1B3B9 /* tabDisk@2x.png */,
 				2CDF099A19C58AE700A1B3B9 /* tabMovie.png */,
 				2CDF099B19C58AE700A1B3B9 /* tabMovie@2x.png */,
-				2CC6660918546B4500A051F9 /* FileIcon.png */,
-				2C17010C18491B8B00A37516 /* FolderIcon.png */,
 			);
 			name = Images;
 			sourceTree = "<group>";
@@ -418,8 +421,6 @@
 		EDDC271719C6EA85004D5F14 /* Content */ = {
 			isa = PBXGroup;
 			children = (
-				EDDC271819C6F051004D5F14 /* MBProgressHUD.h */,
-				EDDC271919C6F051004D5F14 /* MBProgressHUD.m */,
 				2C0644EF19CD9867002F5F49 /* SearchInfoTableViewController.h */,
 				2C0644F019CD9867002F5F49 /* SearchInfoTableViewController.m */,
 				2CA1D7171854A78800276C67 /* InfoViewController.h */,
@@ -495,7 +496,6 @@
 				2C378CEC19EA802D00C69ADA /* refresh.png in Resources */,
 				2C125EC01848C74B00406FC3 /* Main_iPad.storyboard in Resources */,
 				2C125EC51848C74B00406FC3 /* Images.xcassets in Resources */,
-				2CC6660A18546B4500A051F9 /* FileIcon.png in Resources */,
 				2CDF099F19C58AE700A1B3B9 /* tabMovie@2x.png in Resources */,
 				2C125EBD1848C74B00406FC3 /* Main_iPhone.storyboard in Resources */,
 				2CDF099C19C58AE700A1B3B9 /* tabDisk.png in Resources */,
@@ -503,9 +503,9 @@
 				2CDF099D19C58AE700A1B3B9 /* tabDisk@2x.png in Resources */,
 				2C378CEA19EA802D00C69ADA /* collection.png in Resources */,
 				2C125EB41848C74B00406FC3 /* InfoPlist.strings in Resources */,
-				2C17010D18491B8B00A37516 /* FolderIcon.png in Resources */,
 				2CDF099E19C58AE700A1B3B9 /* tabMovie.png in Resources */,
 				2C378CEB19EA802D00C69ADA /* list.png in Resources */,
+				2CA6BA0E1A45BF9700AFF041 /* default.css in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -695,6 +695,7 @@
 					"$(inherited)",
 					"/Users/sseitov/Documents/dropbox-ios-sync-sdk-3.1.2",
 					"/Users/sseitov/Documents/SDK/dropbox-ios-sync-sdk-3.1.2",
+					/Users/sseitov/Documents/SDK/PixateFreestyle,
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "WD Content/WD Content-Prefix.pch";
@@ -728,6 +729,7 @@
 					"$(inherited)",
 					"/Users/sseitov/Documents/dropbox-ios-sync-sdk-3.1.2",
 					"/Users/sseitov/Documents/SDK/dropbox-ios-sync-sdk-3.1.2",
+					/Users/sseitov/Documents/SDK/PixateFreestyle,
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "WD Content/WD Content-Prefix.pch";

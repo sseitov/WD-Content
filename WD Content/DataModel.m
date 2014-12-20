@@ -263,10 +263,10 @@ NSString * const kDataManagerSQLiteName = @"ContentModel.sqlite";
 	node.info = nil;
 	if ([node.isFile boolValue]) {
 		node.size = [NSNumber numberWithLongLong:item.stat.size];
-		node.image = [NSData dataWithContentsOfURL:[[NSBundle mainBundle] URLForResource:@"FileIcon" withExtension:@"png"]];
+		node.image = UIImagePNGRepresentation([UIImage imageNamed:@"FileIcon"]);
 	} else {
 		node.size = 0;
-		node.image = [NSData dataWithContentsOfURL:[[NSBundle mainBundle] URLForResource:@"FolderIcon" withExtension:@"png"]];
+		node.image = UIImagePNGRepresentation([UIImage imageNamed:@"FolderIcon"]);
 	}
 	
 	//Save result in database
@@ -341,6 +341,12 @@ NSString * const kDataManagerSQLiteName = @"ContentModel.sqlite";
 	NSMutableArray* allHosts = [NSMutableArray arrayWithArray:[DataModel auth]];
 	for (NSDictionary* h in allHosts) {
 		if ([[h objectForKey:@"host"] isEqual:[host objectForKey:@"host"]]) {
+			for (NSString* folder in [host objectForKey:@"folders"]) {
+				Node* node = [[DataModel sharedInstance] nodeByPath:folder];
+				if (node) {
+					[[DataModel sharedInstance] deleteNode:node];
+				}
+			}
 			[allHosts removeObject:h];
 			break;
 		}
@@ -348,12 +354,13 @@ NSString * const kDataManagerSQLiteName = @"ContentModel.sqlite";
 	[DataModel setAuth:allHosts];
 }
 
-+ (void)setHost:(NSDictionary*)host
++ (void)setHost:(NSMutableDictionary*)host
 {
 	NSMutableArray* allHosts = [NSMutableArray arrayWithArray:[DataModel auth]];
 	for (NSInteger index=0; index<allHosts.count; index++) {
 		NSDictionary* h = [allHosts objectAtIndex:index];
 		if ([[h objectForKey:@"host"] isEqual:[host objectForKey:@"host"]]) {
+			[host setObject:[NSNumber numberWithBool:YES] forKey:@"validated"];
 			[allHosts replaceObjectAtIndex:index withObject:host];
 			break;
 		}
