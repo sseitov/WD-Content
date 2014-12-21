@@ -49,12 +49,9 @@
 	
 	_nodes = [[DataModel sharedInstance] nodesByRoot:_rootNode];
 
-	UIButton *btn = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 24, 24)];
-	[btn setImage:[UIImage imageNamed:@"refresh.png"] forState:UIControlStateNormal];
-	[btn addTarget:self action:@selector(addNodesForRoot) forControlEvents:UIControlEventTouchDown];
-	UIBarButtonItem* refresh = [[UIBarButtonItem alloc] initWithCustomView:btn];
+	UIBarButtonItem* refresh = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(addNodesForRoot)];
 	
-	btn = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 24, 24)];
+	UIButton *btn = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 24, 24)];
 	if (_viewMode == Collection) {
 		[btn setImage:[UIImage imageNamed:@"list.png"] forState:UIControlStateNormal];
 		_tableView.alpha = 0;
@@ -65,7 +62,7 @@
 	[btn addTarget:self action:@selector(switchMode:) forControlEvents:UIControlEventTouchDown];
 	UIBarButtonItem* compose = [[UIBarButtonItem alloc] initWithCustomView:btn];
 	
-	NSArray* items = @[compose, refresh];
+	NSArray* items = @[refresh, compose];
 	
 	[self.navigationItem setRightBarButtonItems:items];
 	self.title = _rootNode.name;

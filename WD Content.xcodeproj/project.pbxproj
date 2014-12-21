@@ -28,7 +28,6 @@
 		2C1701271849271A00A37516 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C1701261849271A00A37516 /* libz.dylib */; };
 		2C378CEA19EA802D00C69ADA /* collection.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C378CE719EA802D00C69ADA /* collection.png */; };
 		2C378CEB19EA802D00C69ADA /* list.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C378CE819EA802D00C69ADA /* list.png */; };
-		2C378CEC19EA802D00C69ADA /* refresh.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C378CE919EA802D00C69ADA /* refresh.png */; };
 		2C3E5BDF1A4421990046AFC4 /* libc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C3E5BDE1A4421990046AFC4 /* libc++.dylib */; };
 		2C6E746B19C75ECA001D9971 /* SharesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C6E746A19C75ECA001D9971 /* SharesTableViewController.m */; };
 		2CA1D7191854A78800276C67 /* InfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA1D7181854A78800276C67 /* InfoViewController.m */; };
@@ -99,7 +98,6 @@
 		2C1701261849271A00A37516 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		2C378CE719EA802D00C69ADA /* collection.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = collection.png; sourceTree = "<group>"; };
 		2C378CE819EA802D00C69ADA /* list.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = list.png; sourceTree = "<group>"; };
-		2C378CE919EA802D00C69ADA /* refresh.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = refresh.png; sourceTree = "<group>"; };
 		2C3E5BDE1A4421990046AFC4 /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "usr/lib/libc++.dylib"; sourceTree = SDKROOT; };
 		2C6E746919C75ECA001D9971 /* SharesTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SharesTableViewController.h; path = "WD Content/SharesTableViewController.h"; sourceTree = "<group>"; };
 		2C6E746A19C75ECA001D9971 /* SharesTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SharesTableViewController.m; path = "WD Content/SharesTableViewController.m"; sourceTree = "<group>"; };
@@ -364,7 +362,6 @@
 			children = (
 				2C378CE719EA802D00C69ADA /* collection.png */,
 				2C378CE819EA802D00C69ADA /* list.png */,
-				2C378CE919EA802D00C69ADA /* refresh.png */,
 			);
 			name = Images;
 			sourceTree = "<group>";
@@ -470,7 +467,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2C378CEC19EA802D00C69ADA /* refresh.png in Resources */,
 				2C125EC51848C74B00406FC3 /* Images.xcassets in Resources */,
 				2CA6BA011A4569B900AFF041 /* Main.storyboard in Resources */,
 				2C378CEA19EA802D00C69ADA /* collection.png in Resources */,

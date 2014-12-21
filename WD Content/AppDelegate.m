@@ -28,14 +28,10 @@
 									secret:APP_SECRET];
 	[DBAccountManager setSharedManager:accountMgr];
 
-//	UITabBarController* tabBar = (UITabBarController*)_window.rootViewController;
-//	NSDictionary *auth = [[NSUserDefaults standardUserDefaults] objectForKey:@"auth"];
-//	tabBar.selectedIndex = (!auth || auth.count < 1) ? 1 : 0;
     return YES;
 }
 
-- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url
-  sourceApplication:(NSString *)source annotation:(id)annotation
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url sourceApplication:(NSString *)source annotation:(id)annotation
 {
 	DBAccount *account = [[DBAccountManager sharedManager] handleOpenURL:url];
 	if (account) {
