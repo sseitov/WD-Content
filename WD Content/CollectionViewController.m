@@ -167,7 +167,6 @@
 		// add new nodes
 		for (KxSMBItem* item in newItems) {
 			if (![self nodeWithPath:item.path]) {
-				NSLog(@"%@ - %ld", item.path, item.stat.mode);
 				[[DataModel sharedInstance] newNodeForItem:item withParent:_rootNode];
 			}
 		}
