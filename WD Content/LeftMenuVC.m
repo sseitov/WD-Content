@@ -26,10 +26,11 @@
 
 #import "LeftMenuVC.h"
 #import "DataModel.h"
-#import "Notifications.h"
 #import "CollectionViewController.h"
 #import	"AMSlideMenuMainViewController.h"
 #import "AMSlideMenuLeftMenuSegue.h"
+
+NSString* const UpdateMenuNotification = @"UpdateMenuNotification";
 
 @interface LeftMenuVC()
 

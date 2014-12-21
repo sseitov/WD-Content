@@ -68,7 +68,7 @@
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <tableView clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="GVQ-zX-K6j">
+                                        <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="GVQ-zX-K6j">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="42"/>
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <connections>
@@ -78,7 +78,7 @@
                                         </tableView>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstAttribute="bottomMargin" secondItem="GVQ-zX-K6j" secondAttribute="bottom" constant="-7" id="4As-hx-yVi"/>
+                                        <constraint firstAttribute="bottomMargin" secondItem="GVQ-zX-K6j" secondAttribute="bottom" constant="-6" id="4As-hx-yVi"/>
                                         <constraint firstAttribute="trailingMargin" secondItem="GVQ-zX-K6j" secondAttribute="trailing" constant="-8" id="4by-Kb-xlZ"/>
                                         <constraint firstItem="GVQ-zX-K6j" firstAttribute="top" secondItem="lOp-jN-7pi" secondAttribute="topMargin" constant="-8" id="Dij-ik-M3D"/>
                                         <constraint firstItem="GVQ-zX-K6j" firstAttribute="leading" secondItem="lOp-jN-7pi" secondAttribute="leadingMargin" constant="-8" id="fGa-j8-nnO"/>

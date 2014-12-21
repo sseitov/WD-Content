@@ -26,6 +26,8 @@
 
 #import "AMSlideMenuLeftTableViewController.h"
 
+extern NSString* const UpdateMenuNotification;
+
 @interface LeftMenuVC : AMSlideMenuLeftTableViewController
 
 @end

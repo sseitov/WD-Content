@@ -9,7 +9,7 @@
 #import "SettingsViewController.h"
 #import "DataModel.h"
 #import "MBProgressHUD.h"
-#import "Notifications.h"
+#import "LeftMenuVC.h"
 
 @interface SettingsViewController ()
 

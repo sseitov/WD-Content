@@ -44,7 +44,6 @@
 		2CA6B9FE1A4567DD00AFF041 /* MainVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA6B9FC1A4567DD00AFF041 /* MainVC.m */; };
 		2CA6BA011A4569B900AFF041 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2CA6BA031A4569B900AFF041 /* Main.storyboard */; };
 		2CA6BA071A456A1A00AFF041 /* UIColor+CreateMethods.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA6BA061A456A1A00AFF041 /* UIColor+CreateMethods.m */; };
-		2CA6BA0A1A45B72D00AFF041 /* Notifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA6BA091A45B72D00AFF041 /* Notifications.m */; };
 		2CA6BA0C1A45BE9A00AFF041 /* PixateFreestyle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CA6BA0B1A45BE9A00AFF041 /* PixateFreestyle.framework */; };
 		2CA6BA0E1A45BF9700AFF041 /* default.css in Resources */ = {isa = PBXBuildFile; fileRef = 2CA6BA0D1A45BF9700AFF041 /* default.css */; };
 		2CA88715187EA87F0074B73E /* ContentModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2CA88713187EA87F0074B73E /* ContentModel.xcdatamodeld */; };
@@ -129,8 +128,6 @@
 		2CA6BA021A4569B900AFF041 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		2CA6BA051A456A1A00AFF041 /* UIColor+CreateMethods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIColor+CreateMethods.h"; path = "WD Content/AMSlideMenu/Categories/UIColor+CreateMethods.h"; sourceTree = "<group>"; };
 		2CA6BA061A456A1A00AFF041 /* UIColor+CreateMethods.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIColor+CreateMethods.m"; path = "WD Content/AMSlideMenu/Categories/UIColor+CreateMethods.m"; sourceTree = "<group>"; };
-		2CA6BA081A45B72D00AFF041 /* Notifications.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Notifications.h; sourceTree = "<group>"; };
-		2CA6BA091A45B72D00AFF041 /* Notifications.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Notifications.m; sourceTree = "<group>"; };
 		2CA6BA0B1A45BE9A00AFF041 /* PixateFreestyle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PixateFreestyle.framework; path = ../../../../Users/sseitov/Documents/SDK/PixateFreestyle/PixateFreestyle.framework; sourceTree = "<group>"; };
 		2CA6BA0D1A45BF9700AFF041 /* default.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = default.css; sourceTree = "<group>"; };
 		2CA88714187EA87F0074B73E /* ContentModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ContentModel.xcdatamodel; sourceTree = "<group>"; };
@@ -251,8 +248,6 @@
 				2C125EB91848C74B00406FC3 /* AppDelegate.m */,
 				EDDC271819C6F051004D5F14 /* MBProgressHUD.h */,
 				EDDC271919C6F051004D5F14 /* MBProgressHUD.m */,
-				2CA6BA081A45B72D00AFF041 /* Notifications.h */,
-				2CA6BA091A45B72D00AFF041 /* Notifications.m */,
 			);
 			path = "WD Content";
 			sourceTree = "<group>";
@@ -520,7 +515,6 @@
 				2CA6B9F31A4567B800AFF041 /* AMSlideMenuLeftMenuSegue.m in Sources */,
 				ED2194BA19C9AA800053C8B3 /* AFSecurityPolicy.m in Sources */,
 				ED2194B719C9AA800053C8B3 /* AFHTTPRequestOperationManager.m in Sources */,
-				2CA6BA0A1A45B72D00AFF041 /* Notifications.m in Sources */,
 				EDDC271A19C6F051004D5F14 /* MBProgressHUD.m in Sources */,
 				2C0644F119CD9867002F5F49 /* SearchInfoTableViewController.m in Sources */,
 				ED04A5C619D172C00079C787 /* MetaInfo.m in Sources */,
