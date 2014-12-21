@@ -325,6 +325,31 @@ NSString * const kDataManagerSQLiteName = @"ContentModel.sqlite";
 	}
 }
 
+#pragma mark - settings storage
+
++ (NSDate*)lastModified
+{
+	return [[NSUserDefaults standardUserDefaults] objectForKey:@"lastModified"];
+}
+
++ (void)setLastModified:(NSDate*)date
+{
+	
+}
+
++ (void)convertAuth
+{
+	NSMutableArray* newAuth = [NSMutableArray new];
+	NSDictionary *oldAuth = [[NSUserDefaults standardUserDefaults] objectForKey:@"auth"];
+	for (NSString *h in oldAuth.allKeys) {
+		NSMutableDictionary *host = [NSMutableDictionary dictionaryWithDictionary:[oldAuth objectForKey:h]];
+		[host setObject:h forKey:@"host"];
+		[host setObject:[NSNumber numberWithBool:YES] forKey:@"validated"];
+		[newAuth addObject:host];
+	}
+	[DataModel setAuth:newAuth];
+}
+
 + (NSArray*)auth
 {
 	return [[NSUserDefaults standardUserDefaults] objectForKey:@"auth"];

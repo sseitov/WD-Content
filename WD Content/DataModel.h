@@ -45,6 +45,10 @@ extern NSString * const DataModelDidChangeNotification;
 
 - (KxSMBProvider*)provider;
 
++ (NSDate*)lastModified;
++ (void)setLastModified:(NSDate*)date;
++ (void)convertAuth;
+
 + (NSArray*)auth;
 + (void)setAuth:(NSArray*)authArray;
 + (void)removeHost:(NSDictionary*)host;

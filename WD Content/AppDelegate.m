@@ -28,6 +28,10 @@
 									secret:APP_SECRET];
 	[DBAccountManager setSharedManager:accountMgr];
 
+	if ([[DataModel auth] isKindOfClass:[NSDictionary class]]) {
+		[DataModel convertAuth];
+	}
+	
     return YES;
 }
 

@@ -217,11 +217,11 @@
 		2C125EA81848C74B00406FC3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				2CA6BA0B1A45BE9A00AFF041 /* PixateFreestyle.framework */,
 				2C3E5BDE1A4421990046AFC4 /* libc++.dylib */,
 				2C1701261849271A00A37516 /* libz.dylib */,
 				2C1701241849270200A37516 /* libiconv.dylib */,
 				2C170122184926EF00A37516 /* libresolv.dylib */,
+				2CA6BA0B1A45BE9A00AFF041 /* PixateFreestyle.framework */,
 				2CA6B9E01A45664800AFF041 /* Dropbox.framework */,
 				2CA8871B187EA9AA0074B73E /* CoreData.framework */,
 				2C125EA91848C74B00406FC3 /* Foundation.framework */,
@@ -641,7 +641,6 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"/Users/sseitov/Documents/dropbox-ios-sync-sdk-3.1.2",
 					"/Users/sseitov/Documents/SDK/dropbox-ios-sync-sdk-3.1.2",
 					/Users/sseitov/Documents/SDK/PixateFreestyle,
 				);
@@ -675,7 +674,6 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"/Users/sseitov/Documents/dropbox-ios-sync-sdk-3.1.2",
 					"/Users/sseitov/Documents/SDK/dropbox-ios-sync-sdk-3.1.2",
 					/Users/sseitov/Documents/SDK/PixateFreestyle,
 				);
