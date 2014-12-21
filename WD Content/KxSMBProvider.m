@@ -219,7 +219,7 @@ static KxSMBProvider *gSmbProvider;
 
 + (NSUInteger) smbTimeout:(NSUInteger)value
 {
-    static NSUInteger timeout = 10000;
+    static NSUInteger timeout = 30000;
     if (value) {
         timeout = value;
     }
@@ -262,7 +262,7 @@ static KxSMBProvider *gSmbProvider;
     smbc_setDebug(smbContext, 0);
 #endif
     
-	smbc_setTimeout(smbContext, [self smbTimeout:0]);
+	smbc_setTimeout(smbContext, (int)[self smbTimeout:0]);
     smbc_setFunctionAuthData(smbContext, my_smbc_get_auth_data_fn);
         
 	if (!smbc_init_context(smbContext)) {

@@ -14,6 +14,8 @@
 #define APP_KEY     @"3cujrb3xpbb7fuw"
 #define APP_SECRET  @"bfm5uz7aivquetn"
 
+NSString* const UpdateDBNotification = @"UpdateDBNotification";
+
 @interface AppDelegate()
 @end
 
@@ -111,10 +113,11 @@
 	DBPath *path = [[DBPath root] childPath:DB_FILE_NAME];
 	DBFileInfo *info = [filesystem fileInfoForPath:path error:&error];
 	if (info) {
-		if ([info.modifiedTime compare:[[DataModel sharedInstance] lastModified]] == NSOrderedAscending) {
+		if ([info.modifiedTime compare:[DataModel lastModified]] == NSOrderedAscending) {
 			return YES;
 		}
 	}
+	[[NSNotificationCenter defaultCenter] postNotificationName:UpdateDBNotification object:nil];
 	return YES;
 /*
 	if (![filesystem fileInfoForPath:path error:&error]) { // see if path exists

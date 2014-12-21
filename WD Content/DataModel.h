@@ -32,8 +32,6 @@ extern NSString * const DataModelDidChangeNotification;
 - (NSManagedObjectContext*)managedObjectContext;
 
 - (NSString*)sharedDocumentsPath;
-- (BOOL)updateDBFile:(NSData*)data;
-- (NSDate*)lastModified;
 
 - (Node*)nodeByPath:(NSString*)path;
 - (NSArray*)nodesByRoot:(Node*)root;

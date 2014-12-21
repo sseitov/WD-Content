@@ -129,23 +129,9 @@ NSString * const kDataManagerSQLiteName = @"ContentModel.sqlite";
 		NSLog(@"Error while saving: %@\n%@", [error localizedDescription], [error userInfo]);
 		return NO;
 	} else {
-		[[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:@"LastModified"];
+		[DataModel setLastModified:[NSDate date]];
 		return YES;
 	}
-}
-
-- (NSDate*)lastModified
-{
-	NSDate* d = [[NSUserDefaults standardUserDefaults] objectForKey:@"LastModified"];
-	if (!d) {
-		d = [NSDate date];
-	}
-	return d;
-}
-
-- (BOOL)updateDBFile:(NSData*)data
-{
-	return YES;
 }
 
 - (NSString*)sharedDocumentsPath
@@ -185,7 +171,6 @@ NSString * const kDataManagerSQLiteName = @"ContentModel.sqlite";
 }
 
 #pragma mark - fetch methods
-
 
 - (id)fetchObjectFromEntity:(NSString *)entity withPredicate:(NSPredicate *)predicate
 {
@@ -246,6 +231,8 @@ NSString * const kDataManagerSQLiteName = @"ContentModel.sqlite";
 										 nil] ];
 }
 
+#pragma mark - update methods
+
 - (Node*)newNodeForItem:(KxSMBItem*)item withParent:(Node*)parent
 {
 	Node *node = [self nodeByPath:item.path];
@@ -270,9 +257,8 @@ NSString * const kDataManagerSQLiteName = @"ContentModel.sqlite";
 	}
 	
 	//Save result in database
-	NSError *error = nil;
-	if (![_mainObjectContext save:&error]) {
-		NSLog(@"ERROR (newNode): %@", error);
+	if (![self save]) {
+		NSLog(@"ERROR (newNode)");
 	}
 	return node;
 }
@@ -285,9 +271,8 @@ NSString * const kDataManagerSQLiteName = @"ContentModel.sqlite";
 	[_mainObjectContext deleteObject:node];
 	
 	// Save result in the database
-	NSError *error = nil;
-	if (![_mainObjectContext save:&error]) {
-		NSLog(@"ERROR (deleteNode): %@", error);
+	if (![self save]) {
+		NSLog(@"ERROR (deleteNode)");
 	}
 }
 
@@ -305,9 +290,8 @@ NSString * const kDataManagerSQLiteName = @"ContentModel.sqlite";
 	node.info.release_date = [info objectForKey:@"release_date"];
 	
 	//Save result in database
-	NSError *error = nil;
-	if (![_mainObjectContext save:&error]) {
-		NSLog(@"ERROR (addInfo): %@", error);
+	if (![self save]) {
+		NSLog(@"ERROR (addInfo)");
 	}
 }
 
@@ -319,9 +303,8 @@ NSString * const kDataManagerSQLiteName = @"ContentModel.sqlite";
 	node.info = nil;
 	
 	//Save result in database
-	NSError *error = nil;
-	if (![_mainObjectContext save:&error]) {
-		NSLog(@"ERROR (clearInfoForNode): %@", error);
+	if (![self save]) {
+		NSLog(@"ERROR (clearInfoForNode)");
 	}
 }
 
@@ -334,7 +317,8 @@ NSString * const kDataManagerSQLiteName = @"ContentModel.sqlite";
 
 + (void)setLastModified:(NSDate*)date
 {
-	
+	[[NSUserDefaults standardUserDefaults] setObject:date forKey:@"lastModified"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 + (void)convertAuth

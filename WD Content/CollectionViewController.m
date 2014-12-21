@@ -43,10 +43,10 @@
 {
     [super viewDidLoad];
 
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateInfoNotification:)
-												 name:UpdateInfoNotification
-											   object:nil];
-	
+	NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+	[nc addObserver:self selector:@selector(handleUpdateInfoNotification:) name:UpdateInfoNotification object:nil];
+	[nc addObserver:self selector:@selector(handleUpdateDBNotification:) name:UpdateDBNotification object:nil];
+
 	_nodes = [[DataModel sharedInstance] nodesByRoot:_rootNode];
 
 	UIBarButtonItem* refresh = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(addNodesForRoot)];
@@ -88,7 +88,7 @@
 	}];
 }
 
--(void)didUpdateInfoNotification:(NSNotification*)notification
+-(void)handleUpdateInfoNotification:(NSNotification*)notification
 {
 	Node* target = (Node*)notification.object;
 	for (Node* node in _nodes) {
@@ -99,6 +99,13 @@
 			break;
 		}
 	}
+}
+
+-(void)handleUpdateDBNotification:(NSNotification*)notification
+{
+	_nodes = [[DataModel sharedInstance] nodesByRoot:_rootNode];
+	[_collectionView reloadData];
+	[_tableView reloadData];
 }
 
 - (void)viewDidAppear:(BOOL)animated
