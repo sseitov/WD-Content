@@ -240,22 +240,23 @@
 	}
 	else {
 		if (node.info) {
-			InfoViewController *next = [[InfoViewController alloc] initWithMetaInfo:node.info forNode:node];
-			UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:next];
-			nav.navigationBar.barStyle = UIBarStyleBlack;
-			nav.modalPresentationStyle = UIModalPresentationFormSheet;
-			nav.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
-			[self presentViewController:nav animated:YES completion:^(){}];
+			[self performSegueWithIdentifier:@"ShowInfo" sender:node];
 		} else {
-			UIStoryboard* storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-			SearchInfoTableViewController *search = [storyboard instantiateViewControllerWithIdentifier:@"SearchInfoController"];
-			search.node = node;
-			UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:search];
-			nav.navigationBar.barStyle = UIBarStyleBlack;
-			nav.modalPresentationStyle = UIModalPresentationFormSheet;
-			nav.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
-			[self presentViewController:nav animated:YES completion:^(){}];
+			[self performSegueWithIdentifier:@"CreateInfo" sender:node];
 		}
+	}
+}
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+	UINavigationController *vc = [segue destinationViewController];
+	if ([[segue identifier] isEqualToString:@"CreateInfo"])
+	{
+		SearchInfoTableViewController *next = (SearchInfoTableViewController*)vc.topViewController;
+		next.node = sender;
+	} else if ([[segue identifier] isEqualToString:@"ShowInfo"]) {
+		InfoViewController *next = (InfoViewController*)vc.topViewController;
+		[next setInfoForNode:sender];
 	}
 }
 

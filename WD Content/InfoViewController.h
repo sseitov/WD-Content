@@ -13,7 +13,7 @@ extern NSString* const UpdateInfoNotification;
 
 @interface InfoViewController : UITableViewController
 
-- (id)initWithMetaInfo:(MetaInfo*)info forNode:(Node*)node;
-- (id)initWithDictionary:(NSDictionary*)info forNode:(Node*)node;
+- (void)setInfoForNode:(Node*)node;
+- (void)setInfo:(NSDictionary*)info forNode:(Node*)node;
 
 @end

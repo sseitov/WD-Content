@@ -61,8 +61,6 @@
 				}
 			}
 		}
-		for (NSString* host in hosts) {
-		}
 		dispatch_async(dispatch_get_main_queue(), ^{
 			[MBProgressHUD hideHUDForView:self.tableView animated:YES];
 			[self.tableView reloadData];

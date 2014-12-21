@@ -21,6 +21,7 @@
 @property (nonatomic, retain) NSSet *childs;
 @property (nonatomic, retain) Node *parent;
 @property (nonatomic, retain) MetaInfo *info;
+
 @end
 
 @interface Node (CoreDataGeneratedAccessors)

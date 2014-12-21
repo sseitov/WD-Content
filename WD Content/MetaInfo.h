@@ -24,4 +24,6 @@
 @property (nonatomic, retain) NSString * title;
 @property (nonatomic, retain) Node *node;
 
+- (NSDictionary*)dictionary;
+
 @end

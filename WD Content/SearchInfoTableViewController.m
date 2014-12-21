@@ -52,11 +52,6 @@
 
 #pragma mark - Table view data source
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    return 1;
-}
-
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
 	if (_searchResults.count > 0) {
@@ -66,14 +61,13 @@
 	}
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-	return 160;
-}
-
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:nil];
+	UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"Cell"];
+	if (!cell)
+	{
+		cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Cell"];
+	}
 	if (indexPath.row >= _searchResults.count) {
 		cell.textLabel.text = @"No results";
 		cell.accessoryType = UITableViewCellAccessoryNone;
@@ -96,8 +90,16 @@
 	[tableView deselectRowAtIndexPath:indexPath animated:YES];
 	if (indexPath.row < _searchResults.count) {
 		NSDictionary* result = [_searchResults objectAtIndex:indexPath.row];
-		InfoViewController* next = [[InfoViewController alloc] initWithDictionary:result forNode:_node];
-		[self.navigationController pushViewController:next animated:YES];
+		[self performSegueWithIdentifier:@"Info" sender:result];
+	}
+}
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+	if ([[segue identifier] isEqualToString:@"Info"])
+	{
+		InfoViewController *vc = [segue destinationViewController];
+		[vc setInfo:sender forNode:_node];
 	}
 }
 

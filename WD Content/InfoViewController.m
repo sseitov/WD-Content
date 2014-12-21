@@ -13,72 +13,63 @@ NSString* const UpdateInfoNotification = @"UpdateInfoNotification";
 @interface InfoViewController ()
 
 @property (strong, nonatomic) NSMutableDictionary *info;
-@property (strong, nonatomic) NSArray *fields;
-@property (strong, nonatomic) NSData *thumbnail;
 @property (strong, nonatomic) Node* node;
+@property (strong, nonatomic) NSArray *fields;
 
 @end
 
 @implementation InfoViewController
 
-- (id)initWithMetaInfo:(MetaInfo*)info forNode:(Node*)node
+- (void)setInfoForNode:(Node*)node
 {
-    self = [super initWithStyle:UITableViewStyleGrouped];
-    if (self) {
-		_node = node;
-		_info = [[NSMutableDictionary alloc] init];
-		_fields = @[@"title",@"genre",@"director",@"release_date",@"runtime",@"cast",@"overview"];
-		for (NSString* key in _fields) {
-			id obj = [info valueForKey:key];
-			if (obj) {
+	_node = node;
+	_info = [[NSMutableDictionary alloc] init];
+	_fields = @[@"title",@"genre",@"director",@"release_date",@"runtime",@"cast",@"overview"];
+	for (NSString* key in _fields) {
+		id obj = [node.info valueForKey:key];
+		if (obj) {
+			[_info setObject:obj forKey:key];
+		}
+	}
+	if (node.info.thumbnail) {
+		[_info setObject:node.info.thumbnail forKey:@"thumbnail"];
+	}
+	if (node.info.original_title) {
+		[_info setObject:node.info.original_title forKey:@"original_title"];
+	}
+	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done)];
+	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Clear" style:UIBarButtonItemStyleBordered target:self action:@selector(clear)];
+	if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_6_1) {
+		self.navigationItem.leftBarButtonItem.tintColor = [UIColor whiteColor];
+		self.navigationItem.rightBarButtonItem.tintColor = [UIColor whiteColor];
+	}
+}
+
+- (void)setInfo:(NSDictionary*)info forNode:(Node*)node
+{
+	_node = node;
+	_info = [[NSMutableDictionary alloc] init];
+	_fields = @[@"title",@"genre",@"director",@"release_date",@"runtime",@"cast",@"overview"];
+	for (NSString* key in _fields) {
+		id obj = [info valueForKey:key];
+		if (obj) {
+			if ([obj isKindOfClass:[NSNumber class]]) {
+				[_info setObject:[obj stringValue] forKey:key];
+			} else if ([obj isKindOfClass:[NSString class]]) {
 				[_info setObject:obj forKey:key];
 			}
 		}
-		if (info.thumbnail) {
-			[_info setObject:info.thumbnail forKey:@"thumbnail"];
-		}
-		if (info.original_title) {
-			[_info setObject:info.original_title forKey:@"original_title"];
-		}
-		self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done)];
-		self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Clear" style:UIBarButtonItemStyleBordered target:self action:@selector(clear)];
-		if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_6_1) {
-			self.navigationItem.leftBarButtonItem.tintColor = [UIColor whiteColor];
-			self.navigationItem.rightBarButtonItem.tintColor = [UIColor whiteColor];
-		}
-    }
-    return self;
-}
-
-- (id)initWithDictionary:(NSDictionary*)info forNode:(Node*)node
-{
-	self = [super initWithStyle:UITableViewStyleGrouped];
-	if (self) {
-		_node = node;
-		_info = [[NSMutableDictionary alloc] init];
-		_fields = @[@"title",@"genre",@"director",@"release_date",@"runtime",@"cast",@"overview"];
-		for (NSString* key in _fields) {
-			id obj = [info valueForKey:key];
-			if (obj) {
-				if ([obj isKindOfClass:[NSNumber class]]) {
-					[_info setObject:[obj stringValue] forKey:key];
-				} else if ([obj isKindOfClass:[NSString class]]) {
-					[_info setObject:obj forKey:key];
-				}
-			}
-		}
-		if ([info objectForKey:@"thumbnail"]) {
-			[_info setObject:[info objectForKey:@"thumbnail"] forKey:@"thumbnail"];
-		}
-		if ([info objectForKey:@"original_title"]) {
-			[_info setObject:[info objectForKey:@"original_title"] forKey:@"original_title"];
-		}
-		self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(apply)];
-		if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_6_1) {
-			self.navigationItem.rightBarButtonItem.tintColor = [UIColor whiteColor];
-		}
 	}
-	return self;
+	if ([info objectForKey:@"thumbnail"]) {
+		[_info setObject:[info objectForKey:@"thumbnail"] forKey:@"thumbnail"];
+	}
+	if ([info objectForKey:@"original_title"]) {
+		[_info setObject:[info objectForKey:@"original_title"] forKey:@"original_title"];
+	}
+	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(apply)];
+	if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_6_1) {
+		self.navigationItem.rightBarButtonItem.tintColor = [UIColor whiteColor];
+	}
 }
 
 - (void)viewDidLoad
@@ -131,7 +122,7 @@ NSString* const UpdateInfoNotification = @"UpdateInfoNotification";
 	} else {
 		CGSize maximumSize = CGSizeMake(tableView.frame.size.width, 800);
 		NSString *cellString = [_info objectForKey:[_fields objectAtIndex:indexPath.section]];
-		UIFont *font = [UIFont fontWithName:@"Helvetica" size:17];
+		UIFont *font = [UIFont fontWithName:@"HelveticaNeue" size:14];
 		if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1) {
 			CGSize sz = [cellString sizeWithFont:font constrainedToSize:maximumSize];
 			return sz.height > 44 ? sz.height + 40 : 44;
@@ -147,14 +138,12 @@ NSString* const UpdateInfoNotification = @"UpdateInfoNotification";
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:nil];
-	cell.backgroundColor = [UIColor clearColor];
-	cell.contentView.backgroundColor = [UIColor clearColor];
+	UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"Cell"];
+	if (!cell)
+	{
+		cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Cell"];
+	}
 	cell.textLabel.text = [_info objectForKey:[_fields objectAtIndex:indexPath.section]];
-	cell.textLabel.numberOfLines = 0;
-	cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
-	cell.textLabel.font = [UIFont fontWithName:@"Helvetica" size:17];;
-	cell.selectionStyle = UITableViewCellSelectionStyleNone;
 	if (indexPath.section == 0) {
 		if ([_info objectForKey:@"thumbnail"]) {
 			cell.imageView.contentMode = UIViewContentModeScaleToFill;
