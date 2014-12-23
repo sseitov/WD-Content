@@ -99,8 +99,8 @@
 		2C378CE719EA802D00C69ADA /* collection.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = collection.png; sourceTree = "<group>"; };
 		2C378CE819EA802D00C69ADA /* list.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = list.png; sourceTree = "<group>"; };
 		2C3E5BDE1A4421990046AFC4 /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "usr/lib/libc++.dylib"; sourceTree = SDKROOT; };
-		2C6E746919C75ECA001D9971 /* SharesTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SharesTableViewController.h; path = "WD Content/SharesTableViewController.h"; sourceTree = "<group>"; };
-		2C6E746A19C75ECA001D9971 /* SharesTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SharesTableViewController.m; path = "WD Content/SharesTableViewController.m"; sourceTree = "<group>"; };
+		2C6E746919C75ECA001D9971 /* SharesTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SharesTableViewController.h; sourceTree = "<group>"; };
+		2C6E746A19C75ECA001D9971 /* SharesTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SharesTableViewController.m; sourceTree = "<group>"; };
 		2CA1D7171854A78800276C67 /* InfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InfoViewController.h; path = "WD Content/InfoViewController.h"; sourceTree = "<group>"; };
 		2CA1D7181854A78800276C67 /* InfoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = InfoViewController.m; path = "WD Content/InfoViewController.m"; sourceTree = "<group>"; };
 		2CA6B9E01A45664800AFF041 /* Dropbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Dropbox.framework; path = "../../../../Users/sseitov/Documents/SDK/dropbox-ios-sync-sdk-3.1.2/Dropbox.framework"; sourceTree = "<group>"; };
@@ -339,6 +339,8 @@
 				2CA95DC3184B2B4600927138 /* SettingsViewController.m */,
 				2CA95DC5184B2CB700927138 /* SettingsCell.h */,
 				2CA95DC6184B2CB700927138 /* SettingsCell.m */,
+				2C6E746919C75ECA001D9971 /* SharesTableViewController.h */,
+				2C6E746A19C75ECA001D9971 /* SharesTableViewController.m */,
 			);
 			name = Settings;
 			sourceTree = "<group>";
@@ -399,8 +401,6 @@
 				2C0644F019CD9867002F5F49 /* SearchInfoTableViewController.m */,
 				2CA1D7171854A78800276C67 /* InfoViewController.h */,
 				2CA1D7181854A78800276C67 /* InfoViewController.m */,
-				2C6E746919C75ECA001D9971 /* SharesTableViewController.h */,
-				2C6E746A19C75ECA001D9971 /* SharesTableViewController.m */,
 				2C1701091848F68200A37516 /* Cell.h */,
 				2C17010A1848F68200A37516 /* Cell.m */,
 				2C125EC11848C74B00406FC3 /* CollectionViewController.h */,

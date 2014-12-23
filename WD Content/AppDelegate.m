@@ -42,9 +42,12 @@ NSString* const UpdateDBNotification = @"UpdateDBNotification";
 	DBAccount *account = [[DBAccountManager sharedManager] handleOpenURL:url];
 	if (account) {
 		NSLog(@"App linked successfully!");
+		[DataModel setEnableSynchro:YES];
 		[self doSync:account];
 		return YES;
 	}
+	[DataModel setEnableSynchro:NO];
+	[[NSNotificationCenter defaultCenter] postNotificationName:UpdateDBNotification object:[NSNumber numberWithBool:NO]];
 	return NO;
 }
 
@@ -90,6 +93,10 @@ NSString* const UpdateDBNotification = @"UpdateDBNotification";
 
 - (BOOL)doSync:(DBAccount *)account
 {
+	NSLog(@"====== DO SYNCHRO");
+	[[NSNotificationCenter defaultCenter] postNotificationName:UpdateDBNotification object:[NSNumber numberWithBool:YES]];
+	return YES;
+/*
 	//Check that we're given a linked account.
 	
 	if (!account || !account.linked) {
@@ -119,6 +126,7 @@ NSString* const UpdateDBNotification = @"UpdateDBNotification";
 	}
 	[[NSNotificationCenter defaultCenter] postNotificationName:UpdateDBNotification object:nil];
 	return YES;
+*/
 /*
 	if (![filesystem fileInfoForPath:path error:&error]) { // see if path exists
 		

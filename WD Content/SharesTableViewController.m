@@ -12,26 +12,17 @@
 
 @interface SharesTableViewController ()
 
-@property (weak, nonatomic) id<SharesTableViewControllerDelegate> sharesDelegate;
 @property (strong, nonatomic) NSMutableArray* nodes;
 
 @end
 
 @implementation SharesTableViewController
 
-- (id)initWithDelegate:(id<SharesTableViewControllerDelegate>)delegate
-{
-    self = [super initWithStyle:UITableViewStylePlain];
-    if (self) {
-		self.sharesDelegate = delegate;
-		_nodes = [[NSMutableArray alloc] init];
-    }
-    return self;
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+	
+	_nodes = [NSMutableArray new];
 	
 	self.title = @"Select shares";
     self.clearsSelectionOnViewWillAppear = NO;
@@ -49,7 +40,7 @@
 		for (NSDictionary* host in hosts) {
 			id result = [[DataModel sharedInstance].provider fetchAtPath:[NSString stringWithFormat:@"smb://%@", [host objectForKey:@"host"]]];
 			if ([result isKindOfClass:[NSError class]]) {
-				NSLog(@"ERROR: %@", result);
+//				NSLog(@"ERROR: %@", result);
 			} else {
 				if ([result isKindOfClass:[NSArray class]]) {
 					for (KxSMBItem* item in result) {
@@ -70,13 +61,12 @@
 
 - (void)cancel
 {
-	[self dismissViewControllerAnimated:YES completion:^(){}];
+	[_sharesDelegate didSelectShares:nil];
 }
 
 - (void)done
 {
 	[_sharesDelegate didSelectShares:_nodes];
-	[self dismissViewControllerAnimated:YES completion:^(){}];
 }
 
 #pragma mark - Table view data source

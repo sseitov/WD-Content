@@ -29,10 +29,11 @@
 #import "CollectionViewController.h"
 #import	"AMSlideMenuMainViewController.h"
 #import "AMSlideMenuLeftMenuSegue.h"
+#import "SharesTableViewController.h"
 
 NSString* const UpdateMenuNotification = @"UpdateMenuNotification";
 
-@interface LeftMenuVC()
+@interface LeftMenuVC() <SharesTableViewControllerDelegate>
 
 @property (strong, nonatomic) NSMutableArray *rows;
 
@@ -64,15 +65,6 @@ NSString* const UpdateMenuNotification = @"UpdateMenuNotification";
 }
 
 #pragma mark - UITableView delegate
-
-- (NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
-{
-	if (section) {
-		return @"Folders";
-	} else {
-		return @"Settings";
-	}
-}
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
@@ -108,6 +100,45 @@ NSString* const UpdateMenuNotification = @"UpdateMenuNotification";
 	return cell;
 }
 
+- (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+	if (section) {
+		UIView* v = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, 44)];
+		v.backgroundColor = [UIColor colorWithRed:0 green:113.0/255.0 blue:165.0/255.0 alpha:1];
+		UIButton* b = [UIButton buttonWithType:UIButtonTypeContactAdd];
+		b.tintColor = [UIColor whiteColor];
+		b.frame = CGRectMake(210, 0, 44, 44);
+		[b addTarget:self action:@selector(doEdit) forControlEvents:UIControlEventTouchDown];
+		[v addSubview:b];
+		
+		UILabel* l = [[UILabel alloc] initWithFrame:CGRectMake(15, 0, 100, 44)];
+		l.backgroundColor = [UIColor clearColor];
+		l.textColor = [UIColor whiteColor];
+		l.text = @"FOLDERS";
+		l.font = [UIFont fontWithName:@"HelveticaNeue" size:14];
+		[v addSubview:l];
+		
+		return v;
+	} else {
+		UIView* v = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, 44)];
+		v.backgroundColor = [UIColor colorWithRed:0 green:113.0/255.0 blue:165.0/255.0 alpha:1];
+		
+		UILabel* l = [[UILabel alloc] initWithFrame:CGRectMake(15, 0, 100, 44)];
+		l.backgroundColor = [UIColor clearColor];
+		l.textColor = [UIColor whiteColor];
+		l.text = @"SETTINGS";
+		l.font = [UIFont fontWithName:@"HelveticaNeue" size:14];
+		[v addSubview:l];
+		
+		return v;
+	}
+}
+
+- (void)doEdit
+{
+	[self performSegueWithIdentifier:@"Shares" sender:nil];
+}
+
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
 	if ([[segue identifier] isEqualToString:@"Content"])
@@ -124,7 +155,44 @@ NSString* const UpdateMenuNotification = @"UpdateMenuNotification";
 		Node* node = [_rows objectAtIndex:indexPath.row];
 		CollectionViewController* collection = (CollectionViewController*)vc.topViewController;
 		collection.rootNode = node;
+	} else if ([[segue identifier] isEqualToString:@"Shares"]) {
+		UINavigationController *vc = [segue destinationViewController];
+		SharesTableViewController* shares = (SharesTableViewController*)vc.topViewController;
+		shares.sharesDelegate = self;
+		shares.initialNodes = _rows;
 	}
+}
+
+- (void)didSelectShares:(NSArray*)shares
+{
+	[self dismissViewControllerAnimated:NO completion:^() {
+		if (shares) {
+			for (NSDictionary* row in shares) {
+				KxSMBItem* item = [row objectForKey:@"item"];
+				NSNumber* checked = [row objectForKey:@"checked"];
+				Node* node = [[DataModel sharedInstance] nodeByPath:item.path];
+				if ([checked boolValue] == YES && !node) {
+					[[DataModel sharedInstance] newNodeForItem:item withParent:nil];
+				} else if ([checked boolValue] == NO && node) {
+					[[DataModel sharedInstance] deleteNode:node];
+				}
+			}
+			[_rows removeAllObjects];
+			[_rows addObjectsFromArray:[[DataModel sharedInstance] nodesByRoot:nil]];
+			[self.tableView reloadData];
+		}
+		[self.mainVC openLeftMenu];
+	}];
+}
+
+- (NSNumber*)hasNodeWithPath:(NSString*)path
+{
+	for (Node* n in _rows) {
+		if ([n.path isEqual:path]) {
+			return [NSNumber numberWithBool:YES];
+		}
+	}
+	return [NSNumber numberWithBool:NO];
 }
 
 @end

@@ -401,45 +401,16 @@ static NSMutableArray *allInstances;
      *  If using storyboard
      **********************************/
 #ifndef AMSlideMenuWithoutStoryboards    
-    if ([self primaryMenu] == AMPrimaryMenuLeft)
-    {
-        @try
-        {
-            [self performSegueWithIdentifier:@"leftMenu" sender:self];
-
-            @try {
-                [self performSegueWithIdentifier:@"rightMenu" sender:self];
-            }
-            @catch (NSException *exception) {
-                
-            }
-        }
-        @catch (NSException *exception)
-        {
-            [self performSegueWithIdentifier:@"rightMenu" sender:self];
-        }
-    }
-    else if ([self primaryMenu] == AMPrimaryMenuRight)
-    {
-        @try
-        {
-            [self performSegueWithIdentifier:@"rightMenu" sender:self];
-            
-            @try {
-                [self performSegueWithIdentifier:@"leftMenu" sender:self];
-            }
-            @catch (NSException *exception) {
-        
-            }
-        }
-        @catch (NSException *exception)
-        {
-            [self performSegueWithIdentifier:@"leftMenu" sender:self];
-            NSLog(@"WARNING: You setted primaryMenu to right , but you have no segue with identifier 'rightMenu'");
-        }
-    }
+	@try
+	{
+		[self performSegueWithIdentifier:@"leftMenu" sender:self];
+	}
+	@catch (NSException *exception)
+	{
+		NSLog(@"%@", exception);
+	}
     /***********************************/
-    
+	
     /***********************************
      *    If not using storyboards
      ***********************************/

@@ -10,10 +10,12 @@
 #import "DataModel.h"
 #import "MBProgressHUD.h"
 #import "LeftMenuVC.h"
+#import "AppDelegate.h"
 
 @interface SettingsViewController ()
 
 @property (strong, nonatomic) NSMutableArray* authContainer;
+@property (strong, nonatomic) UISwitch* synchroSwitch;
 
 @end
 
@@ -27,6 +29,38 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+	
+	NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+	[nc addObserver:self selector:@selector(handleUpdateDB:) name:UpdateDBNotification object:nil];
+
+	UIView* tableHeader = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 66)];
+	tableHeader.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+	UIView * v = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 22)];
+	v.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+	v.backgroundColor = [UIColor colorWithRed:0 green:113.0/255.0 blue:165.0/255.0 alpha:1];
+	UILabel * l = [[UILabel alloc] initWithFrame:CGRectMake(15, 0, 100, 22)];
+	l.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+	l.textColor = [UIColor whiteColor];
+	l.text = @"SYNCHRO";
+	l.font = [UIFont fontWithName:@"HelveticaNeue" size:12];
+	[v addSubview:l];
+	[tableHeader addSubview:v];
+	
+	UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue2 reuseIdentifier:nil];
+	cell.frame = CGRectMake(0, 22, self.tableView.frame.size.width, 44);
+	cell.textLabel.text = @"Dropbox";
+	cell.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+
+	_synchroSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(self.tableView.frame.size.width-70, 7, 0, 30)];
+	_synchroSwitch.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
+	_synchroSwitch.on = [DataModel enableSynchro];
+	[_synchroSwitch addTarget:self action:@selector(doSynchro:) forControlEvents:UIControlEventValueChanged];
+	[cell.contentView addSubview:_synchroSwitch];
+
+	[tableHeader addSubview:cell];
+	
+	self.tableView.tableHeaderView = tableHeader;
+	
 	_authContainer = [[NSMutableArray alloc] init];
 	[self loadContainer];
 }
@@ -163,7 +197,12 @@
 
 #pragma mark - Table view data source
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+- (NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+	return @"Devices";
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
 	if (self.editing) {
 		return _authContainer.count + 1;
@@ -172,63 +211,33 @@
 	}
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
-{
-	if (section < _authContainer.count && _authContainer.count > 0) {
-		return 44;
-	} else {
-		return 0;
-	}
-}
-
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
-{
-	if (section < _authContainer.count && _authContainer.count > 0) {
-		UILabel *header = [[UILabel alloc] initWithFrame:CGRectZero];
-		header.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-		header.backgroundColor = [UIColor lightGrayColor];
-		header.textColor = [UIColor whiteColor];
-		header.textAlignment = NSTextAlignmentCenter;
-		header.text = [[_authContainer objectAtIndex:section] valueForKey:@"host"];
-		return header;
-	} else {
-		return nil;
-	}
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-	if (_authContainer.count > 0 || self.editing) {
-		return 1;
-	} else {
-		return 0;
-	}
-}
-
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	return indexPath.section < _authContainer.count ? 132 : 44;
+	return indexPath.row < _authContainer.count ? 154 : 44;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"settings_cell";
 	
-	SettingsCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
-	if (indexPath.section < _authContainer.count && _authContainer.count > 0) {
+	if (indexPath.row < _authContainer.count && _authContainer.count > 0) {
+		SettingsCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
 		cell.authorization = [_authContainer objectAtIndex:indexPath.section];
+		[cell.host reloadData];
+		[cell setEditing:self.editing animated:NO];
+		return cell;
 	} else {
-		cell.authorization = nil;
+		UITableViewCell* cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue2 reuseIdentifier:nil];
+		cell.textLabel.text = @"ADD DEVICE";
+		cell.accessoryType = UITableViewCellAccessoryNone;
+		cell.selectionStyle = UITableViewCellSelectionStyleNone;
+		return cell;
 	}
-	[cell setEditing:self.editing animated:NO];
-	[cell.host reloadData];
-	
-    return cell;
 }
 
 - (UITableViewCellEditingStyle)tableView:(UITableView *)aTableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	if (indexPath.section < _authContainer.count) {
+	if (indexPath.row < _authContainer.count) {
 		return UITableViewCellEditingStyleDelete;
 	} else {
 		return UITableViewCellEditingStyleInsert;
@@ -249,12 +258,12 @@
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-		NSDictionary* host = [_authContainer objectAtIndex:indexPath.section];
+		NSDictionary* host = [_authContainer objectAtIndex:indexPath.row];
 		[DataModel removeHost:host];
 		[[NSNotificationCenter defaultCenter] postNotificationName:UpdateMenuNotification object:self];
 		[_authContainer removeObjectAtIndex:indexPath.section];
         [tableView beginUpdates];
-        [tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.section] withRowAnimation:UITableViewRowAnimationTop];
+		[tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationTop];
         [tableView endUpdates];
     } else if (editingStyle == UITableViewCellEditingStyleInsert) {
 		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Enter WD device IP address" message:@"xxx.xxx.xxx.xxx" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Add", nil];
@@ -262,6 +271,24 @@
 		alert.alertViewStyle = UIAlertViewStylePlainTextInput;
 		[alert show];
     }
+}
+
+#pragma mark - synchronization
+
+- (void)doSynchro:(UISwitch*)sender
+{
+	if (sender.on) {
+		AppDelegate* app = (AppDelegate*)[UIApplication sharedApplication].delegate;
+		[app sync:self];
+	} else {
+		[DataModel setEnableSynchro:NO];
+	}
+}
+
+- (void)handleUpdateDB:(NSNotification*)note
+{
+	NSNumber* result = (NSNumber*)note.object;
+	_synchroSwitch.on = [result boolValue];
 }
 
 @end

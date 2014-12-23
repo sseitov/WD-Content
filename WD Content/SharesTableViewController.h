@@ -17,6 +17,7 @@
 
 @interface SharesTableViewController : UITableViewController
 
-- (id)initWithDelegate:(id<SharesTableViewControllerDelegate>)delegate;
+@property (weak, nonatomic) id<SharesTableViewControllerDelegate> sharesDelegate;
+@property (weak, nonatomic) NSArray* initialNodes;
 
 @end

@@ -55,4 +55,7 @@ extern NSString * const DataModelDidChangeNotification;
 + (NSIndexPath*)lastIndex;
 + (void)setLastIndex:(NSIndexPath*)index;
 
++ (BOOL)enableSynchro;
++ (void)setEnableSynchro:(BOOL)enable;
+
 @end

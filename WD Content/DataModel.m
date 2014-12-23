@@ -399,6 +399,17 @@ NSString * const kDataManagerSQLiteName = @"ContentModel.sqlite";
 	}
 }
 
++ (BOOL)enableSynchro
+{
+	return [[NSUserDefaults standardUserDefaults] boolForKey:@"enableSynchro"];
+}
+
++ (void)setEnableSynchro:(BOOL)enable
+{
+	[[NSUserDefaults standardUserDefaults] setBool:enable forKey:@"enableSynchro"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+}
+
 #pragma mark - KxSmbProvider delegate
 
 - (KxSMBAuth *)smbAuthForServer:(NSString*)server withShare:(NSString*)share

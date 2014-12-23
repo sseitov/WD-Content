@@ -11,7 +11,6 @@
 #import "InfoViewController.h"
 #import "DataModel.h"
 #import "MBProgressHUD.h"
-#import "SharesTableViewController.h"
 #import "SearchInfoTableViewController.h"
 #import "AppDelegate.h"
 

@@ -10,10 +10,22 @@
 
 @interface SettingsCell ()
 
-
 @end
 
 @implementation SettingsCell
+
+- (void)setAuthorization:(NSMutableDictionary*)auth
+{
+	_authorization = auth;
+	UILabel *header = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, 22)];
+	header.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+	header.backgroundColor = [UIColor lightGrayColor];
+	header.font = [UIFont fontWithName:@"HelveticaNeue" size:14];
+	header.textColor = [UIColor whiteColor];
+	header.textAlignment = NSTextAlignmentCenter;
+	header.text = [_authorization valueForKey:@"host"];
+	_host.tableHeaderView = header;
+}
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
 {

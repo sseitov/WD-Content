@@ -66,7 +66,9 @@
         [segue perform];
     } else {
         NSString *segueIdentifier = [mainVC segueIdentifierForIndexPathInLeftMenu:initialIndexPath];
-        [leftMenu performSegueWithIdentifier:segueIdentifier sender:self];
+		if (segueIdentifier) {
+			[leftMenu performSegueWithIdentifier:segueIdentifier sender:self];
+		}
     }
 #else
     [leftMenu tableView:leftMenu.tableView didSelectRowAtIndexPath:initialIndexPath];

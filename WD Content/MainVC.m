@@ -51,7 +51,7 @@
 
 - (NSString *)segueIdentifierForIndexPathInLeftMenu:(NSIndexPath *)indexPath
 {
-    return indexPath.section ? @"Content" : @"Devices";
+	return (indexPath.section) ? @"Content" : @"Devices";
 }
 
 - (CGFloat)leftMenuWidth
