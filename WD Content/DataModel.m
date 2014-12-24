@@ -13,8 +13,6 @@ NSString* const DataModelDidChangeNotification = @"DataModelDidChangeNotificatio
 
 @interface DataModel () <KxSMBProviderDelegate>
 
-- (NSString*)sharedDocumentsPath;
-
 @end
 
 @implementation DataModel
@@ -25,6 +23,7 @@ NSString* const DataModelDidChangeNotification = @"DataModelDidChangeNotificatio
 
 NSString * const kDataManagerModelName = @"ContentModel";
 NSString * const kDataManagerSQLiteName = @"ContentModel.sqlite";
+NSString * const kDataManagerAuthName = @"Auth.plist";
 
 + (DataModel*)sharedInstance
 {
@@ -68,7 +67,7 @@ NSString * const kDataManagerSQLiteName = @"ContentModel.sqlite";
 		return _persistentStoreCoordinator;
 	
 	// Get the paths to the SQLite file
-	NSString *storePath = [[self sharedDocumentsPath] stringByAppendingPathComponent:kDataManagerSQLiteName];
+	NSString *storePath = [[DataModel sharedDocumentsPath] stringByAppendingPathComponent:kDataManagerSQLiteName];
 	NSURL *storeURL = [NSURL fileURLWithPath:storePath];
 	
 	// Define the Core Data version migration options
@@ -134,32 +133,11 @@ NSString * const kDataManagerSQLiteName = @"ContentModel.sqlite";
 	}
 }
 
-- (NSString*)sharedDocumentsPath
+- (void)updateDB
 {
-	static NSString *SharedDocumentsPath = nil;
-	if (SharedDocumentsPath)
-		return SharedDocumentsPath;
-	
-	// Compose a path to the <Library>/Database directory
-	NSString *libraryPath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-	SharedDocumentsPath = [libraryPath stringByAppendingPathComponent:@"ContentModel"];
-	
-	// Ensure the database directory exists
-	NSFileManager *manager = [NSFileManager defaultManager];
-	BOOL isDirectory;
-	if (![manager fileExistsAtPath:SharedDocumentsPath isDirectory:&isDirectory] || !isDirectory) {
-		NSError *error = nil;
-		NSDictionary *attr = [NSDictionary dictionaryWithObject:NSFileProtectionComplete
-														 forKey:NSFileProtectionKey];
-		[manager createDirectoryAtPath:SharedDocumentsPath
-		   withIntermediateDirectories:YES
-							attributes:attr
-								 error:&error];
-		if (error)
-			NSLog(@"Error creating directory path: %@", [error localizedDescription]);
-	}
-	
-	return SharedDocumentsPath;
+	_mainObjectContext = nil;
+	_persistentStoreCoordinator = nil;
+	[self mainObjectContext];
 }
 
 - (NSManagedObjectContext*)managedObjectContext
@@ -308,7 +286,45 @@ NSString * const kDataManagerSQLiteName = @"ContentModel.sqlite";
 	}
 }
 
-#pragma mark - settings storage
+#pragma mark - user settings storage
+
++ (NSString*)sharedDocumentsPath
+{
+	static NSString *SharedDocumentsPath = nil;
+	if (SharedDocumentsPath)
+		return SharedDocumentsPath;
+	
+	// Compose a path to the <Library>/Database directory
+	NSString *libraryPath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+	SharedDocumentsPath = [libraryPath stringByAppendingPathComponent:@"ContentModel"];
+	
+	// Ensure the database directory exists
+	NSFileManager *manager = [NSFileManager defaultManager];
+	BOOL isDirectory;
+	if (![manager fileExistsAtPath:SharedDocumentsPath isDirectory:&isDirectory] || !isDirectory) {
+		NSError *error = nil;
+		NSDictionary *attr = [NSDictionary dictionaryWithObject:NSFileProtectionComplete
+														 forKey:NSFileProtectionKey];
+		[manager createDirectoryAtPath:SharedDocumentsPath
+		   withIntermediateDirectories:YES
+							attributes:attr
+								 error:&error];
+		if (error)
+			NSLog(@"Error creating directory path: %@", [error localizedDescription]);
+	}
+	
+	return SharedDocumentsPath;
+}
+
++ (NSString*)authPath
+{
+	return [[DataModel sharedDocumentsPath] stringByAppendingPathComponent:kDataManagerAuthName];
+}
+
++ (NSString*)contentPath
+{
+	return [[DataModel sharedDocumentsPath] stringByAppendingPathComponent:kDataManagerSQLiteName];
+}
 
 + (NSDate*)lastModified
 {
@@ -319,6 +335,22 @@ NSString * const kDataManagerSQLiteName = @"ContentModel.sqlite";
 {
 	[[NSUserDefaults standardUserDefaults] setObject:date forKey:@"lastModified"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
+}
+
++ (NSDate*)lastAuthModified
+{
+	NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[DataModel authPath] error:nil];
+	return [attributes fileModificationDate];
+}
+
++ (void)setLastAuthModified:(NSDate*)date
+{
+	NSFileManager *fileManager = [NSFileManager defaultManager];
+	NSDictionary *creationDateAttr = [NSDictionary dictionaryWithObjectsAndKeys: date, NSFileCreationDate, nil];
+	NSDictionary *modificationDateAttr = [NSDictionary dictionaryWithObjectsAndKeys: date, NSFileModificationDate, nil];
+	NSError* err = nil;
+	[fileManager setAttributes:modificationDateAttr ofItemAtPath:[DataModel authPath] error:&err];
+	[fileManager setAttributes:creationDateAttr ofItemAtPath:[DataModel authPath] error:&err];
 }
 
 + (void)convertAuth
@@ -336,13 +368,12 @@ NSString * const kDataManagerSQLiteName = @"ContentModel.sqlite";
 
 + (NSArray*)auth
 {
-	return [[NSUserDefaults standardUserDefaults] objectForKey:@"auth"];
+	return [NSArray arrayWithContentsOfFile:[DataModel authPath]];
 }
 
 + (void)setAuth:(NSArray*)authArray
 {
-	[[NSUserDefaults standardUserDefaults] setObject:authArray forKey:@"auth"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
+	[authArray writeToFile:[DataModel authPath] atomically:YES];
 }
 
 + (void)removeHost:(NSDictionary*)host
@@ -399,22 +430,11 @@ NSString * const kDataManagerSQLiteName = @"ContentModel.sqlite";
 	}
 }
 
-+ (BOOL)enableSynchro
-{
-	return [[NSUserDefaults standardUserDefaults] boolForKey:@"enableSynchro"];
-}
-
-+ (void)setEnableSynchro:(BOOL)enable
-{
-	[[NSUserDefaults standardUserDefaults] setBool:enable forKey:@"enableSynchro"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
-}
-
 #pragma mark - KxSmbProvider delegate
 
 - (KxSMBAuth *)smbAuthForServer:(NSString*)server withShare:(NSString*)share
 {
-	NSArray *auth = [[NSUserDefaults standardUserDefaults] objectForKey:@"auth"];
+	NSArray *auth = [DataModel auth];
 	for (NSDictionary *host in auth) {
 		if ([[host objectForKey:@"host"] isEqual:server]) {
 			return [KxSMBAuth smbAuthWorkgroup:[host valueForKey:@"workgroup"]

@@ -52,7 +52,7 @@
             </objects>
             <point key="canvasLocation" x="-3584" y="1342"/>
         </scene>
-        <!--Settings View Controller-->
+        <!--WD Devices-->
         <scene sceneID="CCP-Up-bTU">
             <objects>
                 <tableViewController id="w3n-zR-tv6" customClass="SettingsViewController" sceneMemberID="viewController">
@@ -94,7 +94,7 @@
                             <outlet property="delegate" destination="w3n-zR-tv6" id="pKA-Ms-hTU"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" id="0Vv-xA-nMX"/>
+                    <navigationItem key="navigationItem" title="WD Devices" id="0Vv-xA-nMX"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="med-jR-tpg" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

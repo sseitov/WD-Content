@@ -8,29 +8,35 @@
 
 #import "AppDelegate.h"
 #import "TMDB.h"
-#import <Dropbox/Dropbox.h>
+#import <DropboxSDK/DropboxSDK.h>
 #import "DataModel.h"
 
-#define APP_KEY     @"3cujrb3xpbb7fuw"
-#define APP_SECRET  @"bfm5uz7aivquetn"
+#define TMDB_API_KEY	@"0aec9897fa96fb8f97e70aeb0da26a7e"
+#define DB_APP_KEY		@"hvab58vh14czlqk"
+#define DB_APP_SECRET	@"mtjlw6gukivz7vb"
 
-NSString* const UpdateDBNotification = @"UpdateDBNotification";
+NSString* const ErrorDBAccountNotification = @"ErrorDBAccountNotification";
 
-@interface AppDelegate()
+@interface AppDelegate() <DBSessionDelegate>
+	
+@property (strong, nonatomic) NSString *relinkUserId;
+
 @end
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-	[TMDB sharedInstance].apiKey = @"0aec9897fa96fb8f97e70aeb0da26a7e";
+	[TMDB sharedInstance].apiKey = TMDB_API_KEY;
+	
+	DBSession* session = [[DBSession alloc] initWithAppKey:DB_APP_KEY appSecret:DB_APP_SECRET root:kDBRootAppFolder];
+	session.delegate = self;
+	[DBSession setSharedSession:session];
 
-	DBAccountManager* accountMgr = [[DBAccountManager alloc]
-									initWithAppKey:APP_KEY
-									secret:APP_SECRET];
-	[DBAccountManager setSharedManager:accountMgr];
-
-	if ([[DataModel auth] isKindOfClass:[NSDictionary class]]) {
+	NSArray* auth = [DataModel auth];
+	if (!auth) {
+		auth = [NSArray array];
+	} else if ([auth isKindOfClass:[NSDictionary class]]) {
 		[DataModel convertAuth];
 	}
 	
@@ -39,16 +45,15 @@ NSString* const UpdateDBNotification = @"UpdateDBNotification";
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url sourceApplication:(NSString *)source annotation:(id)annotation
 {
-	DBAccount *account = [[DBAccountManager sharedManager] handleOpenURL:url];
-	if (account) {
-		NSLog(@"App linked successfully!");
-		[DataModel setEnableSynchro:YES];
-		[self doSync:account];
+	if ([[DBSession sharedSession] handleOpenURL:url]) {
+		if ([[DBSession sharedSession].userIds count] == 0) {
+			[[NSNotificationCenter defaultCenter] postNotificationName:ErrorDBAccountNotification object:nil];
+		}
 		return YES;
+	} else {
+		[[NSNotificationCenter defaultCenter] postNotificationName:ErrorDBAccountNotification object:nil];
+		return NO;
 	}
-	[DataModel setEnableSynchro:NO];
-	[[NSNotificationCenter defaultCenter] postNotificationName:UpdateDBNotification object:[NSNumber numberWithBool:NO]];
-	return NO;
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application
@@ -78,109 +83,22 @@ NSString* const UpdateDBNotification = @"UpdateDBNotification";
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
 
-#pragma mark - DropBox sync
+#pragma mark - DBSessionDelegate methods
 
-- (void)sync:(UIViewController*)controller
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)index
 {
-	DBAccountManager* accountMgr = [DBAccountManager sharedManager];
-	if (accountMgr.linkedAccount) {
-		[self doSync:accountMgr.linkedAccount];
-	} else {
-		[[DBAccountManager sharedManager] linkFromController:controller];
+	if (index != alertView.cancelButtonIndex) {
+		[[DBSession sharedSession] linkUserId:_relinkUserId fromController:self.window.rootViewController];
 	}
-
+	_relinkUserId = nil;
 }
 
-- (BOOL)doSync:(DBAccount *)account
+- (void)sessionDidReceiveAuthorizationFailure:(DBSession*)session userId:(NSString *)userId
 {
-	NSLog(@"====== DO SYNCHRO");
-	[[NSNotificationCenter defaultCenter] postNotificationName:UpdateDBNotification object:[NSNumber numberWithBool:YES]];
-	return YES;
-/*
-	//Check that we're given a linked account.
-	
-	if (!account || !account.linked) {
-		NSLog(@"No account linked");
-		return NO;
-	}
-	
-	//Check if shared filesystem already exists - can't create more than
-	//one DBFilesystem on the same account.
-	
-	DBFilesystem *filesystem = [DBFilesystem sharedFilesystem];
-	
-	if (!filesystem) {
-		filesystem = [[DBFilesystem alloc] initWithAccount:account];
-		[DBFilesystem setSharedFilesystem:filesystem];
-	}
-	
-	NSString *const DB_FILE_NAME = @"ContentModel.sqlite";
-	
-	DBError *error = nil;
-	DBPath *path = [[DBPath root] childPath:DB_FILE_NAME];
-	DBFileInfo *info = [filesystem fileInfoForPath:path error:&error];
-	if (info) {
-		if ([info.modifiedTime compare:[DataModel lastModified]] == NSOrderedAscending) {
-			return YES;
-		}
-	}
-	[[NSNotificationCenter defaultCenter] postNotificationName:UpdateDBNotification object:nil];
-	return YES;
-*/
-/*
-	if (![filesystem fileInfoForPath:path error:&error]) { // see if path exists
-		
-		//Report error if path look up failed for some other reason than NOT FOUND
-		
-		if ([error code] != DBErrorNotFound) {
-			NSLog(@"Error getting file info");
-			return NO;
-		}
-		
-		 //Write a new test file.
-		DBFile *file = [[DBFilesystem sharedFilesystem] createFile:path error:&error];
-		if (!file) {
-			NSLog(@"Error creating file.");
-			return NO;
-		}
-		
-		NSString *storePath = [[[DataModel sharedInstance] sharedDocumentsPath] stringByAppendingPathComponent:DB_FILE_NAME];
-		NSData* data = [NSData dataWithContentsOfURL:[NSURL fileURLWithPath:storePath]];
-		if (![file writeData:data error:&error]) {
-			NSLog(@"Error writing file.");
-			return NO;
-		}
-		[file close];
-		NSLog(@"Created new file %@.\n", [path stringValue]);
-	}
-	
-	//Read and print the contents of test file.  Since we're not making
-	//any attempt to wait for the latest version, this may print an
-	//older cached version.  Use status property of DBFile and/or a
-	// listener to check for a new version.
-	
-	DBFileInfo *info = [filesystem fileInfoForPath:path error:&error];
-	if (!info) {
-		NSLog(@"File does not exist.");
-	}
-	
-	if (![info isFolder]) {
-		NSLog(@"file modified at %@", info.modifiedTime);
-		DBFile *file = [[DBFilesystem sharedFilesystem] openFile:path error:&error];
-		if (!file) {
-			NSLog(@"Error opening file.");
-			return NO;
-		}
-		
-		NSData *data = [file readData:&error];
-		if (!data) {
-			NSLog(@"Error reading file.");
-			return NO;
-		}
-		[file close];
-	}
-	
-	return YES;*/
+	_relinkUserId = userId;
+	[[[UIAlertView alloc]
+	   initWithTitle:@"Dropbox Session Ended" message:@"Do you want to relink?" delegate:self
+	  cancelButtonTitle:@"Cancel" otherButtonTitles:@"Relink", nil] show];
 }
 
 @end

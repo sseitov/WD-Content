@@ -11,4 +11,6 @@
 
 @interface SettingsViewController : UITableViewController
 
+extern NSString* const UpdateDBNotification;
+
 @end

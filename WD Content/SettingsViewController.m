@@ -11,19 +11,54 @@
 #import "MBProgressHUD.h"
 #import "LeftMenuVC.h"
 #import "AppDelegate.h"
+#import "DropboxClient.h"
+#import "SettingsHeaderView.h"
+
+#define WAIT(a) [a lock]; [a wait]; [a unlock]
+#define SIGNAL(a) [a lock]; [a signal]; [a unlock]
 
 @interface SettingsViewController ()
+{
+	DropboxClient* _authDropboxClient;
+	DropboxClient* _contentDropboxClient;
+}
 
 @property (strong, nonatomic) NSMutableArray* authContainer;
-@property (strong, nonatomic) UISwitch* synchroSwitch;
+@property (nonatomic, readonly) UISwitch* synchroSwitch;
+@property (nonatomic, readonly) UIButton* synchroButton;
+
+
+@property (nonatomic, readonly) DropboxClient* authDropboxClient;
+@property (nonatomic, readonly) DropboxClient* contentDropboxClient;
 
 @end
 
 @implementation SettingsViewController
 
-- (void)awakeFromNib
+-(UISwitch*)synchroSwitch
 {
-	self.title = @"WD Devices";
+	return ((SettingsHeaderView*)self.tableView.tableHeaderView).synchroSwitch;
+}
+
+-(UIButton*)synchroButton
+{
+	return ((SettingsHeaderView*)self.tableView.tableHeaderView).synchroButton;
+}
+
+- (DropboxClient*)authDropboxClient
+{
+	if (!_authDropboxClient) {
+		_authDropboxClient = [[DropboxClient alloc] initForFile:Auth];
+	}
+	return _authDropboxClient;
+}
+
+- (DropboxClient*)contentDropboxClient
+{
+	if (!_contentDropboxClient) {
+		_contentDropboxClient = [[DropboxClient alloc] initForFile:Content];
+	}
+	return _contentDropboxClient;
 }
 
 - (void)viewDidLoad
@@ -31,35 +66,15 @@
     [super viewDidLoad];
 	
 	NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-	[nc addObserver:self selector:@selector(handleUpdateDB:) name:UpdateDBNotification object:nil];
+	[nc addObserver:self selector:@selector(handleFinishAuthSynchro:) name:FinishAuthSynchroNotification object:nil];
+	[nc addObserver:self selector:@selector(handleFinishContentSynchro:) name:FinishContentSynchroNotification object:nil];
+	[nc addObserver:self selector:@selector(handleErrrorDBAccount:) name:ErrorDBAccountNotification object:nil];
 
-	UIView* tableHeader = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 66)];
-	tableHeader.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-	UIView * v = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 22)];
-	v.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-	v.backgroundColor = [UIColor colorWithRed:0 green:113.0/255.0 blue:165.0/255.0 alpha:1];
-	UILabel * l = [[UILabel alloc] initWithFrame:CGRectMake(15, 0, 100, 22)];
-	l.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-	l.textColor = [UIColor whiteColor];
-	l.text = @"SYNCHRO";
-	l.font = [UIFont fontWithName:@"HelveticaNeue" size:12];
-	[v addSubview:l];
-	[tableHeader addSubview:v];
-	
-	UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue2 reuseIdentifier:nil];
-	cell.frame = CGRectMake(0, 22, self.tableView.frame.size.width, 44);
-	cell.textLabel.text = @"Dropbox";
-	cell.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-
-	_synchroSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(self.tableView.frame.size.width-70, 7, 0, 30)];
-	_synchroSwitch.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
-	_synchroSwitch.on = [DataModel enableSynchro];
-	[_synchroSwitch addTarget:self action:@selector(doSynchro:) forControlEvents:UIControlEventValueChanged];
-	[cell.contentView addSubview:_synchroSwitch];
-
-	[tableHeader addSubview:cell];
-	
-	self.tableView.tableHeaderView = tableHeader;
+	self.tableView.tableHeaderView = [[SettingsHeaderView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 66)];
+	self.synchroSwitch.on = [[DBSession sharedSession] isLinked];
+	[self.synchroSwitch addTarget:self action:@selector(switchSynchro:) forControlEvents:UIControlEventValueChanged];
+	self.synchroButton.enabled = self.synchroSwitch.on;
+	[self.synchroButton addTarget:self action:@selector(doSynchro) forControlEvents:UIControlEventTouchDown];
 	
 	_authContainer = [[NSMutableArray alloc] init];
 	[self loadContainer];
@@ -99,9 +114,6 @@
 	[self setEditing:YES animated:YES];
 	[self.tableView reloadData];
 }
-
-#define WAIT(a) [a lock]; [a wait]; [a unlock]
-#define SIGNAL(a) [a lock]; [a signal]; [a unlock]
 
 - (void)refreshHosts:(void (^)(NSArray*))result
 {
@@ -275,20 +287,55 @@
 
 #pragma mark - synchronization
 
-- (void)doSynchro:(UISwitch*)sender
+- (void)switchSynchro:(UISwitch*)sender
 {
-	if (sender.on) {
-		AppDelegate* app = (AppDelegate*)[UIApplication sharedApplication].delegate;
-		[app sync:self];
+	self.synchroButton.enabled = sender.on;
+	if (![[DBSession sharedSession] isLinked]) {
+		[[DBSession sharedSession] linkFromController:self];
 	} else {
-		[DataModel setEnableSynchro:NO];
+		[[DBSession sharedSession] unlinkAll];
 	}
 }
 
-- (void)handleUpdateDB:(NSNotification*)note
+- (void)doSynchro
+{
+	[MBProgressHUD showHUDAddedTo:self.view animated:YES];
+	[self.authDropboxClient sync:(_authContainer.count == 0)];
+}
+
+- (void)handleFinishAuthSynchro:(NSNotification*)note
 {
 	NSNumber* result = (NSNumber*)note.object;
-	_synchroSwitch.on = [result boolValue];
+	if ([result boolValue] == YES) {
+		if (note.userInfo) {	// download from dropbox
+			DBMetadata* meta = [note.userInfo objectForKey:@"meta"];
+			[DataModel setLastAuthModified:meta.lastModifiedDate];
+		}
+		[self setEditing:NO animated:YES];
+		[self loadContainer];
+		[self.tableView reloadData];
+	}
+	[self.contentDropboxClient sync:([DataModel lastModified] == 0)];
+}
+
+- (void)handleFinishContentSynchro:(NSNotification*)note
+{
+	NSNumber* result = (NSNumber*)note.object;
+	[MBProgressHUD hideHUDForView:self.view animated:YES];
+	if ([result boolValue] == YES) {
+		if (note.userInfo) {	// download from dropbox
+			[[DataModel sharedInstance] updateDB];
+			DBMetadata* meta = [note.userInfo objectForKey:@"meta"];
+			[DataModel setLastModified:meta.lastModifiedDate];
+			[[NSNotificationCenter defaultCenter] postNotificationName:UpdateMenuNotification object:self];
+		}
+	}
+}
+
+- (void)handleErrrorDBAccount:(NSNotification*)note
+{
+	self.synchroButton.enabled = NO;
+	self.synchroSwitch.on = NO;
 }
 
 @end

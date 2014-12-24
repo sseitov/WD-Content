@@ -18,7 +18,7 @@
 {
 	_authorization = auth;
 	UILabel *header = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, 22)];
-	header.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+	header.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 	header.backgroundColor = [UIColor lightGrayColor];
 	header.font = [UIFont fontWithName:@"HelveticaNeue" size:14];
 	header.textColor = [UIColor whiteColor];

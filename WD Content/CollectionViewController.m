@@ -12,7 +12,6 @@
 #import "DataModel.h"
 #import "MBProgressHUD.h"
 #import "SearchInfoTableViewController.h"
-#import "AppDelegate.h"
 
 #define IS_PAD ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
 
@@ -44,7 +43,6 @@
 
 	NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 	[nc addObserver:self selector:@selector(handleUpdateInfoNotification:) name:UpdateInfoNotification object:nil];
-	[nc addObserver:self selector:@selector(handleUpdateDBNotification:) name:UpdateDBNotification object:nil];
 
 	_nodes = [[DataModel sharedInstance] nodesByRoot:_rootNode];
 
@@ -98,13 +96,6 @@
 			break;
 		}
 	}
-}
-
--(void)handleUpdateDBNotification:(NSNotification*)notification
-{
-	_nodes = [[DataModel sharedInstance] nodesByRoot:_rootNode];
-	[_collectionView reloadData];
-	[_tableView reloadData];
 }
 
 - (void)viewDidAppear:(BOOL)animated

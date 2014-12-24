@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		2C0644F119CD9867002F5F49 /* SearchInfoTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0644F019CD9867002F5F49 /* SearchInfoTableViewController.m */; };
+		2C0AB2B51A4AEFD10007D700 /* DropboxSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C0AB2B41A4AEFD10007D700 /* DropboxSDK.framework */; };
+		2C0AB2B71A4AF06C0007D700 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C0AB2B61A4AF06C0007D700 /* Security.framework */; };
+		2C0AB2BA1A4B37F60007D700 /* DropboxClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0AB2B91A4B37F60007D700 /* DropboxClient.m */; };
 		2C125EAA1848C74B00406FC3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C125EA91848C74B00406FC3 /* Foundation.framework */; };
 		2C125EAC1848C74B00406FC3 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C125EAB1848C74B00406FC3 /* CoreGraphics.framework */; };
 		2C125EAE1848C74B00406FC3 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C125EAD1848C74B00406FC3 /* UIKit.framework */; };
@@ -29,9 +32,9 @@
 		2C378CEA19EA802D00C69ADA /* collection.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C378CE719EA802D00C69ADA /* collection.png */; };
 		2C378CEB19EA802D00C69ADA /* list.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C378CE819EA802D00C69ADA /* list.png */; };
 		2C3E5BDF1A4421990046AFC4 /* libc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C3E5BDE1A4421990046AFC4 /* libc++.dylib */; };
+		2C3FDF141A4B7AEC0019ECD3 /* SettingsHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C3FDF131A4B7AEC0019ECD3 /* SettingsHeaderView.m */; };
 		2C6E746B19C75ECA001D9971 /* SharesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C6E746A19C75ECA001D9971 /* SharesTableViewController.m */; };
 		2CA1D7191854A78800276C67 /* InfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA1D7181854A78800276C67 /* InfoViewController.m */; };
-		2CA6B9E11A45664800AFF041 /* Dropbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CA6B9E01A45664800AFF041 /* Dropbox.framework */; };
 		2CA6B9F21A4567B800AFF041 /* AMSlideMenuContentSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA6B9E41A4567B800AFF041 /* AMSlideMenuContentSegue.m */; };
 		2CA6B9F31A4567B800AFF041 /* AMSlideMenuLeftMenuSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA6B9E61A4567B800AFF041 /* AMSlideMenuLeftMenuSegue.m */; };
 		2CA6B9F41A4567B800AFF041 /* AMSlideMenuLeftTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA6B9E81A4567B800AFF041 /* AMSlideMenuLeftTableViewController.m */; };
@@ -68,6 +71,10 @@
 /* Begin PBXFileReference section */
 		2C0644EF19CD9867002F5F49 /* SearchInfoTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SearchInfoTableViewController.h; path = "WD Content/SearchInfoTableViewController.h"; sourceTree = "<group>"; };
 		2C0644F019CD9867002F5F49 /* SearchInfoTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SearchInfoTableViewController.m; path = "WD Content/SearchInfoTableViewController.m"; sourceTree = "<group>"; };
+		2C0AB2B41A4AEFD10007D700 /* DropboxSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DropboxSDK.framework; path = "../../../../Users/sseitov/Documents/SDK/dropbox-ios-sdk-1.3.13/DropboxSDK.framework"; sourceTree = "<group>"; };
+		2C0AB2B61A4AF06C0007D700 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		2C0AB2B81A4B37F60007D700 /* DropboxClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DropboxClient.h; sourceTree = "<group>"; };
+		2C0AB2B91A4B37F60007D700 /* DropboxClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DropboxClient.m; sourceTree = "<group>"; };
 		2C125EA61848C74B00406FC3 /* WD Content.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "WD Content.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C125EA91848C74B00406FC3 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		2C125EAB1848C74B00406FC3 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -99,11 +106,12 @@
 		2C378CE719EA802D00C69ADA /* collection.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = collection.png; sourceTree = "<group>"; };
 		2C378CE819EA802D00C69ADA /* list.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = list.png; sourceTree = "<group>"; };
 		2C3E5BDE1A4421990046AFC4 /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "usr/lib/libc++.dylib"; sourceTree = SDKROOT; };
+		2C3FDF121A4B7AEC0019ECD3 /* SettingsHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsHeaderView.h; sourceTree = "<group>"; };
+		2C3FDF131A4B7AEC0019ECD3 /* SettingsHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsHeaderView.m; sourceTree = "<group>"; };
 		2C6E746919C75ECA001D9971 /* SharesTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SharesTableViewController.h; sourceTree = "<group>"; };
 		2C6E746A19C75ECA001D9971 /* SharesTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SharesTableViewController.m; sourceTree = "<group>"; };
 		2CA1D7171854A78800276C67 /* InfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InfoViewController.h; path = "WD Content/InfoViewController.h"; sourceTree = "<group>"; };
 		2CA1D7181854A78800276C67 /* InfoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = InfoViewController.m; path = "WD Content/InfoViewController.m"; sourceTree = "<group>"; };
-		2CA6B9E01A45664800AFF041 /* Dropbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Dropbox.framework; path = "../../../../Users/sseitov/Documents/SDK/dropbox-ios-sync-sdk-3.1.2/Dropbox.framework"; sourceTree = "<group>"; };
 		2CA6B9E31A4567B800AFF041 /* AMSlideMenuContentSegue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AMSlideMenuContentSegue.h; path = "WD Content/AMSlideMenu/AMSlideMenuContentSegue.h"; sourceTree = "<group>"; };
 		2CA6B9E41A4567B800AFF041 /* AMSlideMenuContentSegue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AMSlideMenuContentSegue.m; path = "WD Content/AMSlideMenu/AMSlideMenuContentSegue.m"; sourceTree = "<group>"; };
 		2CA6B9E51A4567B800AFF041 /* AMSlideMenuLeftMenuSegue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AMSlideMenuLeftMenuSegue.h; path = "WD Content/AMSlideMenu/AMSlideMenuLeftMenuSegue.h"; sourceTree = "<group>"; };
@@ -174,13 +182,14 @@
 				2C1701271849271A00A37516 /* libz.dylib in Frameworks */,
 				2C1701251849270200A37516 /* libiconv.dylib in Frameworks */,
 				2C170123184926EF00A37516 /* libresolv.dylib in Frameworks */,
-				2CA6BA0C1A45BE9A00AFF041 /* PixateFreestyle.framework in Frameworks */,
-				2CA6B9E11A45664800AFF041 /* Dropbox.framework in Frameworks */,
 				2C1701201849266700A37516 /* libtevent.a in Frameworks */,
 				2C17011F1849266700A37516 /* libtdb.a in Frameworks */,
 				2C1701211849266700A37516 /* libwbclient.a in Frameworks */,
 				2C17011E1849266700A37516 /* libtalloc.a in Frameworks */,
 				2C17011D1849266700A37516 /* libsmbclient.a in Frameworks */,
+				2C0AB2B71A4AF06C0007D700 /* Security.framework in Frameworks */,
+				2C0AB2B51A4AEFD10007D700 /* DropboxSDK.framework in Frameworks */,
+				2CA6BA0C1A45BE9A00AFF041 /* PixateFreestyle.framework in Frameworks */,
 				2CA8871C187EA9AA0074B73E /* CoreData.framework in Frameworks */,
 				2C125EAC1848C74B00406FC3 /* CoreGraphics.framework in Frameworks */,
 				2C125EAE1848C74B00406FC3 /* UIKit.framework in Frameworks */,
@@ -221,8 +230,9 @@
 				2C1701261849271A00A37516 /* libz.dylib */,
 				2C1701241849270200A37516 /* libiconv.dylib */,
 				2C170122184926EF00A37516 /* libresolv.dylib */,
+				2C0AB2B61A4AF06C0007D700 /* Security.framework */,
+				2C0AB2B41A4AEFD10007D700 /* DropboxSDK.framework */,
 				2CA6BA0B1A45BE9A00AFF041 /* PixateFreestyle.framework */,
-				2CA6B9E01A45664800AFF041 /* Dropbox.framework */,
 				2CA8871B187EA9AA0074B73E /* CoreData.framework */,
 				2C125EA91848C74B00406FC3 /* Foundation.framework */,
 				2C125EAB1848C74B00406FC3 /* CoreGraphics.framework */,
@@ -337,6 +347,8 @@
 			children = (
 				2CA95DC2184B2B4600927138 /* SettingsViewController.h */,
 				2CA95DC3184B2B4600927138 /* SettingsViewController.m */,
+				2C3FDF121A4B7AEC0019ECD3 /* SettingsHeaderView.h */,
+				2C3FDF131A4B7AEC0019ECD3 /* SettingsHeaderView.m */,
 				2CA95DC5184B2CB700927138 /* SettingsCell.h */,
 				2CA95DC6184B2CB700927138 /* SettingsCell.m */,
 				2C6E746919C75ECA001D9971 /* SharesTableViewController.h */,
@@ -355,6 +367,8 @@
 				2CA8871D187EAEDE0074B73E /* DataModel.h */,
 				2CA8871E187EAEDE0074B73E /* DataModel.m */,
 				2CA88713187EA87F0074B73E /* ContentModel.xcdatamodeld */,
+				2C0AB2B81A4B37F60007D700 /* DropboxClient.h */,
+				2C0AB2B91A4B37F60007D700 /* DropboxClient.m */,
 			);
 			name = CoreData;
 			sourceTree = "<group>";
@@ -494,6 +508,7 @@
 				ED2194B619C9AA800053C8B3 /* AFHTTPRequestOperation.m in Sources */,
 				ED2194BC19C9AA800053C8B3 /* AFURLRequestSerialization.m in Sources */,
 				ED2194BB19C9AA800053C8B3 /* AFURLConnectionOperation.m in Sources */,
+				2C0AB2BA1A4B37F60007D700 /* DropboxClient.m in Sources */,
 				ED2194BE19C9AA800053C8B3 /* AFURLSessionManager.m in Sources */,
 				2CA6B9F51A4567B800AFF041 /* AMSlideMenuMainViewController.m in Sources */,
 				2CA6B9FD1A4567DD00AFF041 /* LeftMenuVC.m in Sources */,
@@ -505,6 +520,7 @@
 				2CAEE6D419C8C7C000B5DDD7 /* Node.m in Sources */,
 				2CA95DC4184B2B4600927138 /* SettingsViewController.m in Sources */,
 				2C125EBA1848C74B00406FC3 /* AppDelegate.m in Sources */,
+				2C3FDF141A4B7AEC0019ECD3 /* SettingsHeaderView.m in Sources */,
 				2CA1D7191854A78800276C67 /* InfoViewController.m in Sources */,
 				2CA6B9F81A4567B800AFF041 /* UIViewController+AMSlideMenu.m in Sources */,
 				2C125EB61848C74B00406FC3 /* main.m in Sources */,
@@ -641,8 +657,8 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"/Users/sseitov/Documents/SDK/dropbox-ios-sync-sdk-3.1.2",
 					/Users/sseitov/Documents/SDK/PixateFreestyle,
+					"/Users/sseitov/Documents/SDK/dropbox-ios-sdk-1.3.13",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "WD Content/WD Content-Prefix.pch";
@@ -674,8 +690,8 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"/Users/sseitov/Documents/SDK/dropbox-ios-sync-sdk-3.1.2",
 					/Users/sseitov/Documents/SDK/PixateFreestyle,
+					"/Users/sseitov/Documents/SDK/dropbox-ios-sdk-1.3.13",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "WD Content/WD Content-Prefix.pch";
