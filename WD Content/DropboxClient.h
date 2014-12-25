@@ -21,6 +21,8 @@ extern NSString* const FinishContentSynchroNotification;
 @interface DropboxClient : DBRestClient<DBRestClientDelegate>
 
 - (id)initForFile:(enum DropboxClientFile)file;
-- (void)sync:(BOOL)first;
+- (void)sync;
+
+@property (weak, nonatomic) UIView* actionView;
 
 @end

@@ -12,18 +12,18 @@
 NSString* const FinishAuthSynchroNotification = @"FinishAuthSynchroNotification";
 NSString* const FinishContentSynchroNotification = @"FinishContentSynchroNotification";
 
-@interface DropboxClient ()
+@interface DropboxClient () <UIActionSheetDelegate>
 
 @property (nonatomic) enum DropboxClientFile file;
-@property (nonatomic) BOOL firstSynchro;
 
 @property (strong, nonatomic) NSString* extension;
 @property (strong, nonatomic) NSString* fileName;
-@property (strong, nonatomic) NSString* dropboxPath;
 @property (strong, nonatomic) NSString* localPath;
 @property (strong, nonatomic) NSDate* localDate;
 @property (strong, nonatomic) NSString* notification;
 @property (strong, nonatomic) DBMetadata* loadMeta;
+
+@property (strong, nonatomic) NSMutableArray* arrayForSync;
 
 @end
 
@@ -37,46 +37,71 @@ NSString* const FinishContentSynchroNotification = @"FinishContentSynchroNotific
 		_file = file;
 		_extension = (file == Auth) ? @"plist" : @"sqlite";
 		_fileName = (file == Auth) ? @"Auth.plist" : @"ContentModel.sqlite";
-		_dropboxPath = (file == Auth) ? @"/Auth.plist" : @"/ContentModel.sqlite";
 		_localPath = (file == Auth) ? [DataModel authPath] : [DataModel contentPath];
 		_notification = (file == Auth) ? FinishAuthSynchroNotification : FinishContentSynchroNotification;
 	}
 	return self;
 }
 
-- (void)sync:(BOOL)first
+- (void)sync
 {
-	_firstSynchro = first;
 	_localDate = (_file == Auth) ? [DataModel lastAuthModified] : [DataModel lastModified];
 	[self loadMetadata:@"/"];
 }
 
 #pragma mark DBRestClientDelegate methods
 
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+/*	if (buttonIndex == 0) {
+		[self uploadFile:_fileName toPath:@"/" withParentRev:nil fromPath:_localPath];
+	} else if ((buttonIndex - 1) < _arrayForSync.count && _arrayForSync.count > 0) {
+		DBMetadata* meta = [_arrayForSync objectAtIndex:(buttonIndex-1)];
+		[_arrayForSync removeObjectAtIndex:(buttonIndex-1)];
+		for (DBMetadata *m in _arrayForSync) {
+			[self deletePath:m.path];
+		}
+		_loadMeta = meta;
+		[self loadFile:meta.path intoPath:_localPath];
+	} else {*/
+		[[NSNotificationCenter defaultCenter] postNotificationName:_notification object:[NSNumber numberWithBool:NO]];
+//	}
+}
+
++ (NSString*)stringForDate:(NSDate*)date
+{
+	NSDateFormatter* dateFormat = [[NSDateFormatter alloc] init];
+	dateFormat.dateStyle = NSDateFormatterMediumStyle;
+	dateFormat.timeStyle = NSDateFormatterMediumStyle;
+	return [dateFormat stringFromDate:date];
+}
+
 - (void)restClient:(DBRestClient*)client loadedMetadata:(DBMetadata*)metadata
 {
+	_arrayForSync = [NSMutableArray new];
 	for (DBMetadata* fileMeta in metadata.contents) {
 		NSString* extension = [[fileMeta.path pathExtension] lowercaseString];
 		if (!fileMeta.isDirectory && [extension isEqual:_extension]) {
-			NSLog(@"%@ ====== %@", fileMeta.lastModifiedDate, _localDate);
-			NSComparisonResult result = [fileMeta.lastModifiedDate compare:_localDate];
-			if (_firstSynchro || result == NSOrderedDescending) {
-				_loadMeta = fileMeta;
-				[self loadFile:_dropboxPath intoPath:_localPath];
-				return;
-			} else if (result == NSOrderedAscending) {
-				break;
-			} else {
-				[[NSNotificationCenter defaultCenter] postNotificationName:_notification object:[NSNumber numberWithBool:NO]];
-				return;
+			if ([fileMeta.lastModifiedDate compare:_localDate] != NSOrderedSame || _localDate == nil) {
+				[_arrayForSync addObject:fileMeta];
 			}
 		}
 	}
-	if (!_firstSynchro) {
-		[self uploadFile:_fileName toPath:@"/" withParentRev:nil fromPath:_localPath];
-	} else {
-		[[NSNotificationCenter defaultCenter] postNotificationName:_notification object:[NSNumber numberWithBool:NO]];
+
+	UIActionSheet* actions = [[UIActionSheet alloc] init];
+	actions.title = [NSString stringWithFormat:@"Choose version %@ for load", _fileName];
+	actions.delegate = self;
+	
+	[actions addButtonWithTitle:@"Upload local"];
+	if (_arrayForSync.count > 0) {
+		for( DBMetadata *meta in _arrayForSync)  {
+			[actions addButtonWithTitle:[DropboxClient stringForDate:meta.lastModifiedDate]];
+		}
 	}
+	actions.destructiveButtonIndex = 0;
+	[actions addButtonWithTitle:@"Cancel"];
+	actions.cancelButtonIndex = _arrayForSync.count + 1;
+	[actions showInView:self.actionView];
 }
 
 - (void)restClient:(DBRestClient*)client metadataUnchangedAtPath:(NSString*)path
@@ -93,8 +118,8 @@ NSString* const FinishContentSynchroNotification = @"FinishContentSynchroNotific
 
 -(void)restClient:(DBRestClient*)client uploadedFile:(NSString*)destPath from:(NSString*)srcPath metadata:(DBMetadata*)metadata
 {
-	NSLog(@"File %@ uploaded successfully to path: %@", metadata.path, destPath);
-	[[NSNotificationCenter defaultCenter] postNotificationName:_notification object:[NSNumber numberWithBool:YES]];
+	NSLog(@"File %@ uploaded successfully from path: %@", metadata.path, srcPath);
+	[[NSNotificationCenter defaultCenter] postNotificationName:_notification object:[NSNumber numberWithBool:NO]];
 }
 
 - (void)restClient:(DBRestClient*)client uploadFileFailedWithError:(NSError*)error

@@ -120,8 +120,10 @@ NSString * const kDataManagerAuthName = @"Auth.plist";
 
 - (BOOL)save
 {
-	if (![self.mainObjectContext hasChanges])
+	if (![self.mainObjectContext hasChanges]) {
+		NSLog(@"data not changed");
 		return YES;
+	}
 	
 	NSError *error = nil;
 	if (![self.mainObjectContext save:&error]) {
@@ -129,6 +131,7 @@ NSString * const kDataManagerAuthName = @"Auth.plist";
 		return NO;
 	} else {
 		[DataModel setLastModified:[NSDate date]];
+		NSLog(@"data saved");
 		return YES;
 	}
 }

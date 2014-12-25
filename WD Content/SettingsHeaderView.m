@@ -7,6 +7,7 @@
 //
 
 #import "SettingsHeaderView.h"
+#import "BorderedButton.h"
 
 @implementation SettingsHeaderView
 
@@ -34,13 +35,12 @@
 		ll.font = [UIFont fontWithName:@"HelveticaNeue" size:14];
 		[self addSubview:ll];
 		
-		_synchroSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(80, 29, 0, 30)];
+		_synchroSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(80, 28, 0, 30)];
 		[self addSubview:_synchroSwitch];
 		
-		_synchroButton = [UIButton buttonWithType:UIButtonTypeSystem];
-		_synchroButton.frame = CGRectMake(frame.size.width-140, 29, 120, 30);
+		_synchroButton = [[BorderedButton alloc] initWithFrame:CGRectMake(frame.size.width-140, 29, 120, 30) text:@"Synchronize now"];
 		_synchroButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
-		[_synchroButton setTitle:@"Synchronize now" forState:UIControlStateNormal];
+
 		[self addSubview:_synchroButton];
 	}
 	return self;

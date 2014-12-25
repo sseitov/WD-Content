@@ -39,7 +39,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return _authorization ? 3 : 1;
+    return 3;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -49,32 +49,24 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	UITableViewCell *cell;
-	if (_authorization == nil) {
-		cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue2 reuseIdentifier:nil];
-		cell.textLabel.text = @"ADD DEVICE";
-		cell.accessoryType = UITableViewCellAccessoryNone;
-		cell.selectionStyle = UITableViewCellSelectionStyleNone;
-	} else {
-		cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue2 reuseIdentifier:nil];
-		cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-		cell.selectionStyle = UITableViewCellSelectionStyleBlue;
-		switch (indexPath.row) {
-			case 0:
-				cell.textLabel.text = @"SMB Group";
-				cell.detailTextLabel.text = [_authorization valueForKey:@"workgroup"];
-				break;
-			case 1:
-				cell.textLabel.text = @"User";
-				cell.detailTextLabel.text = [_authorization valueForKey:@"user"];
-				break;
-			case 2:
-				cell.textLabel.text = @"Password";
-				cell.detailTextLabel.text = [_authorization valueForKey:@"password"];
-				break;
-			default:
-				break;
-		}
+	UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue2 reuseIdentifier:nil];
+	cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+	cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+	switch (indexPath.row) {
+		case 0:
+			cell.textLabel.text = @"SMB Group";
+			cell.detailTextLabel.text = [_authorization valueForKey:@"workgroup"];
+			break;
+		case 1:
+			cell.textLabel.text = @"User";
+			cell.detailTextLabel.text = [_authorization valueForKey:@"user"];
+			break;
+		case 2:
+			cell.textLabel.text = @"Password";
+			cell.detailTextLabel.text = [_authorization valueForKey:@"password"];
+			break;
+		default:
+			break;
 	}
 	return cell;
 }

@@ -19,6 +19,7 @@
 		2C125EBA1848C74B00406FC3 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C125EB91848C74B00406FC3 /* AppDelegate.m */; };
 		2C125EC31848C74B00406FC3 /* CollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C125EC21848C74B00406FC3 /* CollectionViewController.m */; };
 		2C125EC51848C74B00406FC3 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2C125EC41848C74B00406FC3 /* Images.xcassets */; };
+		2C151B281A4C0A4C00A7F41A /* BorderedButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C151B271A4C0A4C00A7F41A /* BorderedButton.m */; };
 		2C17010B1848F68200A37516 /* Cell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C17010A1848F68200A37516 /* Cell.m */; };
 		2C170113184925F800A37516 /* KxSMBProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C170112184925F800A37516 /* KxSMBProvider.m */; };
 		2C17011D1849266700A37516 /* libsmbclient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C1701151849266700A37516 /* libsmbclient.a */; };
@@ -88,6 +89,8 @@
 		2C125EC11848C74B00406FC3 /* CollectionViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CollectionViewController.h; path = "WD Content/CollectionViewController.h"; sourceTree = "<group>"; };
 		2C125EC21848C74B00406FC3 /* CollectionViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = CollectionViewController.m; path = "WD Content/CollectionViewController.m"; sourceTree = "<group>"; };
 		2C125EC41848C74B00406FC3 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = "WD Content/Images.xcassets"; sourceTree = "<group>"; };
+		2C151B261A4C0A4C00A7F41A /* BorderedButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BorderedButton.h; sourceTree = "<group>"; };
+		2C151B271A4C0A4C00A7F41A /* BorderedButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BorderedButton.m; sourceTree = "<group>"; };
 		2C1701091848F68200A37516 /* Cell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Cell.h; path = "WD Content/Cell.h"; sourceTree = "<group>"; };
 		2C17010A1848F68200A37516 /* Cell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Cell.m; path = "WD Content/Cell.m"; sourceTree = "<group>"; };
 		2C170111184925F800A37516 /* KxSMBProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KxSMBProvider.h; sourceTree = "<group>"; };
@@ -353,6 +356,8 @@
 				2CA95DC6184B2CB700927138 /* SettingsCell.m */,
 				2C6E746919C75ECA001D9971 /* SharesTableViewController.h */,
 				2C6E746A19C75ECA001D9971 /* SharesTableViewController.m */,
+				2C151B261A4C0A4C00A7F41A /* BorderedButton.h */,
+				2C151B271A4C0A4C00A7F41A /* BorderedButton.m */,
 			);
 			name = Settings;
 			sourceTree = "<group>";
@@ -509,6 +514,7 @@
 				ED2194BC19C9AA800053C8B3 /* AFURLRequestSerialization.m in Sources */,
 				ED2194BB19C9AA800053C8B3 /* AFURLConnectionOperation.m in Sources */,
 				2C0AB2BA1A4B37F60007D700 /* DropboxClient.m in Sources */,
+				2C151B281A4C0A4C00A7F41A /* BorderedButton.m in Sources */,
 				ED2194BE19C9AA800053C8B3 /* AFURLSessionManager.m in Sources */,
 				2CA6B9F51A4567B800AFF041 /* AMSlideMenuMainViewController.m in Sources */,
 				2CA6B9FD1A4567DD00AFF041 /* LeftMenuVC.m in Sources */,

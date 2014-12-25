@@ -49,6 +49,7 @@
 {
 	if (!_authDropboxClient) {
 		_authDropboxClient = [[DropboxClient alloc] initForFile:Auth];
+		_authDropboxClient.actionView = self.view;
 	}
 	return _authDropboxClient;
 }
@@ -57,6 +58,7 @@
 {
 	if (!_contentDropboxClient) {
 		_contentDropboxClient = [[DropboxClient alloc] initForFile:Content];
+		_contentDropboxClient.actionView = self.view;
 	}
 	return _contentDropboxClient;
 }
@@ -240,7 +242,7 @@
 		return cell;
 	} else {
 		UITableViewCell* cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue2 reuseIdentifier:nil];
-		cell.textLabel.text = @"ADD DEVICE";
+		cell.textLabel.text = @"Add Device";
 		cell.accessoryType = UITableViewCellAccessoryNone;
 		cell.selectionStyle = UITableViewCellSelectionStyleNone;
 		return cell;
@@ -300,7 +302,7 @@
 - (void)doSynchro
 {
 	[MBProgressHUD showHUDAddedTo:self.view animated:YES];
-	[self.authDropboxClient sync:(_authContainer.count == 0)];
+	[self.authDropboxClient sync];
 }
 
 - (void)handleFinishAuthSynchro:(NSNotification*)note
@@ -315,7 +317,7 @@
 		[self loadContainer];
 		[self.tableView reloadData];
 	}
-	[self.contentDropboxClient sync:([DataModel lastModified] == 0)];
+	[self.contentDropboxClient sync];
 }
 
 - (void)handleFinishContentSynchro:(NSNotification*)note
