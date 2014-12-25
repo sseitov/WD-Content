@@ -72,8 +72,9 @@ NSString * const kDataManagerAuthName = @"Auth.plist";
 	
 	// Define the Core Data version migration options
 	NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
-							 [NSNumber numberWithBool:YES], NSMigratePersistentStoresAutomaticallyOption,
-							 [NSNumber numberWithBool:YES], NSInferMappingModelAutomaticallyOption,
+							 @{@"journal_mode":@"DELETE"}, NSSQLitePragmasOption,
+//							 [NSNumber numberWithBool:YES], NSMigratePersistentStoresAutomaticallyOption,
+//							 [NSNumber numberWithBool:YES], NSInferMappingModelAutomaticallyOption,
 							 nil];
 	
 	// Attempt to load the persistent store
@@ -130,6 +131,7 @@ NSString * const kDataManagerAuthName = @"Auth.plist";
 		NSLog(@"Error while saving: %@\n%@", [error localizedDescription], [error userInfo]);
 		return NO;
 	} else {
+		[_mainObjectContext processPendingChanges];
 		[DataModel setLastModified:[NSDate date]];
 		NSLog(@"data saved");
 		return YES;
@@ -240,8 +242,10 @@ NSString * const kDataManagerAuthName = @"Auth.plist";
 	//Save result in database
 	if (![self save]) {
 		NSLog(@"ERROR (newNode)");
+	} else {
+		[_mainObjectContext refreshObject:node mergeChanges:YES];
 	}
-	return node;
+ 	return node;
 }
 
 - (void)deleteNode:(Node*)node
@@ -273,6 +277,8 @@ NSString * const kDataManagerAuthName = @"Auth.plist";
 	//Save result in database
 	if (![self save]) {
 		NSLog(@"ERROR (addInfo)");
+	} else {
+		[_mainObjectContext refreshObject:node mergeChanges:YES];
 	}
 }
 
@@ -286,6 +292,8 @@ NSString * const kDataManagerAuthName = @"Auth.plist";
 	//Save result in database
 	if (![self save]) {
 		NSLog(@"ERROR (clearInfoForNode)");
+	} else {
+		[_mainObjectContext refreshObject:node mergeChanges:YES];
 	}
 }
 

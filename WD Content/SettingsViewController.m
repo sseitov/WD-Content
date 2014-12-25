@@ -27,7 +27,6 @@
 @property (nonatomic, readonly) UISwitch* synchroSwitch;
 @property (nonatomic, readonly) UIButton* synchroButton;
 
-
 @property (nonatomic, readonly) DropboxClient* authDropboxClient;
 @property (nonatomic, readonly) DropboxClient* contentDropboxClient;
 

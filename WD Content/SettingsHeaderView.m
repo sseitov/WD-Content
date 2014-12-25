@@ -28,20 +28,25 @@
 		l.font = [UIFont fontWithName:@"HelveticaNeue" size:12];
 		[v addSubview:l];
 
-		UILabel * ll = [[UILabel alloc] initWithFrame:CGRectMake(15, 22, 100, 44)];
+		UIToolbar* toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 22, frame.size.width, 44)];
+		toolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+		
+		UILabel * ll = [[UILabel alloc] initWithFrame:CGRectMake(15, 22, 60, 44)];
 		ll.backgroundColor = [UIColor clearColor];
 		ll.textColor = [UIColor blackColor];
 		ll.text = @"Dropbox";
 		ll.font = [UIFont fontWithName:@"HelveticaNeue" size:14];
-		[self addSubview:ll];
-		
-		_synchroSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(80, 28, 0, 30)];
-		[self addSubview:_synchroSwitch];
-		
-		_synchroButton = [[BorderedButton alloc] initWithFrame:CGRectMake(frame.size.width-140, 29, 120, 30) text:@"Synchronize now"];
-		_synchroButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
+		UIBarButtonItem* btn1 = [[UIBarButtonItem alloc] initWithCustomView:ll];
 
-		[self addSubview:_synchroButton];
+		_synchroSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
+		UIBarButtonItem* btn2 = [[UIBarButtonItem alloc] initWithCustomView:_synchroSwitch];
+		
+		_synchroButton = [[BorderedButton alloc] initWithFrame:CGRectMake(0, 0, 120, 30) text:@"Synchronize now"];
+		UIBarButtonItem* btn3 = [[UIBarButtonItem alloc] initWithCustomView:_synchroButton];
+
+		UIBarButtonItem* space = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+		toolbar.items = @[btn1, btn2, space, btn3];
+		[self addSubview:toolbar];
 	}
 	return self;
 }
