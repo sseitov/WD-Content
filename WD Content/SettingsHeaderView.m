@@ -7,7 +7,6 @@
 //
 
 #import "SettingsHeaderView.h"
-#import "BorderedButton.h"
 
 @implementation SettingsHeaderView
 
@@ -41,7 +40,9 @@
 		_synchroSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
 		UIBarButtonItem* btn2 = [[UIBarButtonItem alloc] initWithCustomView:_synchroSwitch];
 		
-		_synchroButton = [[BorderedButton alloc] initWithFrame:CGRectMake(0, 0, 120, 30) text:@"Synchronize now"];
+		_synchroButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
+		[_synchroButton setImage:[UIImage imageNamed:@"refresh_on"] forState:UIControlStateNormal];
+		[_synchroButton setImage:[UIImage imageNamed:@"refresh_off"] forState:UIControlStateDisabled];
 		UIBarButtonItem* btn3 = [[UIBarButtonItem alloc] initWithCustomView:_synchroButton];
 
 		UIBarButtonItem* space = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
