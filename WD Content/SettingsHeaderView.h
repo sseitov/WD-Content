@@ -8,9 +8,17 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol SyncDelegate <NSObject>
+
+- (void)didEnableSync:(BOOL)enable;
+- (void)sync;
+
+@end
+
 @interface SettingsHeaderView : UIView
 
-@property (nonatomic, strong) UISwitch* synchroSwitch;
-@property (nonatomic, strong) UIButton* synchroButton;
+@property (weak, nonatomic) id<SyncDelegate> delegate;
+
+- (void)enableSync:(BOOL)enable;
 
 @end

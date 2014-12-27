@@ -17,15 +17,13 @@
 #define WAIT(a) [a lock]; [a wait]; [a unlock]
 #define SIGNAL(a) [a lock]; [a signal]; [a unlock]
 
-@interface SettingsViewController ()
+@interface SettingsViewController () <SyncDelegate>
 {
 	DropboxClient* _authDropboxClient;
 	DropboxClient* _contentDropboxClient;
 }
 
 @property (strong, nonatomic) NSMutableArray* authContainer;
-@property (nonatomic, readonly) UISwitch* synchroSwitch;
-@property (nonatomic, readonly) UIButton* synchroButton;
 
 @property (nonatomic, readonly) DropboxClient* authDropboxClient;
 @property (nonatomic, readonly) DropboxClient* contentDropboxClient;
@@ -33,16 +31,6 @@
 @end
 
 @implementation SettingsViewController
-
--(UISwitch*)synchroSwitch
-{
-	return ((SettingsHeaderView*)self.tableView.tableHeaderView).synchroSwitch;
-}
-
--(UIButton*)synchroButton
-{
-	return ((SettingsHeaderView*)self.tableView.tableHeaderView).synchroButton;
-}
 
 - (DropboxClient*)authDropboxClient
 {
@@ -70,12 +58,11 @@
 	[nc addObserver:self selector:@selector(handleFinishAuthSynchro:) name:FinishAuthSynchroNotification object:nil];
 	[nc addObserver:self selector:@selector(handleFinishContentSynchro:) name:FinishContentSynchroNotification object:nil];
 	[nc addObserver:self selector:@selector(handleErrrorDBAccount:) name:ErrorDBAccountNotification object:nil];
-
-	self.tableView.tableHeaderView = [[SettingsHeaderView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 66)];
-	self.synchroSwitch.on = [[DBSession sharedSession] isLinked];
-	[self.synchroSwitch addTarget:self action:@selector(switchSynchro:) forControlEvents:UIControlEventValueChanged];
-	self.synchroButton.enabled = self.synchroSwitch.on;
-	[self.synchroButton addTarget:self action:@selector(doSynchro) forControlEvents:UIControlEventTouchDown];
+	
+	SettingsHeaderView* header = [[SettingsHeaderView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 66)];
+	[header enableSync:[[DBSession sharedSession] isLinked]];
+	header.delegate = self;
+	self.tableView.tableHeaderView = header;
 	
 	_authContainer = [[NSMutableArray alloc] init];
 	[self loadContainer];
@@ -286,23 +273,26 @@
     }
 }
 
-#pragma mark - synchronization
+#pragma mark - SyncDelegate 
 
-- (void)switchSynchro:(UISwitch*)sender
+- (void)didEnableSync:(BOOL)enable
 {
-	self.synchroButton.enabled = sender.on;
-	if (![[DBSession sharedSession] isLinked]) {
-		[[DBSession sharedSession] linkFromController:self];
+	if (enable) {
+		if (![[DBSession sharedSession] isLinked]) {
+			[[DBSession sharedSession] linkFromController:self];
+		}
 	} else {
 		[[DBSession sharedSession] unlinkAll];
 	}
 }
 
-- (void)doSynchro
+- (void)sync
 {
 	[MBProgressHUD showHUDAddedTo:self.view animated:YES];
 	[self.authDropboxClient sync];
 }
+
+#pragma mark - synchronization
 
 - (void)handleFinishAuthSynchro:(NSNotification*)note
 {
@@ -335,8 +325,7 @@
 
 - (void)handleErrrorDBAccount:(NSNotification*)note
 {
-	self.synchroButton.enabled = NO;
-	self.synchroSwitch.on = NO;
+	[(SettingsHeaderView*)self.tableView.tableHeaderView enableSync:NO];
 }
 
 @end

@@ -8,6 +8,12 @@
 
 #import "SettingsHeaderView.h"
 
+@interface SettingsHeaderView ()
+
+@property (strong, nonatomic) UIToolbar* toolbar;
+
+@end
+
 @implementation SettingsHeaderView
 
 - (id)initWithFrame:(CGRect)frame
@@ -18,7 +24,6 @@
 		UIView * v = [[UIView alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, 22)];
 		v.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 		v.backgroundColor = [UIColor colorWithRed:0 green:113.0/255.0 blue:165.0/255.0 alpha:1];
-		[self addSubview:v];
 		
 		UILabel * l = [[UILabel alloc] initWithFrame:CGRectMake(15, 0, 100, 22)];
 		l.backgroundColor = [UIColor clearColor];
@@ -26,9 +31,11 @@
 		l.text = @"SYNCHRO";
 		l.font = [UIFont fontWithName:@"HelveticaNeue" size:12];
 		[v addSubview:l];
+		
+		[self addSubview:v];
 
-		UIToolbar* toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 22, frame.size.width, 44)];
-		toolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+		_toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 22, frame.size.width, 44)];
+		_toolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 		
 		UILabel * ll = [[UILabel alloc] initWithFrame:CGRectMake(15, 22, 60, 44)];
 		ll.backgroundColor = [UIColor clearColor];
@@ -36,20 +43,34 @@
 		ll.text = @"Dropbox";
 		ll.font = [UIFont fontWithName:@"HelveticaNeue" size:14];
 		UIBarButtonItem* btn1 = [[UIBarButtonItem alloc] initWithCustomView:ll];
-
-		_synchroSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
-		UIBarButtonItem* btn2 = [[UIBarButtonItem alloc] initWithCustomView:_synchroSwitch];
 		
-		_synchroButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
-		[_synchroButton setImage:[UIImage imageNamed:@"refresh_on"] forState:UIControlStateNormal];
-		[_synchroButton setImage:[UIImage imageNamed:@"refresh_off"] forState:UIControlStateDisabled];
-		UIBarButtonItem* btn3 = [[UIBarButtonItem alloc] initWithCustomView:_synchroButton];
-
+		UISwitch* s = [[UISwitch alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
+		[s addTarget:self action:@selector(switchSynchro:) forControlEvents:UIControlEventValueChanged];
+		UIBarButtonItem* btn2 = [[UIBarButtonItem alloc] initWithCustomView:s];
+		
 		UIBarButtonItem* space = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-		toolbar.items = @[btn1, btn2, space, btn3];
-		[self addSubview:toolbar];
+		
+		UIBarButtonItem* btn3 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh
+																			  target:self.delegate action:@selector(sync)];
+	
+		_toolbar.items = @[btn1, btn2, space, btn3];
+		[self addSubview:_toolbar];
 	}
 	return self;
+}
+
+- (void)enableSync:(BOOL)enable
+{
+	UISwitch* s = (UISwitch*)[[_toolbar.items objectAtIndex:1] customView];
+	s.on = enable;
+	UIBarButtonItem* b = [_toolbar.items objectAtIndex:3];
+	b.enabled = enable;
+}
+
+- (void)switchSynchro:(UISwitch*)sender
+{
+	[self enableSync:sender.on];
+	[self.delegate didEnableSync:sender.on];
 }
 
 @end
