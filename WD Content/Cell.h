@@ -7,10 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "DataModel.h"
 
 @interface Cell : UICollectionViewCell
 
 @property (strong, nonatomic) IBOutlet UILabel *title;
 @property (strong, nonatomic) IBOutlet UIImageView *image;
+
+- (void)setInfo:(Node*)node;
 
 @end

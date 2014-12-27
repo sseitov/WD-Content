@@ -206,13 +206,7 @@
 {
     Cell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"my_cell" forIndexPath:indexPath];
 	Node *node = [_nodes objectAtIndex:indexPath.row];
-	if (node.info && node.info.thumbnail) {
-		cell.image.image = [UIImage imageWithData:node.info.thumbnail];
-	} else {
-		cell.image.image = [UIImage imageWithData:node.image];
-	}
-	cell.title.text = node.name;
-	cell.title.textColor = [UIColor blackColor];
+	[cell setInfo:node];
     return cell;
 }
 
@@ -265,13 +259,9 @@
 	UITableViewCell* cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:nil];
 	Node *node = [_nodes objectAtIndex:indexPath.row];
 	cell.imageView.contentMode = UIViewContentModeScaleAspectFill;
-	if (node.info && node.info.thumbnail) {
-		cell.imageView.image = [UIImage imageWithData:node.info.thumbnail];
-	} else {
-		cell.imageView.image = [UIImage imageWithData:node.image];
-	}
+	cell.imageView.image = [node.info thumbnail] ? [UIImage imageWithData:node.info.thumbnail] : [UIImage imageWithData:node.image];
 	cell.textLabel.numberOfLines = 0;
-	cell.textLabel.text = node.name;
+	cell.textLabel.text = [node.info title] ? node.info.title : node.name;
 	cell.textLabel.backgroundColor = [UIColor clearColor];
 	if ([node.isFile boolValue] == NO) {
 		cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
