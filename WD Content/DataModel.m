@@ -133,7 +133,6 @@ NSString * const kDataManagerAuthName = @"Auth.plist";
 	} else {
 		[_mainObjectContext processPendingChanges];
 		[DataModel setLastModified:[NSDate date]];
-		NSLog(@"data saved");
 		return YES;
 	}
 }
