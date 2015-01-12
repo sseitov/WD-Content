@@ -54,6 +54,7 @@
 		2CA95DC4184B2B4600927138 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA95DC3184B2B4600927138 /* SettingsViewController.m */; };
 		2CA95DC7184B2CB700927138 /* SettingsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA95DC6184B2CB700927138 /* SettingsCell.m */; };
 		2CAEE6D419C8C7C000B5DDD7 /* Node.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CAEE6D319C8C7C000B5DDD7 /* Node.m */; };
+		2CD030DB1A640ED7003B22CA /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CD030D91A640ED7003B22CA /* LaunchScreen.xib */; };
 		ED04A5C619D172C00079C787 /* MetaInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = ED04A5C519D172C00079C787 /* MetaInfo.m */; };
 		ED2194A119C9A9690053C8B3 /* TMDB.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2194A019C9A9690053C8B3 /* TMDB.m */; };
 		ED2194B619C9AA800053C8B3 /* AFHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2194A419C9AA800053C8B3 /* AFHTTPRequestOperation.m */; };
@@ -146,6 +147,7 @@
 		2CA95DC6184B2CB700927138 /* SettingsCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsCell.m; sourceTree = "<group>"; };
 		2CAEE6D219C8C7C000B5DDD7 /* Node.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Node.h; sourceTree = "<group>"; };
 		2CAEE6D319C8C7C000B5DDD7 /* Node.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Node.m; sourceTree = "<group>"; };
+		2CD030DA1A640ED7003B22CA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = "WD Content/Base.lproj/LaunchScreen.xib"; sourceTree = "<group>"; };
 		ED04A5C419D172C00079C787 /* MetaInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MetaInfo.h; sourceTree = "<group>"; };
 		ED04A5C519D172C00079C787 /* MetaInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MetaInfo.m; sourceTree = "<group>"; };
 		ED21949F19C9A9690053C8B3 /* TMDB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TMDB.h; sourceTree = "<group>"; };
@@ -277,6 +279,7 @@
 			children = (
 				2CDF099719C58AD000A1B3B9 /* Images */,
 				2CA6BA0D1A45BF9700AFF041 /* default.css */,
+				2CD030D91A640ED7003B22CA /* LaunchScreen.xib */,
 				2CA6BA031A4569B900AFF041 /* Main.storyboard */,
 				2C125EC41848C74B00406FC3 /* Images.xcassets */,
 			);
@@ -484,6 +487,7 @@
 				2C125EC51848C74B00406FC3 /* Images.xcassets in Resources */,
 				2CA6BA011A4569B900AFF041 /* Main.storyboard in Resources */,
 				2C378CEA19EA802D00C69ADA /* collection.png in Resources */,
+				2CD030DB1A640ED7003B22CA /* LaunchScreen.xib in Resources */,
 				2C125EB41848C74B00406FC3 /* InfoPlist.strings in Resources */,
 				2C378CEB19EA802D00C69ADA /* list.png in Resources */,
 				2CA6BA0E1A45BF9700AFF041 /* default.css in Resources */,
@@ -557,6 +561,14 @@
 			path = "WD Content";
 			sourceTree = "<group>";
 		};
+		2CD030D91A640ED7003B22CA /* LaunchScreen.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				2CD030DA1A640ED7003B22CA /* Base */,
+			);
+			name = LaunchScreen.xib;
+			sourceTree = "<group>";
+		};
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
@@ -598,7 +610,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PROVISIONING_PROFILE = "36ea7fc9-ba77-4ad2-9d16-9c96399b6c5c";
 				SDKROOT = iphoneos;
@@ -639,7 +651,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				PROVISIONING_PROFILE = "7eb12b62-373d-4845-902d-145223504c73";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -652,7 +664,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -668,7 +679,7 @@
 					libs,
 				);
 				INFOPLIST_FILE = "WD Content/WD Content-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					./libs,
@@ -685,7 +696,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -701,7 +711,7 @@
 					libs,
 				);
 				INFOPLIST_FILE = "WD Content/WD Content-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					./libs,

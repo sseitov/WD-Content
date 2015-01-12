@@ -28,10 +28,8 @@
     self.clearsSelectionOnViewWillAppear = NO;
 	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancel)];
 	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done)];
-	if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_6_1) {
-		self.navigationItem.leftBarButtonItem.tintColor = [UIColor whiteColor];
-		self.navigationItem.rightBarButtonItem.tintColor = [UIColor whiteColor];
-	}
+	self.navigationItem.leftBarButtonItem.tintColor = [UIColor whiteColor];
+	self.navigationItem.rightBarButtonItem.tintColor = [UIColor whiteColor];
 	
 	[MBProgressHUD showHUDAddedTo:self.tableView animated:YES];
 

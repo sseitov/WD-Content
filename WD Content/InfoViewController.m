@@ -38,11 +38,9 @@ NSString* const UpdateInfoNotification = @"UpdateInfoNotification";
 		[_info setObject:node.info.original_title forKey:@"original_title"];
 	}
 	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done)];
-	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Clear" style:UIBarButtonItemStyleBordered target:self action:@selector(clear)];
-	if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_6_1) {
-		self.navigationItem.leftBarButtonItem.tintColor = [UIColor whiteColor];
-		self.navigationItem.rightBarButtonItem.tintColor = [UIColor whiteColor];
-	}
+	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Clear" style:UIBarButtonItemStylePlain target:self action:@selector(clear)];
+	self.navigationItem.leftBarButtonItem.tintColor = [UIColor whiteColor];
+	self.navigationItem.rightBarButtonItem.tintColor = [UIColor whiteColor];
 }
 
 - (void)setInfo:(NSDictionary*)info forNode:(Node*)node
@@ -67,9 +65,7 @@ NSString* const UpdateInfoNotification = @"UpdateInfoNotification";
 		[_info setObject:[info objectForKey:@"original_title"] forKey:@"original_title"];
 	}
 	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(apply)];
-	if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_6_1) {
-		self.navigationItem.rightBarButtonItem.tintColor = [UIColor whiteColor];
-	}
+	self.navigationItem.rightBarButtonItem.tintColor = [UIColor whiteColor];
 }
 
 - (void)viewDidLoad
@@ -123,16 +119,11 @@ NSString* const UpdateInfoNotification = @"UpdateInfoNotification";
 		CGSize maximumSize = CGSizeMake(tableView.frame.size.width, 800);
 		NSString *cellString = [_info objectForKey:[_fields objectAtIndex:indexPath.section]];
 		UIFont *font = [UIFont fontWithName:@"HelveticaNeue" size:14];
-		if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1) {
-			CGSize sz = [cellString sizeWithFont:font constrainedToSize:maximumSize];
-			return sz.height > 44 ? sz.height + 40 : 44;
-		} else {
-			CGRect rect = [cellString boundingRectWithSize:maximumSize
-												   options:NSStringDrawingUsesLineFragmentOrigin
-												attributes:[NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName]
-												   context:nil];
-			return rect.size.height > 44 ? rect.size.height : 44;
-		}
+		CGRect rect = [cellString boundingRectWithSize:maximumSize
+											   options:NSStringDrawingUsesLineFragmentOrigin
+											attributes:[NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName]
+											   context:nil];
+		return rect.size.height > 44 ? rect.size.height : 44;
 	}
 }
 

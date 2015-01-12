@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="yZ8-mB-Pnz">
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
@@ -229,16 +228,12 @@
                                             <rect key="frame" x="0.0" y="0.0" width="160" height="180"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="DFA-mC-G4h">
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="DFA-mC-G4h">
                                                     <rect key="frame" x="30" y="0.0" width="100" height="120"/>
                                                 </imageView>
-                                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="WDTVLiveHub" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3TM-EJ-zOe">
+                                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="WDTVLiveHub" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3TM-EJ-zOe">
                                                     <rect key="frame" x="10" y="120" width="140" height="60"/>
                                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="height" constant="60" id="a3w-nU-Agj"/>
-                                                        <constraint firstAttribute="width" constant="140" id="dGN-6h-im9"/>
-                                                    </constraints>
                                                     <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
@@ -279,14 +274,14 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="vwl-HF-RNm" firstAttribute="top" secondItem="Y7f-YU-lvt" secondAttribute="bottom" id="68O-4O-Xtj"/>
-                            <constraint firstItem="vwl-HF-RNm" firstAttribute="leading" secondItem="sXJ-Sf-6E2" secondAttribute="leadingMargin" constant="-16" id="8CH-Sh-qxY"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="vwl-HF-RNm" secondAttribute="trailing" constant="-16" id="LS2-0H-uAn"/>
-                            <constraint firstItem="IHQ-lf-peX" firstAttribute="top" secondItem="Nhd-Px-b5d" secondAttribute="bottom" id="TWa-u2-I8z"/>
-                            <constraint firstItem="IHQ-lf-peX" firstAttribute="top" secondItem="vwl-HF-RNm" secondAttribute="bottom" id="mUz-pV-m3V"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="Nhd-Px-b5d" secondAttribute="trailing" constant="-16" id="vVh-Zj-bsQ"/>
-                            <constraint firstItem="Nhd-Px-b5d" firstAttribute="top" secondItem="Y7f-YU-lvt" secondAttribute="bottom" id="z7t-u7-nmP"/>
-                            <constraint firstItem="Nhd-Px-b5d" firstAttribute="leading" secondItem="sXJ-Sf-6E2" secondAttribute="leadingMargin" constant="-16" id="zNX-5v-TDJ"/>
+                            <constraint firstItem="vwl-HF-RNm" firstAttribute="bottom" secondItem="IHQ-lf-peX" secondAttribute="top" id="BhC-wO-wOc"/>
+                            <constraint firstAttribute="trailing" secondItem="Nhd-Px-b5d" secondAttribute="trailing" id="Ivq-3b-OCb"/>
+                            <constraint firstItem="vwl-HF-RNm" firstAttribute="trailing" secondItem="Nhd-Px-b5d" secondAttribute="trailing" id="MBn-iG-H41"/>
+                            <constraint firstItem="Nhd-Px-b5d" firstAttribute="top" secondItem="Y7f-YU-lvt" secondAttribute="bottom" id="U92-wQ-xkq"/>
+                            <constraint firstItem="vwl-HF-RNm" firstAttribute="leading" secondItem="sXJ-Sf-6E2" secondAttribute="leading" id="VVH-Rf-bXO"/>
+                            <constraint firstItem="Nhd-Px-b5d" firstAttribute="bottom" secondItem="IHQ-lf-peX" secondAttribute="top" id="aLb-6N-tmK"/>
+                            <constraint firstItem="vwl-HF-RNm" firstAttribute="top" secondItem="Nhd-Px-b5d" secondAttribute="top" id="cBn-4c-Yj7"/>
+                            <constraint firstItem="Nhd-Px-b5d" firstAttribute="leading" secondItem="vwl-HF-RNm" secondAttribute="leading" id="ggN-In-8OZ"/>
                         </constraints>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout"/>
