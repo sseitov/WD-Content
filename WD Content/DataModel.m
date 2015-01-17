@@ -440,6 +440,17 @@ NSString * const kDataManagerAuthName = @"Auth.plist";
 	}
 }
 
++ (NSDictionary*)authForHost:(NSString*)server
+{
+	NSArray *auth = [DataModel auth];
+	for (NSDictionary *host in auth) {
+		if ([[host objectForKey:@"host"] isEqual:server]) {
+			return host;
+		}
+	}
+	return nil;
+}
+
 #pragma mark - KxSmbProvider delegate
 
 - (KxSMBAuth *)smbAuthForServer:(NSString*)server withShare:(NSString*)share

@@ -12,10 +12,23 @@
 #import "DataModel.h"
 #import "MBProgressHUD.h"
 #import "SearchInfoTableViewController.h"
+#import "VideoViewController.h"
 
 #define IS_PAD ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
 
-@interface CollectionViewController ()
+@interface NodeActionSheet : UIActionSheet
+
+@property (strong, nonatomic) Node* node;
+
+@end
+
+@implementation NodeActionSheet
+
+@synthesize node;
+
+@end
+
+@interface CollectionViewController () <UIActionSheetDelegate>
 
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
@@ -216,6 +229,24 @@
 	[self selectNode:node];
 }
 
+- (void)actionSheet:(NodeActionSheet*)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+	switch (buttonIndex) {
+		case 0:
+			if (actionSheet.node.info) {
+				[self performSegueWithIdentifier:@"ShowInfo" sender:actionSheet.node];
+			} else {
+				[self performSegueWithIdentifier:@"CreateInfo" sender:actionSheet.node];
+			}
+			break;
+		case 1:
+			[self performSegueWithIdentifier:@"ViewVideo" sender:actionSheet.node];
+			break;
+		default:
+			break;
+	}
+}
+
 - (void)selectNode:(Node*)node
 {
 	if ([node.isFile boolValue] == NO) {
@@ -226,24 +257,27 @@
 		[self.navigationController pushViewController:next animated:YES];
 	}
 	else {
-		if (node.info) {
-			[self performSegueWithIdentifier:@"ShowInfo" sender:node];
-		} else {
-			[self performSegueWithIdentifier:@"CreateInfo" sender:node];
-		}
+		NodeActionSheet *actions = [[NodeActionSheet alloc] initWithTitle:nil delegate:self
+														cancelButtonTitle:@"Cancel"
+												   destructiveButtonTitle:nil
+														otherButtonTitles:@"Show Info", @"View Video", nil];
+		actions.node = node;
+		[actions showInView:self.view];
 	}
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
 	UINavigationController *vc = [segue destinationViewController];
-	if ([[segue identifier] isEqualToString:@"CreateInfo"])
-	{
+	if ([[segue identifier] isEqualToString:@"CreateInfo"]) {
 		SearchInfoTableViewController *next = (SearchInfoTableViewController*)vc.topViewController;
 		next.node = sender;
 	} else if ([[segue identifier] isEqualToString:@"ShowInfo"]) {
 		InfoViewController *next = (InfoViewController*)vc.topViewController;
 		[next setInfoForNode:sender];
+	} else if ([[segue identifier] isEqualToString:@"ViewVideo"]) {
+		VideoViewController *next = (VideoViewController*)vc.topViewController;
+		next.node = sender;
 	}
 }
 
