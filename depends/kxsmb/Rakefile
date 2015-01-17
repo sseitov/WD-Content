@@ -280,23 +280,29 @@ end
 
 desc "Copy smb headers"
 task :copy_headers do		
-	copyIfNotExists('libsmbclient.h', "#{SAMBA_SOURCE_PATH}/include/", 'libs')
-	copyIfNotExists('talloc.h', "#{SAMBA_FOLDER}/lib/talloc/", 'libs')
-	copyIfNotExists('talloc_stack.h', "#{SAMBA_FOLDER}/lib/util/", 'libs')
+	copyIfNotExists('libsmbclient.h', "#{SAMBA_SOURCE_PATH}/include/", '../libs/include')
+	copyIfNotExists('talloc.h', "#{SAMBA_FOLDER}/lib/talloc/", '../libs/include')
+	copyIfNotExists('talloc_stack.h', "#{SAMBA_FOLDER}/lib/util/", '../libs/include')
 end	
 
 desc "Copy smb libs"
 task :copy_libs do		
 	
-	dest = Pathname.new('libs')
+	dest = Pathname.new('../libs')
 	dest.mkdir unless dest.exist?
+
+	destHeader = Pathname.new('../libs/include')
+	destHeader.mkdir unless destHeader.exist?
+
+	destLib = Pathname.new('../libs/lib')
+	destLib.mkdir unless destLib.exist?
 
 	from = Pathname.new("#{SAMBA_SOURCE_PATH}/bin/universal")
 
 	SMB_LIBS.each do |x|
 		source = from + "#{x}.a"
-		FileUtils.move source, dest	
-		p "copy #{source} -> #{dest}"
+		FileUtils.move source, destLib	
+		p "copy #{source} -> #{destLib}"
 	end
 end	
 

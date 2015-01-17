@@ -282,35 +282,6 @@ task :build_smb_x86_64 do
 	buildArch('x86_64')	
 end
 
-desc "Build smb universal libs"
-task :build_smb_universal do	
-	
-	dest = Pathname.new("#{SAMBA_SOURCE_PATH}/bin/universal")
-	dest.mkdir unless dest.exist?
-
-		args = "-create -arch armv7 #{SAMBA_SOURCE_PATH}/bin/armv7/libsmbclient.a -arch armv7s #{SAMBA_SOURCE_PATH}/bin/armv7s/libsmbclient.a -arch arm64 #{SAMBA_SOURCE_PATH}/bin/arm64/libsmbclient.a -arch i386 #{SAMBA_SOURCE_PATH}/bin/i386/libsmbclient.a -arch x86_64 #{SAMBA_SOURCE_PATH}/bin/x86_64/libsmbclient.a -output #{dest}/libsmbclient.a"
-		system_or_exit "xcrun lipo #{args}"
-end
-
-desc "Copy smb files"
-task :copy_files do		
-	
-	dest = Pathname.new('libs')
-	dest.mkdir unless dest.exist?
-	
-	destHeader = Pathname.new('libs/include')
-	destHeader.mkdir unless dest.exist?
-	copyIfNotExists('libsmbclient.h', "#{SAMBA_SOURCE_PATH}/include/", 'libs/include')
-
-	destLib = Pathname.new('libs/lib')
-	destLib.mkdir unless destLib.exist?
-	
-	from = Pathname.new("#{SAMBA_SOURCE_PATH}/bin/universal")
-	source = from + "libsmbclient.a"
-	FileUtils.move source, destLib	
-	p "copy #{source} -> #{destLib}"
-end	
-
 desc "Clean"
 task :clean do
 	cleanDir("#{SAMBA_SOURCE_PATH}/bin/armv7")
@@ -345,5 +316,5 @@ task :retrieve_samba do
 
 end
 
-task :build_all => [:retrieve_samba, :build_smb_armv7, :build_smb_armv7s, :build_smb_arm64, :build_smb_i386, :build_smb_x86_64, :build_smb_universal, :copy_files] 
+task :build_all => [:retrieve_samba, :build_smb_armv7, :build_smb_armv7s, :build_smb_arm64, :build_smb_i386, :build_smb_x86_64] 
 task :default => [:build_all]
