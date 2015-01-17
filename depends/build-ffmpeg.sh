@@ -10,11 +10,11 @@ CONFIGURE_FLAGS="--enable-cross-compile --enable-pthreads --disable-ffserver --d
 LIBS="libavcodec libavformat libavutil libswscale libavdevice libavfilter \
       libpostproc libswresample"
 
-ARCHS="armv7 armv7s i386 arm64 x86_64"
+ARCHS="armv7 armv7s arm64 i386 x86_64"
 
 # directories
 SOURCE="ffmpeg"
-FAT="../ffmpeg"
+FAT="libs"
 SCRIPT_DIR=$( (cd -P $(dirname $0) && pwd) )
 
 SCRATCH="scratch"
@@ -76,22 +76,16 @@ then
 		CXXFLAGS="$CFLAGS"
 		LDFLAGS="$CFLAGS"
 
-		# Add x264 if exists
-#		X264_DIST="$SCRIPT_DIR/x264-$ARCH/dist"
-#		if [ -d "$X264_DIST" ]; 
-#		then
-#		    CONFIGURE_OPTIONS="--enable-libx264 --extra-ldflags=-L$X264_DIST/lib --extra-cflags=-I$X264_DIST/include"
-#		else
-#		    CONFIGURE_OPTIONS=    
-#		fi
-  
-		# Add Celt if exists
-#		CELT_DIST="$SCRIPT_DIR/celt-$ARCH/dist"
-#		if [ -d "$CELT_DIST" ]; 
-#		then
-#		    CONFIGURE_OPTIONS="$CONFIGURE_OPTIONS --enable-libcelt --extra-ldflags=-L$CELT_DIST/lib --extra-cflags=-I$CELT_DIST/include"
-#		fi
-    
+		# Add smbclient if exists
+		SMB_LIB="$SCRIPT_DIR/samba/source3/bin/$ARCH"
+		SMB_INC="$SCRIPT_DIR/libs/include"
+		CONFIGURE_OPTIONS="--enable-libsmbclient --enable-version3"
+		CFLAGS="$CFLAGS -I$SMB_INC"
+		LDFLAGS="$LDFLAGS -L$SMB_LIB -ltalloc -ltevent -ltdb -lwbclient -lz -liconv"
+		
+		ln -s $SMB_LIB/libsmbclient.dylib.0 $SMB_LIB/libsmbclient.dylib
+		ln -s $SMB_LIB/libwbclient.dylib.0 $SMB_LIB/libwbclient.dylib
+		
 		$CWD/$SOURCE/configure \
 		    --target-os=darwin \
 		    --arch=$ARCH \
