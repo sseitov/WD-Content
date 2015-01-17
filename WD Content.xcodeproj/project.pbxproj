@@ -28,8 +28,7 @@
 		2C378CEB19EA802D00C69ADA /* list.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C378CE819EA802D00C69ADA /* list.png */; };
 		2C3E5BDF1A4421990046AFC4 /* libc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C3E5BDE1A4421990046AFC4 /* libc++.dylib */; };
 		2C3FDF141A4B7AEC0019ECD3 /* SettingsHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C3FDF131A4B7AEC0019ECD3 /* SettingsHeaderView.m */; };
-		2C5875021A6AC25D0069F3F1 /* Decoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5874FF1A6AC25D0069F3F1 /* Decoder.m */; };
-		2C5875031A6AC25D0069F3F1 /* VideoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5875011A6AC25D0069F3F1 /* VideoViewController.m */; };
+		2C5875031A6AC25D0069F3F1 /* VideoViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2C5875011A6AC25D0069F3F1 /* VideoViewController.mm */; };
 		2C58751F1A6AC3E80069F3F1 /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C5875161A6AC3E80069F3F1 /* libavcodec.a */; };
 		2C5875201A6AC3E80069F3F1 /* libavdevice.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C5875171A6AC3E80069F3F1 /* libavdevice.a */; };
 		2C5875211A6AC3E80069F3F1 /* libavfilter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C5875181A6AC3E80069F3F1 /* libavfilter.a */; };
@@ -43,6 +42,11 @@
 		2C58752D1A6ACA850069F3F1 /* libtdb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C5875291A6ACA850069F3F1 /* libtdb.a */; };
 		2C58752E1A6ACA850069F3F1 /* libtevent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C58752A1A6ACA850069F3F1 /* libtevent.a */; };
 		2C58752F1A6ACA850069F3F1 /* libwbclient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C58752B1A6ACA850069F3F1 /* libwbclient.a */; };
+		2C5875311A6ADC5A0069F3F1 /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C5875301A6ADC5A0069F3F1 /* VideoToolbox.framework */; };
+		2C5875331A6ADC6D0069F3F1 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C5875321A6ADC6D0069F3F1 /* AVFoundation.framework */; };
+		2C5875381A6AF1590069F3F1 /* VTDecoder.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2C5875371A6AF1590069F3F1 /* VTDecoder.mm */; };
+		2C58753A1A6AF2390069F3F1 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C5875391A6AF2390069F3F1 /* CoreMedia.framework */; };
+		2C58753D1A6AF7DC0069F3F1 /* AudioDecoder.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2C58753C1A6AF7DC0069F3F1 /* AudioDecoder.mm */; };
 		2C6E746B19C75ECA001D9971 /* SharesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C6E746A19C75ECA001D9971 /* SharesTableViewController.m */; };
 		2CA1D7191854A78800276C67 /* InfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA1D7181854A78800276C67 /* InfoViewController.m */; };
 		2CA6B9F21A4567B800AFF041 /* AMSlideMenuContentSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA6B9E41A4567B800AFF041 /* AMSlideMenuContentSegue.m */; };
@@ -119,10 +123,8 @@
 		2C3E5BDE1A4421990046AFC4 /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "usr/lib/libc++.dylib"; sourceTree = SDKROOT; };
 		2C3FDF121A4B7AEC0019ECD3 /* SettingsHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsHeaderView.h; sourceTree = "<group>"; };
 		2C3FDF131A4B7AEC0019ECD3 /* SettingsHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsHeaderView.m; sourceTree = "<group>"; };
-		2C5874FE1A6AC25D0069F3F1 /* Decoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Decoder.h; sourceTree = "<group>"; };
-		2C5874FF1A6AC25D0069F3F1 /* Decoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Decoder.m; sourceTree = "<group>"; };
 		2C5875001A6AC25D0069F3F1 /* VideoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoViewController.h; sourceTree = "<group>"; };
-		2C5875011A6AC25D0069F3F1 /* VideoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoViewController.m; sourceTree = "<group>"; };
+		2C5875011A6AC25D0069F3F1 /* VideoViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = VideoViewController.mm; sourceTree = "<group>"; };
 		2C5875161A6AC3E80069F3F1 /* libavcodec.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavcodec.a; path = depends/libs/lib/libavcodec.a; sourceTree = "<group>"; };
 		2C5875171A6AC3E80069F3F1 /* libavdevice.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavdevice.a; path = depends/libs/lib/libavdevice.a; sourceTree = "<group>"; };
 		2C5875181A6AC3E80069F3F1 /* libavfilter.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavfilter.a; path = depends/libs/lib/libavfilter.a; sourceTree = "<group>"; };
@@ -136,6 +138,15 @@
 		2C5875291A6ACA850069F3F1 /* libtdb.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtdb.a; path = depends/libs/lib/libtdb.a; sourceTree = "<group>"; };
 		2C58752A1A6ACA850069F3F1 /* libtevent.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtevent.a; path = depends/libs/lib/libtevent.a; sourceTree = "<group>"; };
 		2C58752B1A6ACA850069F3F1 /* libwbclient.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libwbclient.a; path = depends/libs/lib/libwbclient.a; sourceTree = "<group>"; };
+		2C5875301A6ADC5A0069F3F1 /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
+		2C5875321A6ADC6D0069F3F1 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		2C5875341A6AE52A0069F3F1 /* Decoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Decoder.h; sourceTree = "<group>"; };
+		2C5875351A6AE8CD0069F3F1 /* SynchroQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SynchroQueue.h; sourceTree = "<group>"; };
+		2C5875361A6AF1590069F3F1 /* VTDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VTDecoder.h; sourceTree = "<group>"; };
+		2C5875371A6AF1590069F3F1 /* VTDecoder.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = VTDecoder.mm; sourceTree = "<group>"; };
+		2C5875391A6AF2390069F3F1 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		2C58753B1A6AF7DC0069F3F1 /* AudioDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioDecoder.h; sourceTree = "<group>"; };
+		2C58753C1A6AF7DC0069F3F1 /* AudioDecoder.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AudioDecoder.mm; sourceTree = "<group>"; };
 		2C6E746919C75ECA001D9971 /* SharesTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SharesTableViewController.h; sourceTree = "<group>"; };
 		2C6E746A19C75ECA001D9971 /* SharesTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SharesTableViewController.m; sourceTree = "<group>"; };
 		2CA1D7171854A78800276C67 /* InfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InfoViewController.h; path = "WD Content/InfoViewController.h"; sourceTree = "<group>"; };
@@ -224,6 +235,9 @@
 				2C58752E1A6ACA850069F3F1 /* libtevent.a in Frameworks */,
 				2C58752F1A6ACA850069F3F1 /* libwbclient.a in Frameworks */,
 				2C5875251A6AC3E80069F3F1 /* libsmbclient.a in Frameworks */,
+				2C58753A1A6AF2390069F3F1 /* CoreMedia.framework in Frameworks */,
+				2C5875331A6ADC6D0069F3F1 /* AVFoundation.framework in Frameworks */,
+				2C5875311A6ADC5A0069F3F1 /* VideoToolbox.framework in Frameworks */,
 				2C0AB2B71A4AF06C0007D700 /* Security.framework in Frameworks */,
 				2C0AB2B51A4AEFD10007D700 /* DropboxSDK.framework in Frameworks */,
 				2CA6BA0C1A45BE9A00AFF041 /* PixateFreestyle.framework in Frameworks */,
@@ -280,6 +294,9 @@
 				2C58752A1A6ACA850069F3F1 /* libtevent.a */,
 				2C58752B1A6ACA850069F3F1 /* libwbclient.a */,
 				2C58751C1A6AC3E80069F3F1 /* libsmbclient.a */,
+				2C5875391A6AF2390069F3F1 /* CoreMedia.framework */,
+				2C5875321A6ADC6D0069F3F1 /* AVFoundation.framework */,
+				2C5875301A6ADC5A0069F3F1 /* VideoToolbox.framework */,
 				2C0AB2B61A4AF06C0007D700 /* Security.framework */,
 				2C0AB2B41A4AEFD10007D700 /* DropboxSDK.framework */,
 				2CA6BA0B1A45BE9A00AFF041 /* PixateFreestyle.framework */,
@@ -353,10 +370,14 @@
 		2C5874FD1A6AC2470069F3F1 /* Video */ = {
 			isa = PBXGroup;
 			children = (
-				2C5874FE1A6AC25D0069F3F1 /* Decoder.h */,
-				2C5874FF1A6AC25D0069F3F1 /* Decoder.m */,
+				2C5875341A6AE52A0069F3F1 /* Decoder.h */,
+				2C58753B1A6AF7DC0069F3F1 /* AudioDecoder.h */,
+				2C58753C1A6AF7DC0069F3F1 /* AudioDecoder.mm */,
+				2C5875361A6AF1590069F3F1 /* VTDecoder.h */,
+				2C5875371A6AF1590069F3F1 /* VTDecoder.mm */,
+				2C5875351A6AE8CD0069F3F1 /* SynchroQueue.h */,
 				2C5875001A6AC25D0069F3F1 /* VideoViewController.h */,
-				2C5875011A6AC25D0069F3F1 /* VideoViewController.m */,
+				2C5875011A6AC25D0069F3F1 /* VideoViewController.mm */,
 			);
 			name = Video;
 			sourceTree = "<group>";
@@ -572,7 +593,7 @@
 				ED2194B619C9AA800053C8B3 /* AFHTTPRequestOperation.m in Sources */,
 				ED2194BC19C9AA800053C8B3 /* AFURLRequestSerialization.m in Sources */,
 				ED2194BB19C9AA800053C8B3 /* AFURLConnectionOperation.m in Sources */,
-				2C5875031A6AC25D0069F3F1 /* VideoViewController.m in Sources */,
+				2C5875031A6AC25D0069F3F1 /* VideoViewController.mm in Sources */,
 				2C0AB2BA1A4B37F60007D700 /* DropboxClient.m in Sources */,
 				ED2194BE19C9AA800053C8B3 /* AFURLSessionManager.m in Sources */,
 				2CA6B9F51A4567B800AFF041 /* AMSlideMenuMainViewController.m in Sources */,
@@ -583,6 +604,7 @@
 				2CA6B9F71A4567B800AFF041 /* AMSlideMenuRightTableViewController.m in Sources */,
 				2CA8871F187EAEDE0074B73E /* DataModel.m in Sources */,
 				2CAEE6D419C8C7C000B5DDD7 /* Node.m in Sources */,
+				2C5875381A6AF1590069F3F1 /* VTDecoder.mm in Sources */,
 				2CA95DC4184B2B4600927138 /* SettingsViewController.m in Sources */,
 				2C125EBA1848C74B00406FC3 /* AppDelegate.m in Sources */,
 				2C3FDF141A4B7AEC0019ECD3 /* SettingsHeaderView.m in Sources */,
@@ -593,10 +615,10 @@
 				ED2194BA19C9AA800053C8B3 /* AFSecurityPolicy.m in Sources */,
 				ED2194B719C9AA800053C8B3 /* AFHTTPRequestOperationManager.m in Sources */,
 				EDDC271A19C6F051004D5F14 /* MBProgressHUD.m in Sources */,
+				2C58753D1A6AF7DC0069F3F1 /* AudioDecoder.mm in Sources */,
 				2C0644F119CD9867002F5F49 /* SearchInfoTableViewController.m in Sources */,
 				ED04A5C619D172C00079C787 /* MetaInfo.m in Sources */,
 				2CA6B9F41A4567B800AFF041 /* AMSlideMenuLeftTableViewController.m in Sources */,
-				2C5875021A6AC25D0069F3F1 /* Decoder.m in Sources */,
 				2CA6B9F21A4567B800AFF041 /* AMSlideMenuContentSegue.m in Sources */,
 				ED2194BD19C9AA800053C8B3 /* AFURLResponseSerialization.m in Sources */,
 				2CA6BA071A456A1A00AFF041 /* UIColor+CreateMethods.m in Sources */,

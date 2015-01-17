@@ -291,7 +291,7 @@
                         <outlet property="tableView" destination="Nhd-Px-b5d" id="47E-iw-eJ5"/>
                         <segue destination="LcC-uZ-kdv" kind="presentation" identifier="ShowInfo" modalPresentationStyle="formSheet" modalTransitionStyle="coverVertical" id="vec-f4-LaC"/>
                         <segue destination="EdQ-0t-smL" kind="presentation" identifier="CreateInfo" modalPresentationStyle="formSheet" modalTransitionStyle="coverVertical" id="dey-0R-oqD"/>
-                        <segue destination="oY4-Eq-ZOw" kind="presentation" identifier="ViewVideo" modalPresentationStyle="fullScreen" modalTransitionStyle="flipHorizontal" id="ki4-ia-CIm"/>
+                        <segue destination="PpX-dR-tli" kind="presentation" identifier="ViewVideo" modalPresentationStyle="fullScreen" modalTransitionStyle="flipHorizontal" id="lUQ-Hd-l9k"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="u2O-xZ-R1r" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -336,21 +336,28 @@
         <!--Video View Controller-->
         <scene sceneID="g6x-Nu-Kr1">
             <objects>
-                <viewController id="Ubj-eM-oIy" customClass="VideoViewController" sceneMemberID="viewController">
+                <viewController extendedLayoutIncludesOpaqueBars="YES" id="Ubj-eM-oIy" customClass="VideoViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="HTk-5K-F0J"/>
                         <viewControllerLayoutGuide type="bottom" id="CbV-C1-7pL"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="Z1h-0b-sFS">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="64" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
-                    <navigationItem key="navigationItem" id="4aN-RE-xch"/>
+                    <extendedEdge key="edgesForExtendedLayout" top="YES"/>
+                    <navigationItem key="navigationItem" id="4aN-RE-xch">
+                        <barButtonItem key="leftBarButtonItem" systemItem="done" id="1DO-SW-dal">
+                            <connections>
+                                <action selector="done:" destination="Ubj-eM-oIy" id="hQn-Tx-jXW"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Kxd-7G-wHP" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1803" y="3578"/>
+            <point key="canvasLocation" x="-1828" y="3578"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="siK-cU-Mqe">
@@ -369,20 +376,20 @@
             <point key="canvasLocation" x="-2518" y="2808"/>
         </scene>
         <!--Navigation Controller-->
-        <scene sceneID="VkB-n3-TOe">
+        <scene sceneID="4kw-4Z-W5h">
             <objects>
-                <navigationController id="oY4-Eq-ZOw" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="P2w-WC-sQZ">
+                <navigationController id="PpX-dR-tli" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="dsH-QM-ukE">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
-                        <segue destination="Ubj-eM-oIy" kind="relationship" relationship="rootViewController" id="Vkq-sb-p52"/>
+                        <segue destination="Ubj-eM-oIy" kind="relationship" relationship="rootViewController" id="IfN-bF-qlt"/>
                     </connections>
                 </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="doa-83-l99" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="VT6-gc-0kx" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1803" y="2808"/>
+            <point key="canvasLocation" x="-1828" y="2808"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="lpJ-1Y-cHV">

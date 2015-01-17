@@ -9,27 +9,40 @@
 #import "VideoViewController.h"
 #import "MBProgressHUD.h"
 #import "Decoder.h"
+#import <AVFoundation/AVFoundation.h>
+#include "SynchroQueue.h"
+#import "VTDecoder.h"
+#import "AudioDecoder.h"
 
-#include "libavcodec/avcodec.h"
-#include "libavformat/avformat.h"
-#include "libavformat/avio.h"
-#include "libavfilter/avfilter.h"
+extern "C" {
+#	include "libavcodec/avcodec.h"
+#	include "libavformat/avformat.h"
+#	include "libavformat/avio.h"
+#	include "libavfilter/avfilter.h"
+};
 
 enum {
 	ThreadStillWorking,
 	ThreadIsDone
 };
 
-@interface VideoViewController ()
+@interface VideoViewController () <VTDecoderDelegate> {
+	SynchroQueue<CMSampleBufferRef>	_videoQueue;
+}
 
-@property (strong, nonatomic) Decoder* audioDecoder;
-@property (strong, nonatomic) Decoder* videoDecoder;
+@property (strong, nonatomic) AudioDecoder *audioDecoder;
+@property (strong, nonatomic) VTDecoder *videoDecoder;
+
 @property (nonatomic) int audioIndex;
 @property (nonatomic) int videoIndex;
 
 @property (readwrite, atomic) AVFormatContext*	mediaContext;
 @property (readwrite, atomic) BOOL mediaRunning;
 @property (strong, nonatomic) NSConditionLock *demuxerState;
+
+@property (strong, nonatomic) AVSampleBufferDisplayLayer *videoLayer;
+
+- (IBAction)done:(id)sender;
 
 @end
 
@@ -41,11 +54,39 @@ enum {
 	
 	self.title = [_node.info title] ? _node.info.title : _node.name;
 	
-	_audioDecoder = [[Decoder alloc] init];
-	_videoDecoder = [[Decoder alloc] init];
+	_audioDecoder = [[AudioDecoder alloc] init];
+	_videoDecoder = [[VTDecoder alloc] init];
+	_videoDecoder.delegate = self;
 	
+	_videoLayer = [[AVSampleBufferDisplayLayer alloc] init];
+	_videoLayer.videoGravity = AVLayerVideoGravityResizeAspect;
+	_videoLayer.backgroundColor = [[UIColor blackColor] CGColor];
+	[self layoutScreen];
+
 	[MBProgressHUD showHUDAddedTo:self.view animated:YES];
-	
+	[self performSelectorInBackground:@selector(openMedia:) withObject:[self mediaSmbPath]];
+}
+
+- (void)dealloc
+{
+	[self closeMedia];
+}
+
+- (void)layoutScreen
+{
+	[_videoLayer removeFromSuperlayer];
+	_videoLayer.bounds = self.view.bounds;
+	_videoLayer.position = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds));
+	[self.view.layer addSublayer:_videoLayer];
+}
+
+- (void) willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+	[self layoutScreen];
+}
+
+- (NSString*)mediaSmbPath
+{
 	NSRange p = [_node.path rangeOfString:@"smb://"];
 	NSRange r = {p.length, _node.path.length - p.length};
 	NSRange s = [_node.path rangeOfString:@"/" options:NSCaseInsensitiveSearch range:r];
@@ -53,20 +94,16 @@ enum {
 	NSString* server = [_node.path substringWithRange:ss];
 	NSRange pp = {s.location, _node.path.length - s.location};
 	NSString *path = [_node.path substringWithRange:pp];
-
+	
 	NSDictionary* auth = [DataModel authForHost:server];
 	if (auth) {
-		NSString* url = [NSString stringWithFormat:@"smb://%@:%@@%@%@",
-						 [auth objectForKey:@"user"],
-						 [auth objectForKey:@"password"],
-						 server, path];
-		[self performSelectorInBackground:@selector(openMedia:) withObject:url];
+		return [NSString stringWithFormat:@"smb://%@:%@@%@%@",
+				[auth objectForKey:@"user"],
+				[auth objectForKey:@"password"],
+				server, path];
+	} else {
+		return nil;
 	}
-}
-
-- (void)dealloc
-{
-	[self closeMedia];
 }
 
 - (AVFormatContext*)loadMedia:(NSString*)url
@@ -76,10 +113,7 @@ enum {
 	
 	int err = avformat_open_input(&mediaContext, [url UTF8String], NULL, NULL);
 	if ( err != 0) {
-		char buf[255];
-		av_strerror(err, buf, 255);
-		printf("%s\n", buf);
-		return 0;
+		return NULL;
 	}
 	
 	// Retrieve stream information
@@ -117,6 +151,26 @@ enum {
 	[alert show];
 }
 
+- (void)decoder:(VTDecoder*)decoder decodedBuffer:(CMSampleBufferRef)buffer
+{
+	_videoQueue.push(&buffer);
+}
+
+- (void)refreshScreen
+{
+	while (true) {
+		CMSampleBufferRef buffer;
+		if (_videoQueue.pop(&buffer)) {
+			NSLog(@"enqueue video");
+			[_videoLayer enqueueSampleBuffer:buffer];
+			CFRelease(buffer);
+			usleep(40);
+		} else {
+			break;
+		}
+	}
+}
+
 - (void)openMedia:(NSString*)url
 {
 	@autoreleasepool {
@@ -134,6 +188,9 @@ enum {
 		
 		_demuxerState = [[NSConditionLock alloc] initWithCondition:ThreadStillWorking];
 		_mediaRunning = YES;
+		_videoQueue.start();
+		
+		[self performSelectorInBackground:@selector(refreshScreen) withObject:nil];
 		
 		NSLog(@"media opened");
 		while (_mediaRunning) {
@@ -151,8 +208,11 @@ enum {
 			
 			if (nextPacket.stream_index == _audioIndex) {
 				NSLog(@"audio");
+				AVFrame* frame = av_frame_alloc();
+				[_audioDecoder decodePacket:&nextPacket toFrame:frame];
+				av_free(frame);
 			} else if (nextPacket.stream_index == _videoIndex) {
-				NSLog(@"video");
+				[_videoDecoder decodePacket:&nextPacket toFrame:NULL];
 			}
 			av_free_packet(&nextPacket);
 		}
@@ -168,11 +228,18 @@ enum {
 {
 	if (_mediaRunning) {
 		_mediaRunning = NO;
+		_videoQueue.stop();
 		[_demuxerState lockWhenCondition:ThreadIsDone];
 		[_demuxerState unlock];
 	} else {
 		return;
 	}
+}
+
+- (IBAction)done:(id)sender
+{
+	[self closeMedia];
+	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end

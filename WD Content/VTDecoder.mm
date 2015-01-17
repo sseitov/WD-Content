@@ -1,0 +1,224 @@
+//
+//  VTDecoder.m
+//  DirectVideo
+//
+//  Created by Sergey Seitov on 03.01.15.
+//  Copyright (c) 2015 Sergey Seitov. All rights reserved.
+//
+
+#import "VTDecoder.h"
+#import <VideoToolbox/VideoToolbox.h>
+
+@interface VTDecoder () {
+    VTDecompressionSessionRef _session;
+    CMVideoFormatDescriptionRef _videoFormat;
+    CMSampleTimingInfo _timingInfo;
+}
+
+@property (nonatomic) int numFrames;
+
+@end
+
+void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
+                                     void *sourceFrameRefCon,
+                                     OSStatus status,
+                                     VTDecodeInfoFlags infoFlags,
+                                     CVImageBufferRef imageBuffer,
+                                     CMTime presentationTimeStamp,
+                                     CMTime presentationDuration );
+
+@implementation VTDecoder
+
+- (CMSampleTimingInfo*)timing
+{
+    return &_timingInfo;
+}
+/* extradata
+
+ bits
+8   version ( always 0x01 )
+8   avc profile ( sps[0][1] )
+8   avc compatibility ( sps[0][2] )
+8   avc level ( sps[0][3] )
+6   reserved ( all bits on )
+2   NALULengthSizeMinusOne
+3   reserved ( all bits on )
+5   number of SPS NALUs (usually 1)
+repeated once per SPS:
+16     SPS size
+variable   SPS NALU data
+8   number of PPS NALUs (usually 1)
+repeated once per PPS
+16    PPS size
+variable PPS NALU data
+
+ */
+
+- (BOOL)openWithContext:(AVCodecContext*)context
+{
+/*
+	int index = 0;
+	while (true) {
+		for (int i=0; i<16; i++) {
+			printf("%.2x ", context->extradata[index++]);
+			if (index >= context->extradata_size) {
+				break;
+			}
+		}
+		if (index >= context->extradata_size) {
+			break;
+		} else {
+			printf("\n");
+		}
+	}
+*/
+	uint16_t spsLen = NTOHS(*(uint16_t*)(context->extradata+6));
+	const uint8_t *sps = context->extradata+8;
+	
+	uint16_t ppsLen = NTOHS(*((uint16_t*)(context->extradata+8+spsLen+1)));
+	const uint8_t *pps = context->extradata+8+spsLen+3;
+	
+	const uint8_t* const parameterSetPointers[2] = { sps , pps };
+	const size_t parameterSetSizes[2] = { spsLen, ppsLen };
+
+    OSStatus err = CMVideoFormatDescriptionCreateFromH264ParameterSets(kCFAllocatorDefault,
+                                                                       2,
+                                                                       parameterSetPointers,
+                                                                       parameterSetSizes,
+                                                                       4,
+                                                                       &_videoFormat);
+    if (err != noErr) {
+        return NO;
+    }
+    
+    NSDictionary* destinationPixelBufferAttributes = @{
+                                                       (id)kCVPixelBufferPixelFormatTypeKey : [NSNumber numberWithInt:kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange],
+                                                       (id)kCVPixelBufferWidthKey : [NSNumber numberWithInt:context->width],
+                                                       (id)kCVPixelBufferHeightKey : [NSNumber numberWithInt:context->height],
+                                                       (id)kCVPixelBufferOpenGLCompatibilityKey : [NSNumber numberWithBool:YES]
+                                                       };
+/*	NSDictionary* destinationPixelBufferAttributes = @{
+													   (id)kCVPixelBufferPixelFormatTypeKey : [NSNumber numberWithInt:kCVPixelFormatType_32BGRA],
+													   (id)kCVPixelBufferWidthKey : [NSNumber numberWithInt:context->width],
+													   (id)kCVPixelBufferHeightKey : [NSNumber numberWithInt:context->height],
+													   (id)kCVPixelBufferOpenGLCompatibilityKey : [NSNumber numberWithBool:YES]
+													   };*/
+
+    VTDecompressionOutputCallbackRecord outputCallback;
+    outputCallback.decompressionOutputCallback = DeompressionDataCallbackHandler;
+    outputCallback.decompressionOutputRefCon = (__bridge void*)self;
+    
+    OSStatus status = VTDecompressionSessionCreate(NULL,
+                                          _videoFormat,
+                                          NULL,
+                                          (__bridge CFDictionaryRef)destinationPixelBufferAttributes,
+                                          &outputCallback,
+                                          &_session);
+    if (status == noErr) {
+        VTSessionSetProperty(_session, kVTDecompressionPropertyKey_ThreadCount, (__bridge CFTypeRef)[NSNumber numberWithInt:1]);
+        VTSessionSetProperty(_session, kVTDecompressionPropertyKey_RealTime, kCFBooleanTrue);
+        _numFrames = 0;
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
+- (void)close
+{
+    if (_session) {
+        VTDecompressionSessionInvalidate(_session);
+        CFRelease(_session);
+        _session = NULL;
+    }
+    if (_videoFormat) {
+        CFRelease(_videoFormat);
+        _videoFormat = NULL;
+    }
+}
+
+- (BOOL)decodePacket:(AVPacket*)packet toFrame:(AVFrame*)frame
+{
+	_timingInfo.presentationTimeStamp = CMTimeMake(_numFrames, 1000.0);
+	_timingInfo.duration =CMTimeMake(1, 25);
+	_timingInfo.decodeTimeStamp = kCMTimeInvalid;
+
+	CMSampleBufferRef sampleBuff = NULL;
+ 	CMBlockBufferRef newBBufOut = NULL;
+	OSStatus err = CMBlockBufferCreateWithMemoryBlock(
+													  NULL,             // CFAllocatorRef structureAllocator
+													  packet->data,       // void *memoryBlock
+													  packet->size,       // size_t blockLengt
+													  kCFAllocatorNull, // CFAllocatorRef blockAllocator
+													  NULL,             // const CMBlockBufferCustomBlockSource *customBlockSource
+													  0,                // size_t offsetToData
+													  packet->size,       // size_t dataLength
+													  kCMBlockBufferAlwaysCopyDataFlag,            // CMBlockBufferFlags flags
+													  &newBBufOut);     // CMBlockBufferRef *newBBufOut
+	
+	if (err != noErr) {
+		return NO;
+	}
+	err = CMSampleBufferCreate(
+							   kCFAllocatorDefault,           // CFAllocatorRef allocator
+							   newBBufOut,     // CMBlockBufferRef dataBuffer
+							   YES,           // Boolean dataReady
+							   NULL,              // CMSampleBufferMakeDataReadyCallback makeDataReadyCallback
+							   NULL,              // void *makeDataReadyRefcon
+							   _videoFormat,       // CMFormatDescriptionRef formatDescription
+							   1,              // CMItemCount numSamples
+							   1,              // CMItemCount numSampleTimingEntries
+							   &_timingInfo,           // const CMSampleTimingInfo *sampleTimingArray
+							   0,              // CMItemCount numSampleSizeEntries
+							   NULL,           // const size_t *sampleSizeArray
+							   &sampleBuff);      // CMSampleBufferRef *sBufOut
+	CFRelease(newBBufOut);
+
+	err = VTDecompressionSessionDecodeFrame(_session,
+											sampleBuff,
+											kVTDecodeFrame_EnableAsynchronousDecompression | kVTDecodeFrame_1xRealTimePlayback,
+											sampleBuff,
+											NULL);
+    if (err != noErr) {
+		CFRelease(sampleBuff);
+		return NO;
+    } else {
+        VTDecompressionSessionWaitForAsynchronousFrames(_session);
+		_numFrames++;
+		return YES;
+    }
+}
+
+@end
+
+void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
+                                     void *sourceFrameRefCon,
+                                     OSStatus status,
+                                     VTDecodeInfoFlags infoFlags,
+                                     CVImageBufferRef imageBuffer,
+                                     CMTime presentationTimeStamp,
+                                     CMTime presentationDuration )
+{
+    if (status == noErr) {
+        VTDecoder* decoder = (__bridge VTDecoder*)decompressionOutputRefCon;
+        CMVideoFormatDescriptionRef videoInfo = NULL;
+        OSStatus status = CMVideoFormatDescriptionCreateForImageBuffer(NULL, imageBuffer, &videoInfo);
+        if (status == noErr) {
+            CMSampleBufferRef sampleBuffer = NULL;
+            status = CMSampleBufferCreateForImageBuffer(kCFAllocatorDefault,
+                                                        imageBuffer,
+                                                        true,
+                                                        NULL,
+                                                        NULL,
+                                                        videoInfo,
+                                                        decoder.timing,
+                                                        &sampleBuffer);
+            CFRelease(videoInfo);
+            if (status == noErr) {
+                [decoder.delegate decoder:decoder decodedBuffer:sampleBuffer];
+            }
+        }
+    }
+    CMSampleBufferRef decodeBuffer = (CMSampleBufferRef)sourceFrameRefCon;
+    CFRelease(decodeBuffer);
+}
