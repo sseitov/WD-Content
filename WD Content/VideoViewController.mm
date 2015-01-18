@@ -13,6 +13,7 @@
 #include "SynchroQueue.h"
 #import "VTDecoder.h"
 #import "AudioDecoder.h"
+#import "AudioOutput.h"
 
 extern "C" {
 #	include "libavcodec/avcodec.h"
@@ -28,9 +29,11 @@ enum {
 
 @interface VideoViewController () <VTDecoderDelegate> {
 	SynchroQueue<CMSampleBufferRef>	_videoQueue;
+	SynchroQueue<AVPacket>	_videoDecoderQueue;
+	SynchroQueue<AVPacket>	*_audioDecoderQueue;
+	dispatch_queue_t _videoOutputQueue;
 }
 
-@property (strong, nonatomic) AudioDecoder *audioDecoder;
 @property (strong, nonatomic) VTDecoder *videoDecoder;
 
 @property (nonatomic) int audioIndex;
@@ -41,6 +44,7 @@ enum {
 @property (strong, nonatomic) NSConditionLock *demuxerState;
 
 @property (strong, nonatomic) AVSampleBufferDisplayLayer *videoLayer;
+@property (strong, nonatomic) AudioOutput *audioOutput;
 
 - (IBAction)done:(id)sender;
 
@@ -54,7 +58,9 @@ enum {
 	
 	self.title = [_node.info title] ? _node.info.title : _node.name;
 	
-	_audioDecoder = [[AudioDecoder alloc] init];
+	_audioOutput = [[AudioOutput alloc] init];
+	_audioDecoderQueue = new SynchroQueue<AVPacket>(128);
+	
 	_videoDecoder = [[VTDecoder alloc] init];
 	_videoDecoder.delegate = self;
 	
@@ -62,6 +68,8 @@ enum {
 	_videoLayer.videoGravity = AVLayerVideoGravityResizeAspect;
 	_videoLayer.backgroundColor = [[UIColor blackColor] CGColor];
 	[self layoutScreen];
+	
+	_videoOutputQueue = dispatch_queue_create("com.vchannel.WD-Content", DISPATCH_QUEUE_SERIAL);
 
 	[MBProgressHUD showHUDAddedTo:self.view animated:YES];
 	[self performSelectorInBackground:@selector(openMedia:) withObject:[self mediaSmbPath]];
@@ -123,7 +131,7 @@ enum {
 	for (unsigned i=0; i<mediaContext->nb_streams; ++i) {
 		enc = mediaContext->streams[i]->codec;
 		if (enc->codec_type == AVMEDIA_TYPE_AUDIO) {
-			if ([_audioDecoder openWithContext:enc]) {
+			if ([_audioOutput.decoder openWithContext:enc]) {
 				_audioIndex = i;
 			} else {
 				return 0;
@@ -144,7 +152,7 @@ enum {
 {
 	[MBProgressHUD hideHUDForView:self.view animated:YES];
 	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
-													message:@"Error open TV channel"
+													message:@"Error open movie"
 												   delegate:nil
 										  cancelButtonTitle:@"Ok"
 										  otherButtonTitles:nil];
@@ -153,21 +161,8 @@ enum {
 
 - (void)decoder:(VTDecoder*)decoder decodedBuffer:(CMSampleBufferRef)buffer
 {
-	_videoQueue.push(&buffer);
-}
-
-- (void)refreshScreen
-{
-	while (true) {
-		CMSampleBufferRef buffer;
-		if (_videoQueue.pop(&buffer)) {
-			NSLog(@"enqueue video");
-			[_videoLayer enqueueSampleBuffer:buffer];
-			CFRelease(buffer);
-			usleep(40);
-		} else {
-			break;
-		}
+	if (self.mediaRunning) {
+		_videoQueue.push(&buffer);
 	}
 }
 
@@ -188,33 +183,48 @@ enum {
 		
 		_demuxerState = [[NSConditionLock alloc] initWithCondition:ThreadStillWorking];
 		_mediaRunning = YES;
-		_videoQueue.start();
 		
-		[self performSelectorInBackground:@selector(refreshScreen) withObject:nil];
-		
-		NSLog(@"media opened");
-		while (_mediaRunning) {
+		[_videoLayer requestMediaDataWhenReadyOnQueue:_videoOutputQueue usingBlock:^() {
+			CMSampleBufferRef buffer;
+			if (self.mediaRunning && _videoQueue.pop(&buffer)) {
+				NSLog(@"enqueue video %d", _videoQueue.size());
+				[_videoLayer enqueueSampleBuffer:buffer];
+				CFRelease(buffer);
+			} else {
+				[_videoLayer stopRequestingMediaData];
+			}
+		}];
+
+		dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 			AVPacket nextPacket;
-			// Read packet
+			while (self.mediaRunning && _audioDecoderQueue->pop(&nextPacket)) {
+//				NSLog(@"enqueue audio %d", _audioDecoderQueue->size());
+				[_audioOutput pushPacket:&nextPacket];
+				av_free_packet(&nextPacket);
+			}
+		});
+		
+		dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+			AVPacket nextPacket;
+			while (self.mediaRunning && _videoDecoderQueue.pop(&nextPacket)) {
+				[_videoDecoder decodePacket:&nextPacket toFrame:NULL];
+				av_free_packet(&nextPacket);
+			}
+		});
+
+		while (self.mediaRunning) {
+			AVPacket nextPacket;
 			if (av_read_frame(_mediaContext, &nextPacket) < 0) { // eof
 				av_free_packet(&nextPacket);
 				break;
 			}
 			
-			// Duplicate current packet
-			if (av_dup_packet(&nextPacket) < 0) {	// error packet
-				continue;
-			}
-			
 			if (nextPacket.stream_index == _audioIndex) {
-				NSLog(@"audio");
-				AVFrame* frame = av_frame_alloc();
-				[_audioDecoder decodePacket:&nextPacket toFrame:frame];
-				av_free(frame);
+//				_audioDecoderQueue->push(&nextPacket);
+				av_free_packet(&nextPacket);
 			} else if (nextPacket.stream_index == _videoIndex) {
-				[_videoDecoder decodePacket:&nextPacket toFrame:NULL];
+				_videoDecoderQueue.push(&nextPacket);
 			}
-			av_free_packet(&nextPacket);
 		}
 		
 		avformat_close_input(&_mediaContext);
@@ -226,9 +236,16 @@ enum {
 
 - (void)closeMedia
 {
-	if (_mediaRunning) {
-		_mediaRunning = NO;
+	if (self.mediaRunning) {
+		self.mediaRunning = NO;
+
+		_audioDecoderQueue->stop();
+		[_audioOutput stop];
+		delete _audioDecoderQueue;
+		
+		_videoDecoderQueue.stop();
 		_videoQueue.stop();
+		
 		[_demuxerState lockWhenCondition:ThreadIsDone];
 		[_demuxerState unlock];
 	} else {

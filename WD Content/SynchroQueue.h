@@ -24,7 +24,8 @@ protected:
 public:
 	
 	SynchroQueue(SynchroQueue const&) = delete;
-	SynchroQueue() : _stopped(false), _size(20) {}
+	SynchroQueue() : _stopped(false), _size(8) {}
+	SynchroQueue(int size) : _stopped(false), _size(size) {}
 	
 	virtual void free(T*) {}
 	

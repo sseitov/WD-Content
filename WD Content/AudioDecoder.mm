@@ -10,10 +10,13 @@
 extern "C" {
 #	include "libavcodec/avcodec.h"
 };
+#include <mutex>
 
-@interface AudioDecoder ()
+@interface AudioDecoder () {
+	AVCodecContext* _context;
+	std::mutex		_mutex;
+}
 
-@property (readwrite, atomic) AVCodecContext* codec;
 
 @end
 
@@ -21,36 +24,42 @@ extern "C" {
 
 - (BOOL)openWithContext:(AVCodecContext*)context
 {
+	std::unique_lock<std::mutex> lock(_mutex);
 	AVCodec* theCodec = avcodec_find_decoder(context->codec_id);
 	if (!theCodec || avcodec_open2(context, theCodec, NULL) < 0)
 		return NO;
-	self.codec = context;
+	_context = context;
 	return YES;
 }
 
 - (void)close
 {
-	if (self.codec) {
-		avcodec_close(self.codec);
+	std::unique_lock<std::mutex> lock(_mutex);
+	if (_context) {
+		avcodec_close(_context);
 	}
-	self.codec = 0;
+	_context = NULL;
 }
 
 - (BOOL)decodePacket:(AVPacket*)packet toFrame:(AVFrame*)frame
 {
+	std::unique_lock<std::mutex> lock(_mutex);
 	int got_frame = 0;
 	int len = -1;
-	if (self.codec) {
-		len = avcodec_decode_audio4(self.codec, frame, &got_frame, packet);
-	}
-	if (len > 0 && got_frame) {
-		frame->pts = frame->pkt_dts;
-		if (frame->pts == AV_NOPTS_VALUE) {
-			frame->pts = frame->pkt_pts;
+	if (_context) {
+		avcodec_get_frame_defaults(frame);
+		len = avcodec_decode_audio4(_context, frame, &got_frame, packet);
+		if (len > 0 && got_frame) {
+			frame->pts = frame->pkt_dts;
+			if (frame->pts == AV_NOPTS_VALUE) {
+				frame->pts = frame->pkt_pts;
+			}
+			return YES;
+		} else {
+			return NO;
 		}
-		return true;
 	} else {
-		return false;
+		return NO;
 	}
 }
 

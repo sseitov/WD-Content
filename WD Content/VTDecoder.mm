@@ -8,14 +8,14 @@
 
 #import "VTDecoder.h"
 #import <VideoToolbox/VideoToolbox.h>
+#include <mutex>
 
 @interface VTDecoder () {
     VTDecompressionSessionRef _session;
     CMVideoFormatDescriptionRef _videoFormat;
-    CMSampleTimingInfo _timingInfo;
+	AVCodecContext* _context;
+	std::mutex		_mutex;
 }
-
-@property (nonatomic) int numFrames;
 
 @end
 
@@ -29,10 +29,6 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 
 @implementation VTDecoder
 
-- (CMSampleTimingInfo*)timing
-{
-    return &_timingInfo;
-}
 /* extradata
 
  bits
@@ -56,22 +52,8 @@ variable PPS NALU data
 
 - (BOOL)openWithContext:(AVCodecContext*)context
 {
-/*
-	int index = 0;
-	while (true) {
-		for (int i=0; i<16; i++) {
-			printf("%.2x ", context->extradata[index++]);
-			if (index >= context->extradata_size) {
-				break;
-			}
-		}
-		if (index >= context->extradata_size) {
-			break;
-		} else {
-			printf("\n");
-		}
-	}
-*/
+	std::unique_lock<std::mutex> lock(_mutex);
+	
 	uint16_t spsLen = NTOHS(*(uint16_t*)(context->extradata+6));
 	const uint8_t *sps = context->extradata+8;
 	
@@ -97,12 +79,6 @@ variable PPS NALU data
                                                        (id)kCVPixelBufferHeightKey : [NSNumber numberWithInt:context->height],
                                                        (id)kCVPixelBufferOpenGLCompatibilityKey : [NSNumber numberWithBool:YES]
                                                        };
-/*	NSDictionary* destinationPixelBufferAttributes = @{
-													   (id)kCVPixelBufferPixelFormatTypeKey : [NSNumber numberWithInt:kCVPixelFormatType_32BGRA],
-													   (id)kCVPixelBufferWidthKey : [NSNumber numberWithInt:context->width],
-													   (id)kCVPixelBufferHeightKey : [NSNumber numberWithInt:context->height],
-													   (id)kCVPixelBufferOpenGLCompatibilityKey : [NSNumber numberWithBool:YES]
-													   };*/
 
     VTDecompressionOutputCallbackRecord outputCallback;
     outputCallback.decompressionOutputCallback = DeompressionDataCallbackHandler;
@@ -115,9 +91,9 @@ variable PPS NALU data
                                           &outputCallback,
                                           &_session);
     if (status == noErr) {
-        VTSessionSetProperty(_session, kVTDecompressionPropertyKey_ThreadCount, (__bridge CFTypeRef)[NSNumber numberWithInt:1]);
+        VTSessionSetProperty(_session, kVTDecompressionPropertyKey_ThreadCount, (__bridge CFTypeRef)[NSNumber numberWithInt:4]);
         VTSessionSetProperty(_session, kVTDecompressionPropertyKey_RealTime, kCFBooleanTrue);
-        _numFrames = 0;
+		_context = context;
         return YES;
     } else {
         return NO;
@@ -126,6 +102,11 @@ variable PPS NALU data
 
 - (void)close
 {
+	std::unique_lock<std::mutex> lock(_mutex);
+	if (_context) {
+		avcodec_close(_context);
+	}
+	_context = NULL;
     if (_session) {
         VTDecompressionSessionInvalidate(_session);
         CFRelease(_session);
@@ -139,9 +120,15 @@ variable PPS NALU data
 
 - (BOOL)decodePacket:(AVPacket*)packet toFrame:(AVFrame*)frame
 {
-	_timingInfo.presentationTimeStamp = CMTimeMake(_numFrames, 1000.0);
-	_timingInfo.duration =CMTimeMake(1, 25);
-	_timingInfo.decodeTimeStamp = kCMTimeInvalid;
+	std::unique_lock<std::mutex> lock(_mutex);
+	if (!_context) {
+		return NO;
+	}
+	
+	CMSampleTimingInfo timingInfo;
+	timingInfo.presentationTimeStamp = CMTimeMake(packet->pts, 1000000.0*av_q2d(_context->time_base));
+	timingInfo.duration = CMTimeMake(packet->duration, 1000000.0*av_q2d(_context->time_base));
+	timingInfo.decodeTimeStamp = kCMTimeInvalid;
 
 	CMSampleBufferRef sampleBuff = NULL;
  	CMBlockBufferRef newBBufOut = NULL;
@@ -168,7 +155,7 @@ variable PPS NALU data
 							   _videoFormat,       // CMFormatDescriptionRef formatDescription
 							   1,              // CMItemCount numSamples
 							   1,              // CMItemCount numSampleTimingEntries
-							   &_timingInfo,           // const CMSampleTimingInfo *sampleTimingArray
+							   &timingInfo,           // const CMSampleTimingInfo *sampleTimingArray
 							   0,              // CMItemCount numSampleSizeEntries
 							   NULL,           // const size_t *sampleSizeArray
 							   &sampleBuff);      // CMSampleBufferRef *sBufOut
@@ -184,7 +171,6 @@ variable PPS NALU data
 		return NO;
     } else {
         VTDecompressionSessionWaitForAsynchronousFrames(_session);
-		_numFrames++;
 		return YES;
     }
 }
@@ -205,13 +191,17 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
         OSStatus status = CMVideoFormatDescriptionCreateForImageBuffer(NULL, imageBuffer, &videoInfo);
         if (status == noErr) {
             CMSampleBufferRef sampleBuffer = NULL;
+			CMSampleTimingInfo timing;
+			timing.presentationTimeStamp = presentationTimeStamp;
+			timing.duration = presentationDuration;
+			timing.decodeTimeStamp = presentationTimeStamp;
             status = CMSampleBufferCreateForImageBuffer(kCFAllocatorDefault,
                                                         imageBuffer,
                                                         true,
                                                         NULL,
                                                         NULL,
                                                         videoInfo,
-                                                        decoder.timing,
+                                                        &timing,
                                                         &sampleBuffer);
             CFRelease(videoInfo);
             if (status == noErr) {

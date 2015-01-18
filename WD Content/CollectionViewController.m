@@ -229,7 +229,7 @@
 	[self selectNode:node];
 }
 
-- (void)actionSheet:(NodeActionSheet*)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+- (void)actionSheet:(NodeActionSheet*)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
 	switch (buttonIndex) {
 		case 0:
@@ -240,7 +240,7 @@
 			}
 			break;
 		case 1:
-			[self performSegueWithIdentifier:@"ViewVideo" sender:actionSheet.node];
+			[self performSegueWithIdentifier:@"ShowVideo" sender:actionSheet.node];
 			break;
 		default:
 			break;
@@ -275,7 +275,7 @@
 	} else if ([[segue identifier] isEqualToString:@"ShowInfo"]) {
 		InfoViewController *next = (InfoViewController*)vc.topViewController;
 		[next setInfoForNode:sender];
-	} else if ([[segue identifier] isEqualToString:@"ViewVideo"]) {
+	} else if ([[segue identifier] isEqualToString:@"ShowVideo"]) {
 		VideoViewController *next = (VideoViewController*)vc.topViewController;
 		next.node = sender;
 	}

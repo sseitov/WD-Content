@@ -291,7 +291,7 @@
                         <outlet property="tableView" destination="Nhd-Px-b5d" id="47E-iw-eJ5"/>
                         <segue destination="LcC-uZ-kdv" kind="presentation" identifier="ShowInfo" modalPresentationStyle="formSheet" modalTransitionStyle="coverVertical" id="vec-f4-LaC"/>
                         <segue destination="EdQ-0t-smL" kind="presentation" identifier="CreateInfo" modalPresentationStyle="formSheet" modalTransitionStyle="coverVertical" id="dey-0R-oqD"/>
-                        <segue destination="PpX-dR-tli" kind="presentation" identifier="ViewVideo" modalPresentationStyle="fullScreen" modalTransitionStyle="flipHorizontal" id="lUQ-Hd-l9k"/>
+                        <segue destination="PpX-dR-tli" kind="presentation" identifier="ShowVideo" modalPresentationStyle="fullScreen" modalTransitionStyle="flipHorizontal" id="lUQ-Hd-l9k"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="u2O-xZ-R1r" userLabel="First Responder" sceneMemberID="firstResponder"/>
