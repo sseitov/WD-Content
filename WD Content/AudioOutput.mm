@@ -41,15 +41,6 @@ static void AudioOutputCallback(void *inClientData,
 
 @implementation AudioOutput
 
-- (id)init
-{
-	self = [super init];
-	if (self) {
-		self.decoder = [[AudioDecoder alloc] init];
-	}
-	return self;
-}
-
 - (void)currentPTS:(int64_t*)ppts withTime:(int64_t*)ptime
 {
 	if (_ringBuffer != NULL)
@@ -151,23 +142,17 @@ static void AudioOutputCallback(void *inClientData,
 	NSLog(@"Audio stopped");
 }
 
-- (void)pushPacket:(AVPacket*)packet
+- (void)writeFrame:(AVFrame*)audioFrame
 {
 	std::unique_lock<std::mutex> lock(audioMutex);
-	static AVFrame audioFrame;
-	
-	if (![self.decoder decodePacket:packet toFrame:&audioFrame]) {
-		NSLog(@"error decode");
-		return;
-	}
 	if (!_started) {
-		BOOL success = [self startWithFrame:&audioFrame];
+		BOOL success = [self startWithFrame:audioFrame];
 		if (!success) {
 			NSLog(@"Error start audio!");
 			return;
 		}
 	}
-	writeRingBuffer(_ringBuffer, &audioFrame);
+	writeRingBuffer(_ringBuffer, audioFrame);
 }
 
 - (double)getCurrentTime

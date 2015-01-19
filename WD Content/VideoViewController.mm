@@ -7,44 +7,23 @@
 //
 
 #import "VideoViewController.h"
-#import "MBProgressHUD.h"
-#import "Decoder.h"
-#import <AVFoundation/AVFoundation.h>
-#include "SynchroQueue.h"
-#import "VTDecoder.h"
-#import "AudioDecoder.h"
 #import "AudioOutput.h"
 
-extern "C" {
-#	include "libavcodec/avcodec.h"
-#	include "libavformat/avformat.h"
-#	include "libavformat/avio.h"
-#	include "libavfilter/avfilter.h"
-};
+#import "Demuxer.h"
+#import "MBProgressHUD.h"
 
-enum {
-	ThreadStillWorking,
-	ThreadIsDone
-};
+#import "Decoder.h"
+#include "SynchroQueue.h"
 
-@interface VideoViewController () <VTDecoderDelegate> {
-	SynchroQueue<CMSampleBufferRef>	_videoQueue;
-	SynchroQueue<AVPacket>	_videoDecoderQueue;
-	SynchroQueue<AVPacket>	*_audioDecoderQueue;
+#import <CoreMedia/CoreMedia.h>
+
+@interface VideoViewController () {
 	dispatch_queue_t _videoOutputQueue;
 }
 
-@property (strong, nonatomic) VTDecoder *videoDecoder;
-
-@property (nonatomic) int audioIndex;
-@property (nonatomic) int videoIndex;
-
-@property (readwrite, atomic) AVFormatContext*	mediaContext;
-@property (readwrite, atomic) BOOL mediaRunning;
-@property (strong, nonatomic) NSConditionLock *demuxerState;
+@property (strong, nonatomic) Demuxer* demuxer;
 
 @property (strong, nonatomic) AVSampleBufferDisplayLayer *videoLayer;
-@property (strong, nonatomic) AudioOutput *audioOutput;
 
 - (IBAction)done:(id)sender;
 
@@ -58,26 +37,48 @@ enum {
 	
 	self.title = [_node.info title] ? _node.info.title : _node.name;
 	
-	_audioOutput = [[AudioOutput alloc] init];
-	_audioDecoderQueue = new SynchroQueue<AVPacket>(128);
-	
-	_videoDecoder = [[VTDecoder alloc] init];
-	_videoDecoder.delegate = self;
+	_demuxer = [[Demuxer alloc] init];
 	
 	_videoLayer = [[AVSampleBufferDisplayLayer alloc] init];
 	_videoLayer.videoGravity = AVLayerVideoGravityResizeAspect;
 	_videoLayer.backgroundColor = [[UIColor blackColor] CGColor];
+	
+	CMTimebaseRef tmBase = nil;
+	CMTimebaseCreateWithMasterClock(CFAllocatorGetDefault(), CMClockGetHostTimeClock(),&tmBase);
+	_videoLayer.controlTimebase = tmBase;
+	CMTimebaseSetTime(_videoLayer.controlTimebase, CMTimeMake(5, 1));
+	CMTimebaseSetRate(_videoLayer.controlTimebase, 1.0);
+	
 	[self layoutScreen];
 	
-	_videoOutputQueue = dispatch_queue_create("com.vchannel.WD-Content", DISPATCH_QUEUE_SERIAL);
+	_videoOutputQueue = dispatch_queue_create("com.vchannel.WD-Content.VideoOutput", DISPATCH_QUEUE_SERIAL);
 
 	[MBProgressHUD showHUDAddedTo:self.view animated:YES];
-	[self performSelectorInBackground:@selector(openMedia:) withObject:[self mediaSmbPath]];
+	[_demuxer openWithPath:_node.path completion:^(BOOL success) {
+		dispatch_async(dispatch_get_main_queue(), ^() {
+			[MBProgressHUD hideHUDForView:self.view animated:YES];
+			if (!success) {
+				[self errorOpen];
+			} else {
+				[self play];
+			}
+		});
+	}];
 }
 
-- (void)dealloc
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
-	[self closeMedia];
+	[self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)errorOpen
+{
+	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error open movie"
+													message:@"Error reading or media format not supported"
+												   delegate:self
+										  cancelButtonTitle:@"Ok"
+										  otherButtonTitles:nil];
+	[alert show];
 }
 
 - (void)layoutScreen
@@ -93,169 +94,32 @@ enum {
 	[self layoutScreen];
 }
 
-- (NSString*)mediaSmbPath
+- (void)play
 {
-	NSRange p = [_node.path rangeOfString:@"smb://"];
-	NSRange r = {p.length, _node.path.length - p.length};
-	NSRange s = [_node.path rangeOfString:@"/" options:NSCaseInsensitiveSearch range:r];
-	NSRange ss = {p.length, s.location - p.length};
-	NSString* server = [_node.path substringWithRange:ss];
-	NSRange pp = {s.location, _node.path.length - s.location};
-	NSString *path = [_node.path substringWithRange:pp];
-	
-	NSDictionary* auth = [DataModel authForHost:server];
-	if (auth) {
-		return [NSString stringWithFormat:@"smb://%@:%@@%@%@",
-				[auth objectForKey:@"user"],
-				[auth objectForKey:@"password"],
-				server, path];
-	} else {
-		return nil;
-	}
-}
-
-- (AVFormatContext*)loadMedia:(NSString*)url
-{
-	NSLog(@"open %@", url);
-	AVFormatContext* mediaContext = 0;
-	
-	int err = avformat_open_input(&mediaContext, [url UTF8String], NULL, NULL);
-	if ( err != 0) {
-		return NULL;
-	}
-	
-	// Retrieve stream information
-	avformat_find_stream_info(mediaContext, NULL);
-	
-	AVCodecContext* enc;
-	for (unsigned i=0; i<mediaContext->nb_streams; ++i) {
-		enc = mediaContext->streams[i]->codec;
-		if (enc->codec_type == AVMEDIA_TYPE_AUDIO) {
-			if ([_audioOutput.decoder openWithContext:enc]) {
-				_audioIndex = i;
-			} else {
-				return 0;
-			}
-		} else if (enc->codec_type == AVMEDIA_TYPE_VIDEO) {
-			if ([_videoDecoder openWithContext:enc]) {
-				_videoIndex = i;
-			} else {
-				return 0;
-			}
-		}
-	}
-	
-	return mediaContext;
-}
-
-- (void)errorOpen
-{
-	[MBProgressHUD hideHUDForView:self.view animated:YES];
-	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
-													message:@"Error open movie"
-												   delegate:nil
-										  cancelButtonTitle:@"Ok"
-										  otherButtonTitles:nil];
-	[alert show];
-}
-
-- (void)decoder:(VTDecoder*)decoder decodedBuffer:(CMSampleBufferRef)buffer
-{
-	if (self.mediaRunning) {
-		_videoQueue.push(&buffer);
-	}
-}
-
-- (void)openMedia:(NSString*)url
-{
-	@autoreleasepool {
-		_mediaContext = [self loadMedia:url];
-		if (!_mediaContext) {
-			[self performSelectorOnMainThread:@selector(errorOpen) withObject:nil waitUntilDone:YES];
-			return;
-		}
-		
-		dispatch_async(dispatch_get_main_queue(), ^()
-					   {
-						   [MBProgressHUD hideHUDForView:self.view animated:YES];
-					   });
-		av_read_play(_mediaContext);
-		
-		_demuxerState = [[NSConditionLock alloc] initWithCondition:ThreadStillWorking];
-		_mediaRunning = YES;
-		
-		[_videoLayer requestMediaDataWhenReadyOnQueue:_videoOutputQueue usingBlock:^() {
-			CMSampleBufferRef buffer;
-			if (self.mediaRunning && _videoQueue.pop(&buffer)) {
-				NSLog(@"enqueue video %d", _videoQueue.size());
+	[_demuxer play];
+	[_videoLayer requestMediaDataWhenReadyOnQueue:_videoOutputQueue usingBlock:^() {
+		while (_videoLayer.isReadyForMoreMediaData) {
+			CMSampleBufferRef buffer = _demuxer.takeVideo;
+			if (buffer) {
 				[_videoLayer enqueueSampleBuffer:buffer];
 				CFRelease(buffer);
 			} else {
-				[_videoLayer stopRequestingMediaData];
-			}
-		}];
-
-		dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-			AVPacket nextPacket;
-			while (self.mediaRunning && _audioDecoderQueue->pop(&nextPacket)) {
-//				NSLog(@"enqueue audio %d", _audioDecoderQueue->size());
-				[_audioOutput pushPacket:&nextPacket];
-				av_free_packet(&nextPacket);
-			}
-		});
-		
-		dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-			AVPacket nextPacket;
-			while (self.mediaRunning && _videoDecoderQueue.pop(&nextPacket)) {
-				[_videoDecoder decodePacket:&nextPacket toFrame:NULL];
-				av_free_packet(&nextPacket);
-			}
-		});
-
-		while (self.mediaRunning) {
-			AVPacket nextPacket;
-			if (av_read_frame(_mediaContext, &nextPacket) < 0) { // eof
-				av_free_packet(&nextPacket);
 				break;
 			}
-			
-			if (nextPacket.stream_index == _audioIndex) {
-//				_audioDecoderQueue->push(&nextPacket);
-				av_free_packet(&nextPacket);
-			} else if (nextPacket.stream_index == _videoIndex) {
-				_videoDecoderQueue.push(&nextPacket);
-			}
 		}
-		
-		avformat_close_input(&_mediaContext);
-		_mediaContext = 0;
-		[_demuxerState lock];
-		[_demuxerState unlockWithCondition:ThreadIsDone];
-	}
+	}];
 }
 
-- (void)closeMedia
+- (void)stop
 {
-	if (self.mediaRunning) {
-		self.mediaRunning = NO;
-
-		_audioDecoderQueue->stop();
-		[_audioOutput stop];
-		delete _audioDecoderQueue;
-		
-		_videoDecoderQueue.stop();
-		_videoQueue.stop();
-		
-		[_demuxerState lockWhenCondition:ThreadIsDone];
-		[_demuxerState unlock];
-	} else {
-		return;
-	}
+	[_videoLayer stopRequestingMediaData];
+	[_demuxer stop];
 }
 
 - (IBAction)done:(id)sender
 {
-	[self closeMedia];
+	[self stop];
+	[_demuxer close];
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 

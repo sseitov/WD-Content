@@ -9,6 +9,16 @@
 #import <Foundation/Foundation.h>
 #import "Decoder.h"
 
+@class AudioDecoder;
+
+@protocol AudioDecoderDelegate <NSObject>
+
+- (void)audioDecoder:(AudioDecoder*)decoder decodedBuffer:(AVFrame*)frame;
+
+@end
+
 @interface AudioDecoder : NSObject<Decoder>
+
+@property (weak, nonatomic) id<AudioDecoderDelegate> delegate;
 
 @end

@@ -51,6 +51,7 @@
 		2C605E521A6BC08000736968 /* AudioRingBuffer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2C605E501A6BC08000736968 /* AudioRingBuffer.mm */; };
 		2C605E541A6BC25100736968 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C605E531A6BC25100736968 /* AudioToolbox.framework */; };
 		2C6E746B19C75ECA001D9971 /* SharesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C6E746A19C75ECA001D9971 /* SharesTableViewController.m */; };
+		2C7FD8C01A6CF62100718477 /* Demuxer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2C7FD8BF1A6CF62100718477 /* Demuxer.mm */; };
 		2CA1D7191854A78800276C67 /* InfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA1D7181854A78800276C67 /* InfoViewController.m */; };
 		2CA6B9F21A4567B800AFF041 /* AMSlideMenuContentSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA6B9E41A4567B800AFF041 /* AMSlideMenuContentSegue.m */; };
 		2CA6B9F31A4567B800AFF041 /* AMSlideMenuLeftMenuSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA6B9E61A4567B800AFF041 /* AMSlideMenuLeftMenuSegue.m */; };
@@ -157,6 +158,8 @@
 		2C605E531A6BC25100736968 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		2C6E746919C75ECA001D9971 /* SharesTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SharesTableViewController.h; sourceTree = "<group>"; };
 		2C6E746A19C75ECA001D9971 /* SharesTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SharesTableViewController.m; sourceTree = "<group>"; };
+		2C7FD8BE1A6CF62100718477 /* Demuxer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Demuxer.h; sourceTree = "<group>"; };
+		2C7FD8BF1A6CF62100718477 /* Demuxer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Demuxer.mm; sourceTree = "<group>"; };
 		2CA1D7171854A78800276C67 /* InfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InfoViewController.h; path = "WD Content/InfoViewController.h"; sourceTree = "<group>"; };
 		2CA1D7181854A78800276C67 /* InfoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = InfoViewController.m; path = "WD Content/InfoViewController.m"; sourceTree = "<group>"; };
 		2CA6B9E31A4567B800AFF041 /* AMSlideMenuContentSegue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AMSlideMenuContentSegue.h; path = "WD Content/AMSlideMenu/AMSlideMenuContentSegue.h"; sourceTree = "<group>"; };
@@ -390,6 +393,8 @@
 				2C5875361A6AF1590069F3F1 /* VTDecoder.h */,
 				2C5875371A6AF1590069F3F1 /* VTDecoder.mm */,
 				2C5875351A6AE8CD0069F3F1 /* SynchroQueue.h */,
+				2C7FD8BE1A6CF62100718477 /* Demuxer.h */,
+				2C7FD8BF1A6CF62100718477 /* Demuxer.mm */,
 				2C5875001A6AC25D0069F3F1 /* VideoViewController.h */,
 				2C5875011A6AC25D0069F3F1 /* VideoViewController.mm */,
 			);
@@ -612,6 +617,7 @@
 				2C0AB2BA1A4B37F60007D700 /* DropboxClient.m in Sources */,
 				ED2194BE19C9AA800053C8B3 /* AFURLSessionManager.m in Sources */,
 				2CA6B9F51A4567B800AFF041 /* AMSlideMenuMainViewController.m in Sources */,
+				2C7FD8C01A6CF62100718477 /* Demuxer.mm in Sources */,
 				2CA6B9FD1A4567DD00AFF041 /* LeftMenuVC.m in Sources */,
 				2C170113184925F800A37516 /* KxSMBProvider.m in Sources */,
 				2CA88715187EA87F0074B73E /* ContentModel.xcdatamodeld in Sources */,
@@ -787,7 +793,7 @@
 				);
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "0e1a1939-ff79-4195-ab6f-66cfa857c696";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};
@@ -819,7 +825,7 @@
 					"$(PROJECT_DIR)/depends/libs/lib",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "0e1a1939-ff79-4195-ab6f-66cfa857c696";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};

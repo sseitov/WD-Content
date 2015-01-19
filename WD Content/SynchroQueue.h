@@ -20,21 +20,29 @@ protected:
 	std::condition_variable _empty;
 	std::condition_variable _full;
 	bool					_stopped;
-	int                     _size;
+	
+	virtual void free(T*) = 0;
+
 public:
 	
 	SynchroQueue(SynchroQueue const&) = delete;
-	SynchroQueue() : _stopped(false), _size(8) {}
-	SynchroQueue(int size) : _stopped(false), _size(size) {}
+	SynchroQueue() : _stopped(false) {}
 	
-	virtual void free(T*) {}
-	
-	virtual bool push(T* elem)
+	int size()
 	{
 		std::unique_lock<std::mutex> lock(_mutex);
-		if (_queue.size() > _size) {
-			_full.wait(lock, [this]() { return (_queue.size() < _size || _stopped);});
-		}
+		return _queue.size();
+	}
+	
+	bool empty()
+	{
+		std::unique_lock<std::mutex> lock(_mutex);
+		return _queue.empty();
+	}
+	
+	bool push(T* elem)
+	{
+		std::unique_lock<std::mutex> lock(_mutex);
 		if (_stopped) {
 			return false;
 		} else {
@@ -58,28 +66,17 @@ public:
 		}
 	}
 	
-	void start()
-	{
-		_stopped = false;
-	}
-	
 	void stop()
 	{
+		std::unique_lock<std::mutex> lock(_mutex);
 		_stopped = true;
+		while (!_queue.empty()) {
+			T elem = _queue.front();
+			free(&elem);
+			_queue.pop_front();
+		}
 		_full.notify_one();
 		_empty.notify_one();
-	}
-	
-	int size()
-	{
-		std::unique_lock<std::mutex> lock(_mutex);
-		return (int)_queue.size();
-	}
-	
-	bool empty()
-	{
-		std::unique_lock<std::mutex> lock(_mutex);
-		return _queue.empty();
 	}
 };
 

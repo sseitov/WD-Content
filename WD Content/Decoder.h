@@ -16,6 +16,6 @@ extern "C" {
 
 - (BOOL)openWithContext:(AVCodecContext*)context;
 - (void)close;
-- (BOOL)decodePacket:(AVPacket*)packet toFrame:(AVFrame*)frame;
+- (BOOL)decodePacket:(AVPacket*)packet;
 
 @end

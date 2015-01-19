@@ -14,17 +14,12 @@
 
 @protocol VTDecoderDelegate <NSObject>
 
-- (void)decoder:(VTDecoder*)decoder decodedBuffer:(CMSampleBufferRef)buffer;
+- (void)videoDecoder:(VTDecoder*)decoder decodedBuffer:(CMSampleBufferRef)buffer;
 
 @end
 
 @interface VTDecoder : NSObject<Decoder>
 
 @property (weak, nonatomic) id<VTDecoderDelegate> delegate;
-/*
-- (BOOL)openWithContext:(AVCodecContext*)codec;
-- (void)close;
-- (BOOL)decodePacket:(AVPacket*)packet toFrame:(AVFrame*)frame;
-*/
 
 @end

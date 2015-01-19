@@ -19,6 +19,73 @@
 
 @end
 
+/* extradata
+ 
+ bits
+ 8   version ( always 0x01 )
+ 8   avc profile ( sps[0][1] )
+ 8   avc compatibility ( sps[0][2] )
+ 8   avc level ( sps[0][3] )
+ 6   reserved ( all bits on )
+ 2   NALULengthSizeMinusOne
+ 3   reserved ( all bits on )
+ 5   number of SPS NALUs (usually 1)
+ repeated once per SPS:
+ 16     SPS size
+ variable   SPS NALU data
+ 8   number of PPS NALUs (usually 1)
+ repeated once per PPS
+ 16    PPS size
+ variable PPS NALU data
+ 
+ */
+
+static CMVideoFormatDescriptionRef CreateFormat(AVCodecContext* context)
+{
+	switch (context->codec_id) {
+		case AV_CODEC_ID_MPEG4:
+			/*			if (context->extradata_size) {
+				return NO;
+			 } else {
+				format = CreateFormatDescription(kVTFormatMPEG4Video, theCodec->width, theCodec->height);
+			 }*/
+			NSLog(@"AV_CODEC_ID_MPEG4 not implemented yet");
+			break;
+		case AV_CODEC_ID_MPEG2VIDEO:
+			//			format = CreateFormatDescription(kVTFormatMPEG2Video, theCodec->width, theCodec->height);
+			NSLog(@"AV_CODEC_ID_MPEG2VIDEO not implemented yet");
+			return NULL;
+		case AV_CODEC_ID_H264:
+		{
+			uint16_t spsLen = NTOHS(*(uint16_t*)(context->extradata+6));
+			const uint8_t *sps = context->extradata+8;
+			
+			uint16_t ppsLen = NTOHS(*((uint16_t*)(context->extradata+8+spsLen+1)));
+			const uint8_t *pps = context->extradata+8+spsLen+3;
+			
+			const uint8_t* const parameterSetPointers[2] = { sps , pps };
+			const size_t parameterSetSizes[2] = { spsLen, ppsLen };
+			
+			CMVideoFormatDescriptionRef format = NULL;
+			OSStatus err = CMVideoFormatDescriptionCreateFromH264ParameterSets(kCFAllocatorDefault,
+																			   2,
+																			   parameterSetPointers,
+																			   parameterSetSizes,
+																			   4,
+																			   &format);
+			if (err != noErr) {
+				return NULL;
+			} else {
+				return format;
+			}
+		}
+			break;
+		default:
+			break;
+	}
+	return NULL;
+}
+
 void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
                                      void *sourceFrameRefCon,
                                      OSStatus status,
@@ -29,50 +96,15 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 
 @implementation VTDecoder
 
-/* extradata
-
- bits
-8   version ( always 0x01 )
-8   avc profile ( sps[0][1] )
-8   avc compatibility ( sps[0][2] )
-8   avc level ( sps[0][3] )
-6   reserved ( all bits on )
-2   NALULengthSizeMinusOne
-3   reserved ( all bits on )
-5   number of SPS NALUs (usually 1)
-repeated once per SPS:
-16     SPS size
-variable   SPS NALU data
-8   number of PPS NALUs (usually 1)
-repeated once per PPS
-16    PPS size
-variable PPS NALU data
-
- */
-
 - (BOOL)openWithContext:(AVCodecContext*)context
 {
 	std::unique_lock<std::mutex> lock(_mutex);
 	
-	uint16_t spsLen = NTOHS(*(uint16_t*)(context->extradata+6));
-	const uint8_t *sps = context->extradata+8;
+	_videoFormat = CreateFormat(context);
+	if (!_videoFormat) {
+		return NO;
+	}
 	
-	uint16_t ppsLen = NTOHS(*((uint16_t*)(context->extradata+8+spsLen+1)));
-	const uint8_t *pps = context->extradata+8+spsLen+3;
-	
-	const uint8_t* const parameterSetPointers[2] = { sps , pps };
-	const size_t parameterSetSizes[2] = { spsLen, ppsLen };
-
-    OSStatus err = CMVideoFormatDescriptionCreateFromH264ParameterSets(kCFAllocatorDefault,
-                                                                       2,
-                                                                       parameterSetPointers,
-                                                                       parameterSetSizes,
-                                                                       4,
-                                                                       &_videoFormat);
-    if (err != noErr) {
-        return NO;
-    }
-    
     NSDictionary* destinationPixelBufferAttributes = @{
                                                        (id)kCVPixelBufferPixelFormatTypeKey : [NSNumber numberWithInt:kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange],
                                                        (id)kCVPixelBufferWidthKey : [NSNumber numberWithInt:context->width],
@@ -118,7 +150,7 @@ variable PPS NALU data
     }
 }
 
-- (BOOL)decodePacket:(AVPacket*)packet toFrame:(AVFrame*)frame
+- (BOOL)decodePacket:(AVPacket*)packet
 {
 	std::unique_lock<std::mutex> lock(_mutex);
 	if (!_context) {
@@ -205,7 +237,7 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
                                                         &sampleBuffer);
             CFRelease(videoInfo);
             if (status == noErr) {
-                [decoder.delegate decoder:decoder decodedBuffer:sampleBuffer];
+                [decoder.delegate videoDecoder:decoder decodedBuffer:sampleBuffer];
             }
         }
     }
