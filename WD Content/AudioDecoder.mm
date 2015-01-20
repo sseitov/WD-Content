@@ -13,8 +13,9 @@ extern "C" {
 #include <mutex>
 
 @interface AudioDecoder () {
-	std::mutex		_mutex;
+	std::mutex			_mutex;
 	dispatch_queue_t	_decoderQueue;
+	AVCodecContext*		_context;
 }
 
 
@@ -59,21 +60,18 @@ extern "C" {
 	_context = NULL;
 }
 
-- (BOOL)decodePacket:(AVPacket*)packet
+- (BOOL)decodePacket:(AVPacket*)packet toFrame:(AVFrame*)frame
 {
 	std::unique_lock<std::mutex> lock(_mutex);
 	if (_context) {
 		int got_frame = 0;
 		int len = -1;
-		static AVFrame frame;
-		avcodec_get_frame_defaults(&frame);
-		len = avcodec_decode_audio4(_context, &frame, &got_frame, packet);
+		len = avcodec_decode_audio4(_context, frame, &got_frame, packet);
 		if (len > 0 && got_frame) {
-			frame.pts = frame.pkt_dts;
-			if (frame.pts == AV_NOPTS_VALUE) {
-				frame.pts = frame.pkt_pts;
+			frame->pts = frame->pkt_dts;
+			if (frame->pts == AV_NOPTS_VALUE) {
+				frame->pts = frame->pkt_pts;
 			}
-			[self.delegate audioDecoder:self decodedBuffer:&frame];
 			return YES;
 		}
 	}

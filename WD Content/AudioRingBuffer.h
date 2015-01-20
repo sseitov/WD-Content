@@ -27,9 +27,6 @@ struct AudioRingBuffer
 {
     int						_count;			// maximum number of elements
 	int						_bufferSize;	// size element of data
-	AVSampleFormat			_format;
-	int						_num_channels;
-	
     int						_start;			// index of oldest element
     int						_end;			// index at which to write new element
 	bool					_stopped;
@@ -41,7 +38,7 @@ struct AudioRingBuffer
 	std::mutex				_mutex;
 	std::condition_variable _overflow;
 	
-	AudioRingBuffer(int elementsCount, int bufferSize, AVSampleFormat format, int num_channels);
+	AudioRingBuffer(int elementsCount, int bufferSize);
 	~AudioRingBuffer();
 	
 	bool isFull() { return (_end + 1) % _count == _start; }
@@ -49,8 +46,7 @@ struct AudioRingBuffer
 };
 
 bool readRingBuffer(AudioRingBuffer* rb, AudioQueueBufferRef& buffer);
-void writeRingBuffer(AudioRingBuffer* rb, uint8_t* data[], int numSamples, int64_t pts);
-
+void writeRingBuffer(AudioRingBuffer* rb, AVFrame* audioFrame);
 void resetRingBuffer(AudioRingBuffer* rb);
 void flushRingBuffer(AudioRingBuffer* rb);
 int64_t ringBufferPTS(AudioRingBuffer* rb);

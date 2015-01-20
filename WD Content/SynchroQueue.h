@@ -12,33 +12,24 @@
 #include <list>
 #include <mutex>
 
+extern "C" {
+#	include "libavcodec/avcodec.h"
+};
+
 template <class T>
 class SynchroQueue {
 protected:
 	std::list<T>			_queue;
 	std::mutex				_mutex;
 	std::condition_variable _empty;
-	std::condition_variable _full;
 	bool					_stopped;
 	
-	virtual void free(T*) = 0;
-
 public:
 	
 	SynchroQueue(SynchroQueue const&) = delete;
 	SynchroQueue() : _stopped(false) {}
 	
-	int size()
-	{
-		std::unique_lock<std::mutex> lock(_mutex);
-		return _queue.size();
-	}
-	
-	bool empty()
-	{
-		std::unique_lock<std::mutex> lock(_mutex);
-		return _queue.empty();
-	}
+	virtual void free(T*) = 0;
 	
 	bool push(T* elem)
 	{
@@ -52,6 +43,14 @@ public:
 		}
 	}
 	
+	bool front(T* elem)
+	{
+		std::unique_lock<std::mutex> lock(_mutex);
+		if (!_queue.empty())
+			return *elem = _queue.front(), true;
+		return false;
+	}
+	
 	bool pop(T* elem)
 	{
 		std::unique_lock<std::mutex> lock(_mutex);
@@ -61,22 +60,42 @@ public:
 		} else {
 			*elem = _queue.front();
 			_queue.pop_front();
-			_full.notify_one();
 			return true;
 		}
 	}
 	
-	void stop()
+	void start()
+	{
+		_stopped = false;
+	}
+	
+	void flush()
 	{
 		std::unique_lock<std::mutex> lock(_mutex);
-		_stopped = true;
 		while (!_queue.empty()) {
 			T elem = _queue.front();
 			free(&elem);
 			_queue.pop_front();
 		}
-		_full.notify_one();
 		_empty.notify_one();
+	}
+	
+	void stop()
+	{
+		_stopped = true;
+		flush();
+	}
+	
+	int size()
+	{
+		std::unique_lock<std::mutex> lock(_mutex);
+		return (int)_queue.size();
+	}
+	
+	bool empty()
+	{
+		std::unique_lock<std::mutex> lock(_mutex);
+		return _queue.empty();
 	}
 };
 

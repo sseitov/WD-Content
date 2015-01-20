@@ -144,7 +144,6 @@
 		2C58752B1A6ACA850069F3F1 /* libwbclient.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libwbclient.a; path = depends/libs/lib/libwbclient.a; sourceTree = "<group>"; };
 		2C5875301A6ADC5A0069F3F1 /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
 		2C5875321A6ADC6D0069F3F1 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
-		2C5875341A6AE52A0069F3F1 /* Decoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Decoder.h; sourceTree = "<group>"; };
 		2C5875351A6AE8CD0069F3F1 /* SynchroQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SynchroQueue.h; sourceTree = "<group>"; };
 		2C5875361A6AF1590069F3F1 /* VTDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VTDecoder.h; sourceTree = "<group>"; };
 		2C5875371A6AF1590069F3F1 /* VTDecoder.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = VTDecoder.mm; sourceTree = "<group>"; };
@@ -387,7 +386,6 @@
 				2C605E4E1A6BC08000736968 /* AudioOutput.mm */,
 				2C605E4F1A6BC08000736968 /* AudioRingBuffer.h */,
 				2C605E501A6BC08000736968 /* AudioRingBuffer.mm */,
-				2C5875341A6AE52A0069F3F1 /* Decoder.h */,
 				2C58753B1A6AF7DC0069F3F1 /* AudioDecoder.h */,
 				2C58753C1A6AF7DC0069F3F1 /* AudioDecoder.mm */,
 				2C5875361A6AF1590069F3F1 /* VTDecoder.h */,

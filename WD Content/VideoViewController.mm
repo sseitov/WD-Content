@@ -11,9 +11,6 @@
 #import "Demuxer.h"
 #import "MBProgressHUD.h"
 
-#import "Decoder.h"
-#include "SynchroQueue.h"
-
 #import <CoreMedia/CoreMedia.h>
 
 @interface VideoViewController () <DemuxerDelegate> {
@@ -97,7 +94,6 @@
 - (void)play
 {
 	[_demuxer play];
-	NSLog(@"current thread %@", [NSThread currentThread]);
 	[_videoOutput requestMediaDataWhenReadyOnQueue:_videoOutputQueue usingBlock:^() {
 		while (_videoOutput.isReadyForMoreMediaData) {
 			CMSampleBufferRef buffer = _demuxer.takeVideo;

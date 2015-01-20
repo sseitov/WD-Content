@@ -8,7 +8,10 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreMedia/CoreMedia.h>
-#import "Decoder.h"
+
+extern "C" {
+#	include "libavcodec/avcodec.h"
+}
 
 @class VTDecoder;
 
@@ -18,8 +21,12 @@
 
 @end
 
-@interface VTDecoder : NSObject<Decoder>
+@interface VTDecoder : NSObject
 
 @property (weak, nonatomic) id<VTDecoderDelegate> delegate;
+
+- (BOOL)openWithContext:(AVCodecContext*)context;
+- (void)close;
+- (BOOL)decodePacket:(AVPacket*)packet;
 
 @end

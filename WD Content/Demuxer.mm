@@ -13,8 +13,7 @@
 #import "AudioOutput.h"
 
 #include <queue>
-#include <mutex>
-#include <vector>
+#include "SynchroQueue.h"
 
 extern "C" {
 #	include "libavcodec/avcodec.h"
@@ -23,25 +22,26 @@ extern "C" {
 #	include "libavfilter/avfilter.h"
 };
 
-struct AudioData {
-	std::vector<uint8_t> data[AV_NUM_DATA_POINTERS];
-	int numSamples;
-	int64_t pts;
+class PacketQueue : public SynchroQueue<AVPacket> {
+public:
+	virtual void free(AVPacket* packet)
+	{
+		av_free_packet(packet);
+	}
 };
 
-@interface Demuxer () <VTDecoderDelegate, AudioDecoderDelegate, AudioOutputDelegate> {
-	
-	dispatch_queue_t	_audioOutputQueue;
+@interface Demuxer () <VTDecoderDelegate> {
 	
 	dispatch_queue_t	_demuxerQueue;
 	std::mutex			_videoMutex;
-	std::mutex			_audioMutex;
-
+	
+	dispatch_queue_t	_audioQueue;
+	PacketQueue			_packetQueue;
+	
 	AVFormatContext*	_mediaContext;
 	std::mutex			_mediaMutex;
 	
 	std::queue<CMSampleBufferRef>	_videoQueue;
-	std::queue<AudioData>			_audioQueue;
 }
 
 @property (strong, nonatomic) VTDecoder *videoDecoder;
@@ -60,18 +60,14 @@ struct AudioData {
 {
 	self = [super init];
 	if (self) {
-		_audioOutputQueue = dispatch_queue_create("com.vchannel.WD-Content.AudioOutput", DISPATCH_QUEUE_SERIAL);
-		
+		_audioDecoder = [[AudioDecoder alloc] init];
 		_audioOutput = [[AudioOutput alloc] init];
-		_audioOutput.delegate = self;
 		
 		_demuxerQueue = dispatch_queue_create("com.vchannel.WD-Content.Demuxer", DISPATCH_QUEUE_SERIAL);
+		_audioQueue = dispatch_queue_create("com.vchannel.WD-Content.Audio", DISPATCH_QUEUE_SERIAL);
 		
 		_videoDecoder = [[VTDecoder alloc] init];
 		_videoDecoder.delegate = self;
-		
-		_audioDecoder = [[AudioDecoder alloc] init];
-		_audioDecoder.delegate = self;
 	}
 	return self;
 }
@@ -144,10 +140,26 @@ struct AudioData {
 			completion(YES);
 		}
 	});
+	dispatch_async(_audioQueue, ^() {
+		AVPacket packet;
+		static AVFrame frame;
+		while (_packetQueue.pop(&packet)) {
+			avcodec_get_frame_defaults(&frame);
+			[_audioDecoder decodePacket:&packet toFrame:&frame];
+			av_free_packet(&packet);
+			if (!_audioOutput.started) {
+				[_audioOutput startWithFrame:&frame];
+			}
+			if (_audioOutput.started) {
+				[_audioOutput writeFrame:&frame];
+			}
+		}
+	});
 }
 
 - (void)close
 {
+	_packetQueue.stop();
 	std::unique_lock<std::mutex> lock(_mediaMutex);
 	avformat_close_input(&_mediaContext);
 	_mediaContext = NULL;
@@ -184,67 +196,14 @@ struct AudioData {
 			}
 			
 			if (nextPacket.stream_index == _audioIndex) {
-				[_audioDecoder decodePacket:&nextPacket];
+				_packetQueue.push(&nextPacket);
 			} else if (nextPacket.stream_index == _videoIndex) {
 				[_videoDecoder decodePacket:&nextPacket];
+				av_free_packet(&nextPacket);
 			}
-			av_free_packet(&nextPacket);
 		}
 		doRequest = NO;
 	});
-}
-
-#pragma mark - AudioDecoder
-
-- (void)audioDecoder:(AudioDecoder*)decoder decodedBuffer:(AVFrame*)frame
-{
-	if (!_audioOutput.started) {
-		if (![_audioOutput startWithFrame:frame]) {
-			NSLog(@"error start audio");
-		}
-	}
-	if (_audioOutput.isReadyForMoreAudioData) {
-		[_audioOutput writeData:frame->data numSamples:frame->nb_samples withPts:frame->pts];
-	} else {
-		std::unique_lock<std::mutex> lock(_audioMutex);
-		AudioData audioData;
-		int size = frame->linesize[0];
-		for (int i=0; i<AV_NUM_DATA_POINTERS; i++) {
-			uint8_t* ptr = frame->data[i];
-			if (ptr) {
-				audioData.data[i].resize(size);
-				memcpy(&(audioData.data[i])[0], ptr, size);
-			}
-		}
-		audioData.pts = frame->pts;
-		_audioQueue.push(audioData);
-	}
-}
-
-- (void)requestMoreAudioData:(AudioOutput*)output
-{
-//	dispatch_async(_audioOutputQueue, ^() {
-		while (_audioOutput.isReadyForMoreAudioData) {
-			{
-				std::unique_lock<std::mutex> lock(_audioMutex);
-				if (!_audioQueue.empty()) {
-					AudioData audioData = _audioQueue.front();
-					uint8_t* rawData[AV_NUM_DATA_POINTERS];
-					for (int i=0; i<AV_NUM_DATA_POINTERS; i++) {
-						if (audioData.data[i].size() > 0) {
-							rawData[i] = &(audioData.data[i])[0];
-						} else {
-							rawData[i] = NULL;
-						}
-					}
-					[output writeData:rawData numSamples:audioData.numSamples withPts:audioData.pts];
-					_audioQueue.pop();
-				} else {
-					break;
-				}
-			}
-		}
-//	});
 }
 
 #pragma mark - VTDecoder
@@ -266,7 +225,7 @@ struct AudioData {
 - (BOOL)isReadyForMoreVideoData
 {
 	std::unique_lock<std::mutex> lock(_videoMutex);
-	return _videoQueue.empty();
+	return (_videoQueue.size() < 2);
 }
 
 - (void)videoDecoder:(VTDecoder*)decoder decodedBuffer:(CMSampleBufferRef)buffer

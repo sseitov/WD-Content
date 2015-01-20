@@ -7,19 +7,15 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "Decoder.h"
 
-@class AudioDecoder;
+extern "C" {
+#	include "libavcodec/avcodec.h"
+}
 
-@protocol AudioDecoderDelegate <NSObject>
+@interface AudioDecoder : NSObject
 
-- (void)audioDecoder:(AudioDecoder*)decoder decodedBuffer:(AVFrame*)frame;
-
-@end
-
-@interface AudioDecoder : NSObject<Decoder>
-
-@property (weak, nonatomic) id<AudioDecoderDelegate> delegate;
-@property (readwrite, nonatomic) AVCodecContext* context;
+- (BOOL)openWithContext:(AVCodecContext*)context;
+- (void)close;
+- (BOOL)decodePacket:(AVPacket*)packet toFrame:(AVFrame*)frame;
 
 @end

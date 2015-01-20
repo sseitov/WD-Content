@@ -9,19 +9,15 @@
 #import "AudioOutput.h"
 #include <AudioToolbox/AudioToolbox.h>
 #include "AudioRingBuffer.h"
-#import "AudioDecoder.h"
-
-static std::mutex audioMutex;
 
 @interface AudioOutput () {
 	
 	AudioStreamBasicDescription			_dataFormat;
 	AudioQueueRef						_queue;
     AudioQueueTimelineRef				_timeLine;
+	AudioRingBuffer*					_ringBuffer;
 	AudioQueueBufferRef					_pool[AUDIO_POOL_SIZE];
 }
-
-@property (readwrite, nonatomic) AudioRingBuffer* ringBuffer;
 
 @end
 
@@ -29,29 +25,16 @@ static void AudioOutputCallback(void *inClientData,
 								AudioQueueRef inAQ,
 								AudioQueueBufferRef inBuffer)
 {
-	AudioOutput* output = (__bridge AudioOutput*)inClientData;
-	if (!readRingBuffer(output.ringBuffer, inBuffer)) {
-		if (output.isReadyForMoreAudioData) {
-			[output.delegate requestMoreAudioData:output];
-		}
-		if (!readRingBuffer(output.ringBuffer, inBuffer)) {
-			memset(inBuffer->mAudioData, 0, output.ringBuffer->_bufferSize);
-			inBuffer->mAudioDataByteSize = output.ringBuffer->_bufferSize;
-		}
+	AudioRingBuffer *rb = (AudioRingBuffer*)inClientData;
+	if (!readRingBuffer(rb, inBuffer)) {
+		memset(inBuffer->mAudioData, 0, rb->_bufferSize);
+		inBuffer->mAudioDataByteSize = rb->_bufferSize;
 	}
+
 	AudioQueueEnqueueBuffer(inAQ, inBuffer, 0, NULL);
 }
 
 @implementation AudioOutput
-
-- (BOOL)isReadyForMoreAudioData
-{
-	if (_ringBuffer) {
-		return !_ringBuffer->isFull();
-	} else {
-		return NO;
-	}
-}
 
 - (void)currentPTS:(int64_t*)ppts withTime:(int64_t*)ptime
 {
@@ -100,9 +83,9 @@ static void AudioOutputCallback(void *inClientData,
 		bufferSize = frame->nb_samples*sizeof(StereoFloatSample);
 	}
 	
-	_ringBuffer = new AudioRingBuffer(AUDIO_POOL_SIZE, bufferSize, (AVSampleFormat)frame->format, frame->channels);
+	_ringBuffer = new AudioRingBuffer(AUDIO_POOL_SIZE, bufferSize);
 		
-	AudioQueueNewOutput(&_dataFormat, AudioOutputCallback, (__bridge void*)self, NULL, 0, 0, &_queue);
+	AudioQueueNewOutput(&_dataFormat, AudioOutputCallback, _ringBuffer, NULL, 0, 0, &_queue);
 	AudioQueueSetParameter(_queue, kAudioQueueParam_Volume, 1.0);
 	AudioQueueCreateTimeline(_queue, &_timeLine);
 	
@@ -114,13 +97,20 @@ static void AudioOutputCallback(void *inClientData,
 	}
 	OSStatus startResult = AudioQueueStart(_queue, 0);
 	self.started = YES;
-	if (startResult != noErr) {
+	if (startResult != 0) {
 		NSLog(@"Audio not started, stopping");
 		[self stop];
 		return NO;
 	} else {
 		NSLog(@"Audio started");
 		return YES;
+	}
+}
+
+- (void)writeFrame:(AVFrame*)frame
+{
+	if (_started) {
+		writeRingBuffer(_ringBuffer, frame);
 	}
 }
 
@@ -152,12 +142,6 @@ static void AudioOutputCallback(void *inClientData,
 	
 	_started = NO;
 	NSLog(@"Audio stopped");
-}
-
-- (void)writeData:(uint8_t**)data numSamples:(int)numSamples withPts:(int64_t)pts
-{
-	std::unique_lock<std::mutex> lock(audioMutex);
-	writeRingBuffer(_ringBuffer, data, numSamples, pts);
 }
 
 - (double)getCurrentTime
