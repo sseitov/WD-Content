@@ -20,5 +20,6 @@
 @interface AudioDecoder : NSObject<Decoder>
 
 @property (weak, nonatomic) id<AudioDecoderDelegate> delegate;
+@property (readwrite, nonatomic) AVCodecContext* context;
 
 @end

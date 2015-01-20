@@ -10,6 +10,7 @@
 #import "TMDB.h"
 #import <DropboxSDK/DropboxSDK.h>
 #import "DataModel.h"
+#import <AVFoundation/AVFoundation.h>
 
 #include "libavformat/avformat.h"
 
@@ -30,6 +31,9 @@ NSString* const ErrorDBAccountNotification = @"ErrorDBAccountNotification";
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
 	[TMDB sharedInstance].apiKey = TMDB_API_KEY;
+	
+	[[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error: nil];
+	[[AVAudioSession sharedInstance] setActive:YES error:nil];
 	
 	avformat_network_init();
 	av_register_all();

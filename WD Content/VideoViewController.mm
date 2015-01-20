@@ -7,7 +7,6 @@
 //
 
 #import "VideoViewController.h"
-#import "AudioOutput.h"
 
 #import "Demuxer.h"
 #import "MBProgressHUD.h"
@@ -17,13 +16,13 @@
 
 #import <CoreMedia/CoreMedia.h>
 
-@interface VideoViewController () {
+@interface VideoViewController () <DemuxerDelegate> {
 	dispatch_queue_t _videoOutputQueue;
 }
 
 @property (strong, nonatomic) Demuxer* demuxer;
 
-@property (strong, nonatomic) AVSampleBufferDisplayLayer *videoLayer;
+@property (strong, nonatomic) AVSampleBufferDisplayLayer *videoOutput;
 
 - (IBAction)done:(id)sender;
 
@@ -37,22 +36,23 @@
 	
 	self.title = [_node.info title] ? _node.info.title : _node.name;
 	
-	_demuxer = [[Demuxer alloc] init];
+	_videoOutputQueue = dispatch_queue_create("com.vchannel.WD-Content.VideoOutput", DISPATCH_QUEUE_SERIAL);
 	
-	_videoLayer = [[AVSampleBufferDisplayLayer alloc] init];
-	_videoLayer.videoGravity = AVLayerVideoGravityResizeAspect;
-	_videoLayer.backgroundColor = [[UIColor blackColor] CGColor];
+	_videoOutput = [[AVSampleBufferDisplayLayer alloc] init];
+	_videoOutput.videoGravity = AVLayerVideoGravityResizeAspect;
+	_videoOutput.backgroundColor = [[UIColor blackColor] CGColor];
 	
 	CMTimebaseRef tmBase = nil;
 	CMTimebaseCreateWithMasterClock(CFAllocatorGetDefault(), CMClockGetHostTimeClock(),&tmBase);
-	_videoLayer.controlTimebase = tmBase;
-	CMTimebaseSetTime(_videoLayer.controlTimebase, CMTimeMake(5, 1));
-	CMTimebaseSetRate(_videoLayer.controlTimebase, 1.0);
+	_videoOutput.controlTimebase = tmBase;
+	CMTimebaseSetTime(_videoOutput.controlTimebase, CMTimeMake(5, 1));
+	CMTimebaseSetRate(_videoOutput.controlTimebase, 1.0);
 	
 	[self layoutScreen];
 	
-	_videoOutputQueue = dispatch_queue_create("com.vchannel.WD-Content.VideoOutput", DISPATCH_QUEUE_SERIAL);
-
+	_demuxer = [[Demuxer alloc] init];
+	_demuxer.delegate = self;
+	
 	[MBProgressHUD showHUDAddedTo:self.view animated:YES];
 	[_demuxer openWithPath:_node.path completion:^(BOOL success) {
 		dispatch_async(dispatch_get_main_queue(), ^() {
@@ -83,10 +83,10 @@
 
 - (void)layoutScreen
 {
-	[_videoLayer removeFromSuperlayer];
-	_videoLayer.bounds = self.view.bounds;
-	_videoLayer.position = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds));
-	[self.view.layer addSublayer:_videoLayer];
+	[_videoOutput removeFromSuperlayer];
+	_videoOutput.bounds = self.view.bounds;
+	_videoOutput.position = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds));
+	[self.view.layer addSublayer:_videoOutput];
 }
 
 - (void) willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
@@ -97,11 +97,12 @@
 - (void)play
 {
 	[_demuxer play];
-	[_videoLayer requestMediaDataWhenReadyOnQueue:_videoOutputQueue usingBlock:^() {
-		while (_videoLayer.isReadyForMoreMediaData) {
+	NSLog(@"current thread %@", [NSThread currentThread]);
+	[_videoOutput requestMediaDataWhenReadyOnQueue:_videoOutputQueue usingBlock:^() {
+		while (_videoOutput.isReadyForMoreMediaData) {
 			CMSampleBufferRef buffer = _demuxer.takeVideo;
 			if (buffer) {
-				[_videoLayer enqueueSampleBuffer:buffer];
+				[_videoOutput enqueueSampleBuffer:buffer];
 				CFRelease(buffer);
 			} else {
 				break;
@@ -112,7 +113,7 @@
 
 - (void)stop
 {
-	[_videoLayer stopRequestingMediaData];
+	[_videoOutput stopRequestingMediaData];
 	[_demuxer stop];
 }
 
@@ -121,6 +122,11 @@
 	[self stop];
 	[_demuxer close];
 	[self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)didStopped:(Demuxer *)demuxer
+{
+	NSLog(@"demuxer finished");
 }
 
 @end

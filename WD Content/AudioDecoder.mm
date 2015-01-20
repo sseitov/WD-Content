@@ -13,7 +13,6 @@ extern "C" {
 #include <mutex>
 
 @interface AudioDecoder () {
-	AVCodecContext* _context;
 	std::mutex		_mutex;
 	dispatch_queue_t	_decoderQueue;
 }

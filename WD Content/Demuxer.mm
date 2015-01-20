@@ -10,9 +10,11 @@
 #import "DataModel.h"
 #import "VTDecoder.h"
 #import "AudioDecoder.h"
+#import "AudioOutput.h"
 
 #include <queue>
 #include <mutex>
+#include <vector>
 
 extern "C" {
 #	include "libavcodec/avcodec.h"
@@ -21,15 +23,25 @@ extern "C" {
 #	include "libavfilter/avfilter.h"
 };
 
-@interface Demuxer () <VTDecoderDelegate, AudioDecoderDelegate> {
+struct AudioData {
+	std::vector<uint8_t> data[AV_NUM_DATA_POINTERS];
+	int numSamples;
+	int64_t pts;
+};
+
+@interface Demuxer () <VTDecoderDelegate, AudioDecoderDelegate, AudioOutputDelegate> {
+	
+	dispatch_queue_t	_audioOutputQueue;
 	
 	dispatch_queue_t	_demuxerQueue;
 	std::mutex			_videoMutex;
+	std::mutex			_audioMutex;
 
 	AVFormatContext*	_mediaContext;
 	std::mutex			_mediaMutex;
 	
-	std::queue<CMSampleBufferRef> _videoQueue;
+	std::queue<CMSampleBufferRef>	_videoQueue;
+	std::queue<AudioData>			_audioQueue;
 }
 
 @property (strong, nonatomic) VTDecoder *videoDecoder;
@@ -37,6 +49,8 @@ extern "C" {
 
 @property (nonatomic) int audioIndex;
 @property (nonatomic) int videoIndex;
+
+@property (strong, nonatomic) AudioOutput *audioOutput;
 
 @end
 
@@ -46,6 +60,11 @@ extern "C" {
 {
 	self = [super init];
 	if (self) {
+		_audioOutputQueue = dispatch_queue_create("com.vchannel.WD-Content.AudioOutput", DISPATCH_QUEUE_SERIAL);
+		
+		_audioOutput = [[AudioOutput alloc] init];
+		_audioOutput.delegate = self;
+		
 		_demuxerQueue = dispatch_queue_create("com.vchannel.WD-Content.Demuxer", DISPATCH_QUEUE_SERIAL);
 		
 		_videoDecoder = [[VTDecoder alloc] init];
@@ -92,27 +111,27 @@ extern "C" {
 	// Retrieve stream information
 	avformat_find_stream_info(mediaContext, NULL);
 	
+	_audioIndex = -1;
+	_videoIndex = -1;
 	AVCodecContext* enc;
 	for (unsigned i=0; i<mediaContext->nb_streams; ++i) {
 		enc = mediaContext->streams[i]->codec;
 		if (enc->codec_type == AVMEDIA_TYPE_AUDIO) {
 			if ([_audioDecoder openWithContext:enc]) {
 				_audioIndex = i;
-			} else {
-				NSLog(@"error open audio");
-				return NULL;
 			}
 		} else if (enc->codec_type == AVMEDIA_TYPE_VIDEO) {
 			if ([_videoDecoder openWithContext:enc]) {
 				_videoIndex = i;
-			} else {
-				NSLog(@"error open video");
-				return NULL;
 			}
 		}
 	}
-	
-	return mediaContext;
+
+	if (_audioIndex < 0 && _videoIndex < 0) {
+		return NULL;
+	} else {
+		return mediaContext;
+	}
 }
 
 - (void)openWithPath:(NSString*)path completion:(void (^)(BOOL))completion
@@ -179,7 +198,53 @@ extern "C" {
 
 - (void)audioDecoder:(AudioDecoder*)decoder decodedBuffer:(AVFrame*)frame
 {
-	
+	if (!_audioOutput.started) {
+		if (![_audioOutput startWithFrame:frame]) {
+			NSLog(@"error start audio");
+		}
+	}
+	if (_audioOutput.isReadyForMoreAudioData) {
+		[_audioOutput writeData:frame->data numSamples:frame->nb_samples withPts:frame->pts];
+	} else {
+		std::unique_lock<std::mutex> lock(_audioMutex);
+		AudioData audioData;
+		int size = frame->linesize[0];
+		for (int i=0; i<AV_NUM_DATA_POINTERS; i++) {
+			uint8_t* ptr = frame->data[i];
+			if (ptr) {
+				audioData.data[i].resize(size);
+				memcpy(&(audioData.data[i])[0], ptr, size);
+			}
+		}
+		audioData.pts = frame->pts;
+		_audioQueue.push(audioData);
+	}
+}
+
+- (void)requestMoreAudioData:(AudioOutput*)output
+{
+//	dispatch_async(_audioOutputQueue, ^() {
+		while (_audioOutput.isReadyForMoreAudioData) {
+			{
+				std::unique_lock<std::mutex> lock(_audioMutex);
+				if (!_audioQueue.empty()) {
+					AudioData audioData = _audioQueue.front();
+					uint8_t* rawData[AV_NUM_DATA_POINTERS];
+					for (int i=0; i<AV_NUM_DATA_POINTERS; i++) {
+						if (audioData.data[i].size() > 0) {
+							rawData[i] = &(audioData.data[i])[0];
+						} else {
+							rawData[i] = NULL;
+						}
+					}
+					[output writeData:rawData numSamples:audioData.numSamples withPts:audioData.pts];
+					_audioQueue.pop();
+				} else {
+					break;
+				}
+			}
+		}
+//	});
 }
 
 #pragma mark - VTDecoder
@@ -193,7 +258,7 @@ extern "C" {
 		return buffer;
 	} else {
 		[self requestMoreMediaData];
-		NSLog(@"requestMoreMediaData");
+//		NSLog(@"requestMoreMediaData");
 		return NULL;
 	}
 }

@@ -10,6 +10,7 @@
 #import <AVFoundation/AVFoundation.h>
 
 @class Demuxer;
+struct AVCodecContext;
 
 @protocol DemuxerDelegate <NSObject>
 
