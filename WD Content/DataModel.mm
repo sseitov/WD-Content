@@ -8,10 +8,14 @@
 
 #import "DataModel.h"
 #import "Node.h"
+#include <mutex>
 
 NSString* const DataModelDidChangeNotification = @"DataModelDidChangeNotification";
 
-@interface DataModel () <KxSMBProviderDelegate>
+@interface DataModel () <KxSMBProviderDelegate> {
+	
+	std::mutex _mutex;
+}
 
 @end
 
@@ -121,6 +125,8 @@ NSString * const kDataManagerAuthName = @"Auth.plist";
 
 - (BOOL)save
 {
+	std::unique_lock<std::mutex> lock(_mutex);
+	
 	if (![self.mainObjectContext hasChanges]) {
 		NSLog(@"data not changed");
 		return YES;

@@ -13,15 +13,27 @@
 
 #import <CoreMedia/CoreMedia.h>
 
+enum {
+	StillWorking,
+	IsStopped
+};
+
 @interface VideoViewController () <DemuxerDelegate> {
 	dispatch_queue_t _videoOutputQueue;
 }
+
+@property (weak, nonatomic) IBOutlet UIToolbar *topBar;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *titleItem;
+@property (weak, nonatomic) IBOutlet UIView *screen;
+@property (weak, nonatomic) IBOutlet UIToolbar *bottomBar;
 
 @property (strong, nonatomic) Demuxer* demuxer;
 
 @property (strong, nonatomic) AVSampleBufferDisplayLayer *videoOutput;
 
 - (IBAction)done:(id)sender;
+
+@property (strong, nonatomic) NSConditionLock *videoState;
 
 @end
 
@@ -31,8 +43,8 @@
 {
     [super viewDidLoad];
 	
-	self.title = [_node.info title] ? _node.info.title : _node.name;
-	
+	_titleItem.title = [_node.info title] ? _node.info.title : _node.name;
+
 	_videoOutputQueue = dispatch_queue_create("com.vchannel.WD-Content.VideoOutput", DISPATCH_QUEUE_SERIAL);
 	
 	_videoOutput = [[AVSampleBufferDisplayLayer alloc] init];
@@ -44,8 +56,6 @@
 	_videoOutput.controlTimebase = tmBase;
 	CMTimebaseSetTime(_videoOutput.controlTimebase, CMTimeMake(5, 1));
 	CMTimebaseSetRate(_videoOutput.controlTimebase, 1.0);
-	
-	[self layoutScreen];
 	
 	_demuxer = [[Demuxer alloc] init];
 	_demuxer.delegate = self;
@@ -81,9 +91,14 @@
 - (void)layoutScreen
 {
 	[_videoOutput removeFromSuperlayer];
-	_videoOutput.bounds = self.view.bounds;
-	_videoOutput.position = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds));
-	[self.view.layer addSublayer:_videoOutput];
+	_videoOutput.bounds = _screen.bounds;
+	_videoOutput.position = CGPointMake(CGRectGetMidX(_screen.bounds), CGRectGetMidY(_screen.bounds));
+	[_screen.layer addSublayer:_videoOutput];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+	[self layoutScreen];
 }
 
 - (void) willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
@@ -93,9 +108,10 @@
 
 - (void)play
 {
+	_videoState = [[NSConditionLock alloc] initWithCondition:StillWorking];
 	[_demuxer play];
 	[_videoOutput requestMediaDataWhenReadyOnQueue:_videoOutputQueue usingBlock:^() {
-		while (_videoOutput.isReadyForMoreMediaData) {
+		while (_videoOutput && _videoOutput.isReadyForMoreMediaData) {
 			CMSampleBufferRef buffer = _demuxer.takeVideo;
 			if (buffer) {
 				[_videoOutput enqueueSampleBuffer:buffer];
@@ -104,6 +120,8 @@
 				break;
 			}
 		}
+		[_videoState lock];
+		[_videoState unlockWithCondition:IsStopped];
 	}];
 }
 
@@ -111,6 +129,8 @@
 {
 	[_videoOutput stopRequestingMediaData];
 	[_demuxer stop];
+	[_videoState lockWhenCondition:IsStopped];
+	[_videoState unlock];
 }
 
 - (IBAction)done:(id)sender

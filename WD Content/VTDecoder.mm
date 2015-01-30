@@ -39,6 +39,28 @@
  variable PPS NALU data
  
  */
+#pragma pack(push,1)
+
+struct SpsHeader
+{
+	uint8_t     version;                    // ( always 0x01 )
+	uint8_t     avc_profile;                // ( sps[0][1] )
+	uint8_t     avc_compatibility;          // ( sps[0][2] )
+	uint8_t     avc_level;                  // ( sps[0][3] )
+	uint8_t     reserved1:6;                // ( all bits on )
+	uint8_t     NALULengthSizeMinusOne:2;
+	uint8_t     reserved2:3;                // ( all bits on )
+	uint8_t     number_of_SPS_NALUs:5;      // (usually 1)
+	uint16_t    SPS_size;
+};
+
+struct PpsHeader
+{
+	uint8_t     number_of_PPS_NALUs;        // (usually 1)
+	uint16_t    PPS_size;
+};
+
+#pragma pack(pop)
 
 static CMVideoFormatDescriptionRef CreateFormat(AVCodecContext* context)
 {
@@ -57,12 +79,21 @@ static CMVideoFormatDescriptionRef CreateFormat(AVCodecContext* context)
 			return NULL;
 		case AV_CODEC_ID_H264:
 		{
+			SpsHeader spsHeader = *((SpsHeader*)context->extradata);
+			uint16_t spsLen = NTOHS(spsHeader.SPS_size);
+			const uint8_t *sps = context->extradata+sizeof(SpsHeader);
+			
+			PpsHeader ppsHeader = *((PpsHeader*)(context->extradata + sizeof(SpsHeader)+spsLen));
+			uint16_t ppsLen = NTOHS(ppsHeader.PPS_size);
+			const uint8_t *pps = context->extradata+sizeof(SpsHeader)+spsLen+sizeof(PpsHeader);
+			
+/*
 			uint16_t spsLen = NTOHS(*(uint16_t*)(context->extradata+6));
 			const uint8_t *sps = context->extradata+8;
 			
 			uint16_t ppsLen = NTOHS(*((uint16_t*)(context->extradata+8+spsLen+1)));
 			const uint8_t *pps = context->extradata+8+spsLen+3;
-			
+*/
 			const uint8_t* const parameterSetPointers[2] = { sps , pps };
 			const size_t parameterSetSizes[2] = { spsLen, ppsLen };
 			
@@ -240,7 +271,7 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
                 [decoder.delegate videoDecoder:decoder decodedBuffer:sampleBuffer];
             }
         }
+		CMSampleBufferRef decodeBuffer = (CMSampleBufferRef)sourceFrameRefCon;
+		CFRelease(decodeBuffer);
     }
-    CMSampleBufferRef decodeBuffer = (CMSampleBufferRef)sourceFrameRefCon;
-    CFRelease(decodeBuffer);
 }

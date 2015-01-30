@@ -68,7 +68,7 @@
 		2CA6BA0E1A45BF9700AFF041 /* default.css in Resources */ = {isa = PBXBuildFile; fileRef = 2CA6BA0D1A45BF9700AFF041 /* default.css */; };
 		2CA88715187EA87F0074B73E /* ContentModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2CA88713187EA87F0074B73E /* ContentModel.xcdatamodeld */; };
 		2CA8871C187EA9AA0074B73E /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CA8871B187EA9AA0074B73E /* CoreData.framework */; };
-		2CA8871F187EAEDE0074B73E /* DataModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA8871E187EAEDE0074B73E /* DataModel.m */; };
+		2CA8871F187EAEDE0074B73E /* DataModel.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2CA8871E187EAEDE0074B73E /* DataModel.mm */; };
 		2CA95DC4184B2B4600927138 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA95DC3184B2B4600927138 /* SettingsViewController.m */; };
 		2CA95DC7184B2CB700927138 /* SettingsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA95DC6184B2CB700927138 /* SettingsCell.m */; };
 		2CAEE6D419C8C7C000B5DDD7 /* Node.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CAEE6D319C8C7C000B5DDD7 /* Node.m */; };
@@ -188,7 +188,7 @@
 		2CA88714187EA87F0074B73E /* ContentModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ContentModel.xcdatamodel; sourceTree = "<group>"; };
 		2CA8871B187EA9AA0074B73E /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		2CA8871D187EAEDE0074B73E /* DataModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataModel.h; sourceTree = "<group>"; };
-		2CA8871E187EAEDE0074B73E /* DataModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataModel.m; sourceTree = "<group>"; };
+		2CA8871E187EAEDE0074B73E /* DataModel.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DataModel.mm; sourceTree = "<group>"; };
 		2CA95DC2184B2B4600927138 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
 		2CA95DC3184B2B4600927138 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
 		2CA95DC5184B2CB700927138 /* SettingsCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsCell.h; sourceTree = "<group>"; };
@@ -466,7 +466,7 @@
 				2CAEE6D219C8C7C000B5DDD7 /* Node.h */,
 				2CAEE6D319C8C7C000B5DDD7 /* Node.m */,
 				2CA8871D187EAEDE0074B73E /* DataModel.h */,
-				2CA8871E187EAEDE0074B73E /* DataModel.m */,
+				2CA8871E187EAEDE0074B73E /* DataModel.mm */,
 				2CA88713187EA87F0074B73E /* ContentModel.xcdatamodeld */,
 				2C0AB2B81A4B37F60007D700 /* DropboxClient.h */,
 				2C0AB2B91A4B37F60007D700 /* DropboxClient.m */,
@@ -621,7 +621,7 @@
 				2CA88715187EA87F0074B73E /* ContentModel.xcdatamodeld in Sources */,
 				2C17010B1848F68200A37516 /* Cell.m in Sources */,
 				2CA6B9F71A4567B800AFF041 /* AMSlideMenuRightTableViewController.m in Sources */,
-				2CA8871F187EAEDE0074B73E /* DataModel.m in Sources */,
+				2CA8871F187EAEDE0074B73E /* DataModel.mm in Sources */,
 				2CAEE6D419C8C7C000B5DDD7 /* Node.m in Sources */,
 				2C5875381A6AF1590069F3F1 /* VTDecoder.mm in Sources */,
 				2CA95DC4184B2B4600927138 /* SettingsViewController.m in Sources */,
@@ -716,7 +716,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "36ea7fc9-ba77-4ad2-9d16-9c96399b6c5c";
+				PROVISIONING_PROFILE = "f0389d62-ea12-4baa-9c84-a093074bfadf";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "armv7 armv7s arm64";
@@ -791,7 +791,7 @@
 				);
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "0e1a1939-ff79-4195-ab6f-66cfa857c696";
+				PROVISIONING_PROFILE = "f0389d62-ea12-4baa-9c84-a093074bfadf";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};
@@ -823,7 +823,7 @@
 					"$(PROJECT_DIR)/depends/libs/lib",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "0e1a1939-ff79-4195-ab6f-66cfa857c696";
+				PROVISIONING_PROFILE = "7eb12b62-373d-4845-902d-145223504c73";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};

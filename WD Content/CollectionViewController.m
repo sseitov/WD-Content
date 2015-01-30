@@ -16,19 +16,7 @@
 
 #define IS_PAD ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
 
-@interface NodeActionSheet : UIActionSheet
-
-@property (strong, nonatomic) Node* node;
-
-@end
-
-@implementation NodeActionSheet
-
-@synthesize node;
-
-@end
-
-@interface CollectionViewController () <UIActionSheetDelegate>
+@interface CollectionViewController ()
 
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
@@ -226,28 +214,11 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
 	Node* node = [_nodes objectAtIndex:indexPath.row];
-	[self selectNode:node];
+	UICollectionViewCell *cell = [collectionView cellForItemAtIndexPath:indexPath];
+	[self selectNode:node fromRect:cell.frame inView:collectionView];
 }
 
-- (void)actionSheet:(NodeActionSheet*)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex
-{
-	switch (buttonIndex) {
-		case 0:
-			if (actionSheet.node.info) {
-				[self performSegueWithIdentifier:@"ShowInfo" sender:actionSheet.node];
-			} else {
-				[self performSegueWithIdentifier:@"CreateInfo" sender:actionSheet.node];
-			}
-			break;
-		case 1:
-			[self performSegueWithIdentifier:@"ShowVideo" sender:actionSheet.node];
-			break;
-		default:
-			break;
-	}
-}
-
-- (void)selectNode:(Node*)node
+- (void)selectNode:(Node*)node fromRect:(CGRect)rect inView:(UIView*)view
 {
 	if ([node.isFile boolValue] == NO) {
 		UIStoryboard* storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
@@ -257,12 +228,32 @@
 		[self.navigationController pushViewController:next animated:YES];
 	}
 	else {
-		NodeActionSheet *actions = [[NodeActionSheet alloc] initWithTitle:nil delegate:self
-														cancelButtonTitle:@"Cancel"
-												   destructiveButtonTitle:nil
-														otherButtonTitles:@"Show Info", @"View Video", nil];
-		actions.node = node;
-		[actions showInView:self.view];
+		UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"What do you want?"
+																				 message:@""
+																		  preferredStyle:UIAlertControllerStyleActionSheet];
+
+		UIAlertAction *action = nil;
+		action = [UIAlertAction actionWithTitle:@"Show Info" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+			if (node.info) {
+				[self performSegueWithIdentifier:@"ShowInfo" sender:node];
+			} else {
+				[self performSegueWithIdentifier:@"CreateInfo" sender:node];
+			}
+		}];
+		[alertController addAction:action];
+		action = [UIAlertAction actionWithTitle:@"View Video" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+			[self performSegueWithIdentifier:@"ShowVideo" sender:node];
+		}];
+		[alertController addAction:action];
+		action = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
+		[alertController addAction:action];
+		
+		if(IS_PAD) {
+			UIPopoverController *popover = [[UIPopoverController alloc] initWithContentViewController:alertController];
+			[popover presentPopoverFromRect:rect inView:view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+		} else {
+			[self presentViewController:alertController animated:YES completion:nil];
+		}
 	}
 }
 
@@ -316,13 +307,15 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
 	Node* node = [_nodes objectAtIndex:indexPath.row];
-	[self selectNode:node];
+	UITableViewCell* cell = [tableView cellForRowAtIndexPath:indexPath];
+	[self selectNode:node fromRect:cell.frame inView:tableView];
 }
 
 - (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
 {
 	Node* node = [_nodes objectAtIndex:indexPath.row];
-	[self selectNode:node];
+	UITableViewCell* cell = [tableView cellForRowAtIndexPath:indexPath];
+	[self selectNode:node fromRect:cell.frame inView:tableView];
 }
 
 @end

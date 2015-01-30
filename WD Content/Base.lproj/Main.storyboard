@@ -342,18 +342,64 @@
                         <viewControllerLayoutGuide type="bottom" id="CbV-C1-7pL"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="Z1h-0b-sFS">
-                        <rect key="frame" x="0.0" y="64" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" barStyle="black" translatesAutoresizingMaskIntoConstraints="NO" id="fog-up-NTZ">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="44" id="FtB-WD-UYU"/>
+                                </constraints>
+                                <items>
+                                    <barButtonItem style="done" systemItem="done" id="L4M-dB-Ls1">
+                                        <connections>
+                                            <action selector="done:" destination="Ubj-eM-oIy" id="Dhy-5B-An8"/>
+                                        </connections>
+                                    </barButtonItem>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="IcI-Xu-0GJ"/>
+                                    <barButtonItem title="Item" width="500" id="DNr-vX-dkF">
+                                        <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    </barButtonItem>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="Kub-v4-QNv"/>
+                                </items>
+                            </toolbar>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3mf-Pl-zvM">
+                                <rect key="frame" x="0.0" y="44" width="600" height="512"/>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                            </view>
+                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" barStyle="black" translatesAutoresizingMaskIntoConstraints="NO" id="jso-7m-97z">
+                                <rect key="frame" x="0.0" y="556" width="600" height="44"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="44" id="0jw-2U-Clo"/>
+                                </constraints>
+                                <items>
+                                    <barButtonItem title="Item" id="Mh1-PW-ah6"/>
+                                </items>
+                            </toolbar>
+                        </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="trailingMargin" secondItem="fog-up-NTZ" secondAttribute="trailing" constant="-16" id="94F-rD-4eB"/>
+                            <constraint firstItem="fog-up-NTZ" firstAttribute="top" secondItem="HTk-5K-F0J" secondAttribute="bottom" id="Fl3-1K-68p"/>
+                            <constraint firstItem="3mf-Pl-zvM" firstAttribute="leading" secondItem="Z1h-0b-sFS" secondAttribute="leadingMargin" constant="-16" id="IH2-aO-zcU"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="3mf-Pl-zvM" secondAttribute="trailing" constant="-16" id="Ly2-Pb-3EX"/>
+                            <constraint firstItem="fog-up-NTZ" firstAttribute="leading" secondItem="Z1h-0b-sFS" secondAttribute="leadingMargin" constant="-16" id="OZe-MX-hpA"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="jso-7m-97z" secondAttribute="trailing" constant="-16" id="PfV-p2-mUi"/>
+                            <constraint firstItem="jso-7m-97z" firstAttribute="leading" secondItem="Z1h-0b-sFS" secondAttribute="leadingMargin" constant="-16" id="d0c-wd-HJB"/>
+                            <constraint firstItem="jso-7m-97z" firstAttribute="top" secondItem="3mf-Pl-zvM" secondAttribute="bottom" id="few-Zj-kYo"/>
+                            <constraint firstItem="CbV-C1-7pL" firstAttribute="top" secondItem="jso-7m-97z" secondAttribute="bottom" id="qE5-eI-czo"/>
+                            <constraint firstItem="3mf-Pl-zvM" firstAttribute="top" secondItem="fog-up-NTZ" secondAttribute="bottom" id="ztp-s8-frD"/>
+                        </constraints>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout" top="YES"/>
-                    <navigationItem key="navigationItem" id="4aN-RE-xch">
-                        <barButtonItem key="leftBarButtonItem" systemItem="done" id="1DO-SW-dal">
-                            <connections>
-                                <action selector="done:" destination="Ubj-eM-oIy" id="hQn-Tx-jXW"/>
-                            </connections>
-                        </barButtonItem>
-                    </navigationItem>
+                    <navigationItem key="navigationItem" id="4aN-RE-xch"/>
+                    <nil key="simulatedStatusBarMetrics"/>
+                    <connections>
+                        <outlet property="bottomBar" destination="jso-7m-97z" id="PLs-Qb-SkO"/>
+                        <outlet property="screen" destination="3mf-Pl-zvM" id="9cz-AQ-6Jb"/>
+                        <outlet property="titleItem" destination="DNr-vX-dkF" id="oNt-ee-tqC"/>
+                        <outlet property="topBar" destination="fog-up-NTZ" id="Fgq-bx-aF8"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Kxd-7G-wHP" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -378,8 +424,9 @@
         <!--Navigation Controller-->
         <scene sceneID="4kw-4Z-W5h">
             <objects>
-                <navigationController id="PpX-dR-tli" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="dsH-QM-ukE">
+                <navigationController navigationBarHidden="YES" id="PpX-dR-tli" sceneMemberID="viewController">
+                    <nil key="simulatedStatusBarMetrics"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" barStyle="black" id="dsH-QM-ukE">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
