@@ -396,9 +396,11 @@
                     <nil key="simulatedStatusBarMetrics"/>
                     <connections>
                         <outlet property="bottomBar" destination="jso-7m-97z" id="PLs-Qb-SkO"/>
+                        <outlet property="bottomBarSpace" destination="qE5-eI-czo" id="laZ-pD-8YH"/>
                         <outlet property="screen" destination="3mf-Pl-zvM" id="9cz-AQ-6Jb"/>
                         <outlet property="titleItem" destination="DNr-vX-dkF" id="oNt-ee-tqC"/>
                         <outlet property="topBar" destination="fog-up-NTZ" id="Fgq-bx-aF8"/>
+                        <outlet property="topBarSpace" destination="Fl3-1K-68p" id="NNv-NW-6SR"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Kxd-7G-wHP" userLabel="First Responder" sceneMemberID="firstResponder"/>

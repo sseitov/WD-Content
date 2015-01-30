@@ -189,8 +189,8 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 	}
 	
 	CMSampleTimingInfo timingInfo;
-	timingInfo.presentationTimeStamp = CMTimeMake(packet->pts, 1000000.0*av_q2d(_context->time_base));
-	timingInfo.duration = CMTimeMake(packet->duration, 1000000.0*av_q2d(_context->time_base));
+	timingInfo.presentationTimeStamp = CMTimeMake(packet->pts, _context->time_base.num);
+	timingInfo.duration = CMTimeMake(packet->duration, _context->time_base.num);
 	timingInfo.decodeTimeStamp = kCMTimeInvalid;
 
 	CMSampleBufferRef sampleBuff = NULL;

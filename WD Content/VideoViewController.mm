@@ -13,11 +13,6 @@
 
 #import <CoreMedia/CoreMedia.h>
 
-enum {
-	StillWorking,
-	IsStopped
-};
-
 @interface VideoViewController () <DemuxerDelegate> {
 	dispatch_queue_t _videoOutputQueue;
 }
@@ -26,6 +21,11 @@ enum {
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *titleItem;
 @property (weak, nonatomic) IBOutlet UIView *screen;
 @property (weak, nonatomic) IBOutlet UIToolbar *bottomBar;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *topBarSpace;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *bottomBarSpace;
+
+@property (nonatomic) BOOL barsHidden;
+@property (nonatomic) BOOL doAnimation;
 
 @property (strong, nonatomic) Demuxer* demuxer;
 
@@ -33,7 +33,8 @@ enum {
 
 - (IBAction)done:(id)sender;
 
-@property (strong, nonatomic) NSConditionLock *videoState;
+@property (strong, nonatomic) NSCondition *videoState;
+@property (nonatomic) BOOL processing;
 
 @end
 
@@ -46,6 +47,7 @@ enum {
 	_titleItem.title = [_node.info title] ? _node.info.title : _node.name;
 
 	_videoOutputQueue = dispatch_queue_create("com.vchannel.WD-Content.VideoOutput", DISPATCH_QUEUE_SERIAL);
+	_videoState = [[NSCondition alloc] init];
 	
 	_videoOutput = [[AVSampleBufferDisplayLayer alloc] init];
 	_videoOutput.videoGravity = AVLayerVideoGravityResizeAspect;
@@ -54,7 +56,7 @@ enum {
 	CMTimebaseRef tmBase = nil;
 	CMTimebaseCreateWithMasterClock(CFAllocatorGetDefault(), CMClockGetHostTimeClock(),&tmBase);
 	_videoOutput.controlTimebase = tmBase;
-	CMTimebaseSetTime(_videoOutput.controlTimebase, CMTimeMake(5, 1));
+	CMTimebaseSetTime(_videoOutput.controlTimebase, kCMTimeZero);
 	CMTimebaseSetRate(_videoOutput.controlTimebase, 1.0);
 	
 	_demuxer = [[Demuxer alloc] init];
@@ -70,6 +72,36 @@ enum {
 				[self play];
 			}
 		});
+	}];
+	UITapGestureRecognizer* tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapOnScreen:)];
+	[_screen addGestureRecognizer:tap];
+	_doAnimation = YES;
+	[self performSelector:@selector(showBars) withObject:nil afterDelay:2.0];
+}
+
+- (void)tapOnScreen:(UITapGestureRecognizer *)tap
+{
+	if (!_doAnimation) {
+		[self showBars];
+	}
+}
+
+- (void)showBars
+{
+	_doAnimation = YES;
+	[UIView animateWithDuration:0.2 animations:^(){
+		if (_barsHidden) {
+			_topBarSpace.constant = 0;
+			_bottomBarSpace.constant = 0;
+		} else {
+			_topBarSpace.constant = -64;
+			_bottomBarSpace.constant = -44;
+		}
+		[self.view layoutIfNeeded];
+	} completion:^(BOOL) {
+		_doAnimation = NO;
+		_barsHidden = !_barsHidden;
+		[self layoutScreen];
 	}];
 }
 
@@ -108,9 +140,10 @@ enum {
 
 - (void)play
 {
-	_videoState = [[NSConditionLock alloc] initWithCondition:StillWorking];
 	[_demuxer play];
 	[_videoOutput requestMediaDataWhenReadyOnQueue:_videoOutputQueue usingBlock:^() {
+		[_videoState lock];
+		_processing = YES;
 		while (_videoOutput && _videoOutput.isReadyForMoreMediaData) {
 			CMSampleBufferRef buffer = _demuxer.takeVideo;
 			if (buffer) {
@@ -120,16 +153,23 @@ enum {
 				break;
 			}
 		}
-		[_videoState lock];
-		[_videoState unlockWithCondition:IsStopped];
+		_processing = NO;
+		[_videoState signal];
+		[_videoState unlock];
 	}];
 }
 
 - (void)stop
 {
 	[_videoOutput stopRequestingMediaData];
+	
+	[_videoState lock];
+	if (_processing) {
+		[_videoState wait];
+	}
+	[_videoState unlock];
+	
 	[_demuxer stop];
-	[_videoState lockWhenCondition:IsStopped];
 	[_videoState unlock];
 }
 

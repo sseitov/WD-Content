@@ -200,6 +200,8 @@ public:
 			} else if (nextPacket.stream_index == _videoIndex) {
 				[_videoDecoder decodePacket:&nextPacket];
 				av_free_packet(&nextPacket);
+			} else {
+				av_free_packet(&nextPacket);
 			}
 		}
 		doRequest = NO;
