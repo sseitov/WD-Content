@@ -26,7 +26,6 @@ struct AVCodecContext;
 - (void)close;
 
 - (void)play;
-- (void)stop;
 
 - (CMSampleBufferRef)takeVideo;
 

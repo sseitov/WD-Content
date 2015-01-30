@@ -169,8 +169,7 @@
 	}
 	[_videoState unlock];
 	
-	[_demuxer stop];
-	[_videoState unlock];
+	[_demuxer close];
 }
 
 - (IBAction)done:(id)sender
