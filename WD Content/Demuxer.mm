@@ -24,8 +24,9 @@ extern "C" {
 
 #define QUEUE_SIZE	31
 
-class PacketQueue : public SynchroQueue<AVPacket> {
+class PacketQueue : public BlockedQueue<AVPacket> {
 public:
+	PacketQueue() : BlockedQueue<AVPacket>(QUEUE_SIZE) {}
 	virtual void free(AVPacket* packet)
 	{
 		av_free_packet(packet);
@@ -35,16 +36,14 @@ public:
 @interface Demuxer () <VTDecoderDelegate> {
 	
 	dispatch_queue_t	_demuxerQueue;
-	std::mutex			_videoMutex;
-	
-	dispatch_queue_t	_audioQueue;
-	PacketQueue			_packetQueue;
+	dispatch_queue_t	_decoderQueue;
 	
 	AVFormatContext*	_mediaContext;
 	std::mutex			_mediaMutex;
 	
+	PacketQueue			_packetQueue;
+	
 	std::queue<CMSampleBufferRef>	_videoQueue;
-	NSDate* _lastDate;
 }
 
 @property (strong, nonatomic) VTDecoder *videoDecoder;
@@ -54,7 +53,6 @@ public:
 @property (nonatomic) int videoIndex;
 
 @property (strong, nonatomic) AudioOutput *audioOutput;
-@property (strong, nonatomic) NSCondition *queueState;
 
 @end
 
@@ -65,15 +63,14 @@ public:
 	self = [super init];
 	if (self) {
 		_audioDecoder = [[AudioDecoder alloc] init];
-		_audioOutput = [[AudioOutput alloc] init];
 		
 		_demuxerQueue = dispatch_queue_create("com.vchannel.WD-Content.Demuxer", DISPATCH_QUEUE_SERIAL);
-		_audioQueue = dispatch_queue_create("com.vchannel.WD-Content.Audio", DISPATCH_QUEUE_SERIAL);
+		_decoderQueue = dispatch_queue_create("com.vchannel.WD-Content.Decoder", DISPATCH_QUEUE_SERIAL);
 		
 		_videoDecoder = [[VTDecoder alloc] init];
 		_videoDecoder.delegate = self;
 		
-		_queueState = [NSCondition new];
+		_audioOutput = [[AudioOutput alloc] init];
 	}
 	return self;
 }
@@ -146,28 +143,6 @@ public:
 			completion(YES);
 		}
 	});
-	dispatch_async(_audioQueue, ^() {
-		AVPacket packet;
-		static AVFrame frame;
-		while (_packetQueue.pop(&packet)) {
-			if (packet.stream_index == _audioIndex) {
-				avcodec_get_frame_defaults(&frame);
-				[_audioDecoder decodePacket:&packet toFrame:&frame];
-				if (!_audioOutput.started) {
-					[_audioOutput startWithFrame:&frame];
-				}
-				if (_audioOutput.started) {
-					[_audioOutput writeFrame:&frame];
-				}
-			} else {
-				[_videoDecoder decodePacket:&packet];
-			}
-			av_free_packet(&packet);
-			[_queueState lock];
-			[_queueState signal];
-			[_queueState unlock];
-		}
-	});
 }
 
 - (BOOL)closed
@@ -184,8 +159,53 @@ public:
 	_mediaContext = NULL;
 }
 
+- (AVPacket)createAudioPacket:(AVPacket*)src
+{
+	AVPacket packet;
+	av_new_packet(&packet, src->size);
+	packet.pts = src->pts;
+	packet.dts = src->dts;
+	memcpy(packet.data, src->data, src->size);
+	packet.size = src->size;
+	packet.stream_index = _audioIndex;
+	packet.duration = src->duration;
+	return packet;
+}
+
 - (void)play
 {
+	__block NSCondition *started = [NSCondition new];
+	
+	// decoder thread
+	dispatch_async(_decoderQueue, ^() {
+		[started lock];
+		[started signal];
+		[started unlock];
+		AVPacket packet;
+		while (_packetQueue.pop(&packet)) {
+//			NSLog(@"queue size after pop %d", _packetQueue.size());
+			if (packet.stream_index == _audioIndex) {
+				AVFrame *frame = av_frame_alloc();
+				if ([_audioDecoder decodePacket:&packet toFrame:frame]) {
+					if (!_audioOutput.started) {
+						[_audioOutput startWithFrame:frame];
+					}
+					if (_audioOutput.started) {
+						[_audioOutput writeFrame:frame];
+					}
+				}
+				av_frame_free(&frame);
+			} else {
+				[_videoDecoder decodePacket:&packet];
+			}
+//			NSLog(@"packet sent into decoder");
+			av_free_packet(&packet);
+		}
+	});
+	[started lock];
+	[started wait];
+	[started unlock];
+	
 	av_read_play(_mediaContext);
 	dispatch_async(_demuxerQueue, ^() {
 		while (!self.closed) {
@@ -194,13 +214,9 @@ public:
 				[self.delegate didStopped:self];
 				break;
 			}
-			if ((nextPacket.stream_index == _audioIndex) || (nextPacket.stream_index == _videoIndex)) {
+			if (nextPacket.stream_index == _videoIndex) {
+//			if ((nextPacket.stream_index == _audioIndex) || (nextPacket.stream_index == _videoIndex)) {
 				_packetQueue.push(&nextPacket);
-				[_queueState lock];
-				if (_packetQueue.size() > QUEUE_SIZE) {
-					[_queueState wait];
-				}
-				[_queueState unlock];
 			} else {
 				av_free_packet(&nextPacket);
 			}
@@ -217,29 +233,17 @@ public:
 
 - (CMSampleBufferRef)takeVideo
 {
-	if (_lastDate && [[NSDate date] timeIntervalSinceDate:_lastDate] < 0.04) {
+	if (_videoQueue.empty()) {
 		return NULL;
-	}
-	_lastDate = [NSDate date];
-	std::unique_lock<std::mutex> lock(_videoMutex);
-	if (!_videoQueue.empty()) {
+	} else {
 		CMSampleBufferRef buffer = _videoQueue.front();
 		_videoQueue.pop();
 		return buffer;
-	} else {
-		return NULL;
 	}
-}
-
-- (BOOL)isReadyForMoreVideoData
-{
-	std::unique_lock<std::mutex> lock(_videoMutex);
-	return (_videoQueue.size() < 4);
 }
 
 - (void)videoDecoder:(VTDecoder*)decoder decodedBuffer:(CMSampleBufferRef)buffer
 {
-	std::unique_lock<std::mutex> lock(_videoMutex);
 	_videoQueue.push(buffer);
 }
 

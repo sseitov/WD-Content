@@ -189,10 +189,10 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 	}
 	
 	CMSampleTimingInfo timingInfo;
-	timingInfo.presentationTimeStamp = CMTimeMake(packet->pts, _context->time_base.num);
-	timingInfo.duration = CMTimeMake(packet->duration, _context->time_base.num);
+	timingInfo.presentationTimeStamp = CMTimeMake(packet->pts, 100000.0*av_q2d(_context->time_base));
+	timingInfo.duration = CMTimeMake(packet->duration, 100000.0*av_q2d(_context->time_base));
 	timingInfo.decodeTimeStamp = kCMTimeInvalid;
-
+	
 	CMSampleBufferRef sampleBuff = NULL;
  	CMBlockBufferRef newBBufOut = NULL;
 	OSStatus err = CMBlockBufferCreateWithMemoryBlock(
@@ -233,7 +233,7 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 		CFRelease(sampleBuff);
 		return NO;
     } else {
-        VTDecompressionSessionWaitForAsynchronousFrames(_session);
+		VTDecompressionSessionWaitForAsynchronousFrames(_session);
 		return YES;
     }
 }
@@ -249,7 +249,8 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
                                      CMTime presentationDuration )
 {
     if (status == noErr) {
-        VTDecoder* decoder = (__bridge VTDecoder*)decompressionOutputRefCon;
+		VTDecoder* decoder = (__bridge VTDecoder*)decompressionOutputRefCon;
+		CMSampleBufferRef decodeBuffer = (CMSampleBufferRef)sourceFrameRefCon;
         CMVideoFormatDescriptionRef videoInfo = NULL;
         OSStatus status = CMVideoFormatDescriptionCreateForImageBuffer(NULL, imageBuffer, &videoInfo);
         if (status == noErr) {
@@ -271,7 +272,8 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
                 [decoder.delegate videoDecoder:decoder decodedBuffer:sampleBuffer];
             }
         }
-		CMSampleBufferRef decodeBuffer = (CMSampleBufferRef)sourceFrameRefCon;
 		CFRelease(decodeBuffer);
-    }
+	} else {
+		NSLog(@"decode error");
+	}
 }

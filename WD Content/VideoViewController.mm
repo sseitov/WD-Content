@@ -33,9 +33,6 @@
 
 - (IBAction)done:(id)sender;
 
-@property (strong, nonatomic) NSCondition *videoState;
-@property (nonatomic) BOOL processing;
-
 @end
 
 @implementation VideoViewController
@@ -47,7 +44,6 @@
 	_titleItem.title = [_node.info title] ? _node.info.title : _node.name;
 
 	_videoOutputQueue = dispatch_queue_create("com.vchannel.WD-Content.VideoOutput", DISPATCH_QUEUE_SERIAL);
-	_videoState = [[NSCondition alloc] init];
 	
 	_videoOutput = [[AVSampleBufferDisplayLayer alloc] init];
 	_videoOutput.videoGravity = AVLayerVideoGravityResizeAspect;
@@ -141,11 +137,10 @@
 - (void)play
 {
 	[_demuxer play];
+
 	[_videoOutput requestMediaDataWhenReadyOnQueue:_videoOutputQueue usingBlock:^() {
-		[_videoState lock];
-		_processing = YES;
 		while (_videoOutput && _videoOutput.isReadyForMoreMediaData) {
-			CMSampleBufferRef buffer = _demuxer.takeVideo;
+			CMSampleBufferRef buffer = [_demuxer takeVideo];
 			if (buffer) {
 				[_videoOutput enqueueSampleBuffer:buffer];
 				CFRelease(buffer);
@@ -153,22 +148,12 @@
 				break;
 			}
 		}
-		_processing = NO;
-		[_videoState signal];
-		[_videoState unlock];
 	}];
 }
 
 - (void)stop
 {
 	[_videoOutput stopRequestingMediaData];
-	
-	[_videoState lock];
-	if (_processing) {
-		[_videoState wait];
-	}
-	[_videoState unlock];
-	
 	[_demuxer close];
 }
 
