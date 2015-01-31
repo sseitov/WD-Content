@@ -37,7 +37,7 @@ extern "C" {
 	std::unique_lock<std::mutex> lock(_mutex);
 	AVCodec* theCodec = avcodec_find_decoder(context->codec_id);
 	if (!theCodec) {
-		NSLog(@"cannot find audio codec %s", context->codec_name);
+		NSLog(@"cannot find audio codec");
 		return NO;
 	}
 	int err = avcodec_open2(context, theCodec, NULL);
@@ -60,22 +60,25 @@ extern "C" {
 	_context = NULL;
 }
 
-- (BOOL)decodePacket:(AVPacket*)packet toFrame:(AVFrame*)frame
+- (void)decodePacket:(AVPacket)packet
 {
-	std::unique_lock<std::mutex> lock(_mutex);
-	if (_context) {
-		int got_frame = 0;
-		int len = -1;
-		len = avcodec_decode_audio4(_context, frame, &got_frame, packet);
-		if (len > 0 && got_frame) {
-			frame->pts = frame->pkt_dts;
-			if (frame->pts == AV_NOPTS_VALUE) {
-				frame->pts = frame->pkt_pts;
+	dispatch_async(_decoderQueue, ^() {
+		std::unique_lock<std::mutex> lock(_mutex);
+		if (_context) {
+			int got_frame = 0;
+			int len = -1;
+			AVFrame *frame = av_frame_alloc();
+			len = avcodec_decode_audio4(_context, frame, &got_frame, &packet);
+			if (len > 0 && got_frame) {
+				frame->pts = frame->pkt_dts;
+				if (frame->pts == AV_NOPTS_VALUE) {
+					frame->pts = frame->pkt_pts;
+				}
+				[self.delegate audioDecoder:self decodedFrame:frame];
 			}
-			return YES;
+			av_free_packet((AVPacket*)&packet);
 		}
-	}
-	return NO;
+	});
 }
 
 @end
