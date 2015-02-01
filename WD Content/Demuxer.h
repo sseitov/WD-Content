@@ -28,6 +28,7 @@ struct AVFrame;
 
 - (void)play;
 
+- (AVCodecContext*)videoContext;
 - (CMSampleBufferRef)takeVideo;
 
 @end

@@ -13,6 +13,10 @@
 
 #import <CoreMedia/CoreMedia.h>
 
+extern "C" {
+#	include "libavformat/avformat.h"
+}
+
 @interface VideoViewController () <DemuxerDelegate> {
 	dispatch_queue_t _videoOutputQueue;
 }
@@ -49,12 +53,6 @@
 	_videoOutput.videoGravity = AVLayerVideoGravityResizeAspect;
 	_videoOutput.backgroundColor = [[UIColor blackColor] CGColor];
 	
-	CMTimebaseRef tmBase = nil;
-	CMTimebaseCreateWithMasterClock(CFAllocatorGetDefault(), CMClockGetHostTimeClock(),&tmBase);
-	_videoOutput.controlTimebase = tmBase;
-	CMTimebaseSetTime(_videoOutput.controlTimebase, kCMTimeZero);
-	CMTimebaseSetRate(_videoOutput.controlTimebase, 1.0);
-	
 	_demuxer = [[Demuxer alloc] init];
 	_demuxer.delegate = self;
 	
@@ -65,6 +63,13 @@
 			if (!success) {
 				[self errorOpen];
 			} else {
+				CMTimebaseRef tmBase = nil;
+				CMTimebaseCreateWithMasterClock(CFAllocatorGetDefault(), CMClockGetHostTimeClock(),&tmBase);
+				_videoOutput.controlTimebase = tmBase;
+				CMTimebaseSetTime(_videoOutput.controlTimebase, kCMTimeZero);
+				AVCodecContext* context = [_demuxer videoContext];
+				CMTimebaseSetRate(_videoOutput.controlTimebase, context->time_base.den);
+				
 				[self play];
 			}
 		});

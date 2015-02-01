@@ -11,6 +11,7 @@
 
 extern "C" {
 #	include "libavcodec/avcodec.h"
+#	include "libavformat/avio.h"
 }
 
 @class VTDecoder;
@@ -24,9 +25,10 @@ extern "C" {
 @interface VTDecoder : NSObject
 
 @property (weak, nonatomic) id<VTDecoderDelegate> delegate;
+@property (readwrite, nonatomic) AVCodecContext* context;
 
 - (BOOL)openWithContext:(AVCodecContext*)context;
 - (void)close;
-- (BOOL)decodePacket:(AVPacket*)packet;
+- (void)decodePacket:(AVPacket*)packet;
 
 @end

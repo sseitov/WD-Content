@@ -246,6 +246,11 @@ public:
 
 #pragma mark - VTDecoder
 
+- (AVCodecContext*)videoContext
+{
+	return _videoDecoder.context;
+}
+
 - (CMSampleBufferRef)takeVideo
 {
 	CMSampleBufferRef buffer = NULL;
