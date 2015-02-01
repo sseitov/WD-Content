@@ -51,6 +51,7 @@
 		2C605E521A6BC08000736968 /* AudioRingBuffer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2C605E501A6BC08000736968 /* AudioRingBuffer.mm */; };
 		2C605E541A6BC25100736968 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C605E531A6BC25100736968 /* AudioToolbox.framework */; };
 		2C6E746B19C75ECA001D9971 /* SharesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C6E746A19C75ECA001D9971 /* SharesTableViewController.m */; };
+		2C719D141A7E46D500CB0B00 /* AudioUnitOutput.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2C719D131A7E46D500CB0B00 /* AudioUnitOutput.mm */; };
 		2C7FD8C01A6CF62100718477 /* Demuxer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2C7FD8BF1A6CF62100718477 /* Demuxer.mm */; };
 		2CA1D7191854A78800276C67 /* InfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA1D7181854A78800276C67 /* InfoViewController.m */; };
 		2CA6B9F21A4567B800AFF041 /* AMSlideMenuContentSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA6B9E41A4567B800AFF041 /* AMSlideMenuContentSegue.m */; };
@@ -157,6 +158,8 @@
 		2C605E531A6BC25100736968 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		2C6E746919C75ECA001D9971 /* SharesTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SharesTableViewController.h; sourceTree = "<group>"; };
 		2C6E746A19C75ECA001D9971 /* SharesTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SharesTableViewController.m; sourceTree = "<group>"; };
+		2C719D121A7E46D500CB0B00 /* AudioUnitOutput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioUnitOutput.h; sourceTree = "<group>"; };
+		2C719D131A7E46D500CB0B00 /* AudioUnitOutput.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AudioUnitOutput.mm; sourceTree = "<group>"; };
 		2C7FD8BE1A6CF62100718477 /* Demuxer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Demuxer.h; sourceTree = "<group>"; };
 		2C7FD8BF1A6CF62100718477 /* Demuxer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Demuxer.mm; sourceTree = "<group>"; };
 		2CA1D7171854A78800276C67 /* InfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InfoViewController.h; path = "WD Content/InfoViewController.h"; sourceTree = "<group>"; };
@@ -386,6 +389,8 @@
 				2C605E4E1A6BC08000736968 /* AudioOutput.mm */,
 				2C605E4F1A6BC08000736968 /* AudioRingBuffer.h */,
 				2C605E501A6BC08000736968 /* AudioRingBuffer.mm */,
+				2C719D121A7E46D500CB0B00 /* AudioUnitOutput.h */,
+				2C719D131A7E46D500CB0B00 /* AudioUnitOutput.mm */,
 				2C58753B1A6AF7DC0069F3F1 /* AudioDecoder.h */,
 				2C58753C1A6AF7DC0069F3F1 /* AudioDecoder.mm */,
 				2C5875361A6AF1590069F3F1 /* VTDecoder.h */,
@@ -630,6 +635,7 @@
 				2CA1D7191854A78800276C67 /* InfoViewController.m in Sources */,
 				2CA6B9F81A4567B800AFF041 /* UIViewController+AMSlideMenu.m in Sources */,
 				2C125EB61848C74B00406FC3 /* main.m in Sources */,
+				2C719D141A7E46D500CB0B00 /* AudioUnitOutput.mm in Sources */,
 				2CA6B9F31A4567B800AFF041 /* AMSlideMenuLeftMenuSegue.m in Sources */,
 				ED2194BA19C9AA800053C8B3 /* AFSecurityPolicy.m in Sources */,
 				ED2194B719C9AA800053C8B3 /* AFHTTPRequestOperationManager.m in Sources */,

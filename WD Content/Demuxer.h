@@ -15,7 +15,8 @@ struct AVFrame;
 
 @protocol DemuxerDelegate <NSObject>
 
-- (void)didStopped:(Demuxer*)demuxer;
+- (void)demuxer:(Demuxer*)demuxer audioDecoded:(AVFrame*)frame;
+- (void)demuxerDidStopped:(Demuxer*)demuxer;
 
 @end
 
@@ -30,5 +31,6 @@ struct AVFrame;
 
 - (AVCodecContext*)videoContext;
 - (CMSampleBufferRef)takeVideo;
+- (AVFrame*)takeAudio;
 
 @end

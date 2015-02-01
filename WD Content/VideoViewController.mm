@@ -10,6 +10,7 @@
 
 #import "Demuxer.h"
 #import "MBProgressHUD.h"
+#import "AudioUnitOutput.h"
 
 #import <CoreMedia/CoreMedia.h>
 
@@ -17,7 +18,7 @@ extern "C" {
 #	include "libavformat/avformat.h"
 }
 
-@interface VideoViewController () <DemuxerDelegate> {
+@interface VideoViewController () <DemuxerDelegate, AudioUnitOutputDelegate> {
 	dispatch_queue_t _videoOutputQueue;
 }
 
@@ -34,6 +35,7 @@ extern "C" {
 @property (strong, nonatomic) Demuxer* demuxer;
 
 @property (strong, nonatomic) AVSampleBufferDisplayLayer *videoOutput;
+@property (strong, nonatomic) AudioUnitOutput *audioOutput;
 
 - (IBAction)done:(id)sender;
 
@@ -47,6 +49,9 @@ extern "C" {
 	
 	_titleItem.title = [_node.info title] ? _node.info.title : _node.name;
 
+	_audioOutput = [[AudioUnitOutput alloc] init];
+	_audioOutput.delegate = self;
+	
 	_videoOutputQueue = dispatch_queue_create("com.vchannel.WD-Content.VideoOutput", DISPATCH_QUEUE_SERIAL);
 	
 	_videoOutput = [[AVSampleBufferDisplayLayer alloc] init];
@@ -158,6 +163,7 @@ extern "C" {
 
 - (void)stop
 {
+	[_audioOutput stop];
 	[_videoOutput stopRequestingMediaData];
 	[_demuxer close];
 }
@@ -169,7 +175,23 @@ extern "C" {
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (void)didStopped:(Demuxer *)demuxer
+#pragma mark - AudioUnitOutput delegate
+
+- (void)requestMoreData:(void (^)(AVFrame*))result
+{
+	result([_demuxer takeAudio]);
+}
+
+#pragma mark - Demuxer delegate
+
+- (void)demuxer:(Demuxer*)demuxer audioDecoded:(AVFrame*)frame
+{
+	if (!_audioOutput.started) {
+		[_audioOutput startWithFrame:frame];
+	}
+}
+
+- (void)demuxerDidStopped:(Demuxer *)demuxer
 {
 	NSLog(@"demuxer finished");
 }

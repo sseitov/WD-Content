@@ -10,7 +10,6 @@
 #import "DataModel.h"
 #import "VTDecoder.h"
 #import "AudioDecoder.h"
-#import "AudioOutput.h"
 
 #include <queue>
 #include "SynchroQueue.h"
@@ -42,6 +41,15 @@ public:
 	}
 };
 
+class AudioQueue : public SynchroQueue<AVFrame*> {
+public:
+	AudioQueue() : SynchroQueue<AVFrame*>() {}
+	virtual void free(AVFrame** ppFrame)
+	{
+		av_frame_free(ppFrame);
+	}
+};
+
 @interface Demuxer () <VTDecoderDelegate, AudioDecoderDelegate> {
 	
 	dispatch_queue_t	_demuxerQueue;
@@ -52,6 +60,7 @@ public:
 	
 	PacketQueue			_packetQueue;
 	VideoQueue			_videoQueue;
+	AudioQueue			_audioQueue;
 }
 
 @property (strong, nonatomic) VTDecoder *videoDecoder;
@@ -59,8 +68,6 @@ public:
 
 @property (nonatomic) int audioIndex;
 @property (nonatomic) int videoIndex;
-
-@property (strong, nonatomic) AudioOutput *audioOutput;
 
 @end
 
@@ -78,8 +85,6 @@ public:
 		
 		_videoDecoder = [[VTDecoder alloc] init];
 		_videoDecoder.delegate = self;
-		
-		_audioOutput = [[AudioOutput alloc] init];
 	}
 	return self;
 }
@@ -214,7 +219,7 @@ public:
 		while (!self.closed) {
 			AVPacket nextPacket;
 			if (av_read_frame(_mediaContext, &nextPacket) < 0) { // eof
-				[self.delegate didStopped:self];
+				[self.delegate demuxerDidStopped:self];
 				break;
 			}
 			if ((nextPacket.stream_index == _audioIndex) || (nextPacket.stream_index == _videoIndex)) {
@@ -231,17 +236,22 @@ public:
 	av_read_pause(_mediaContext);
 }
 
-#pragma mark - AudioDecoder
+#pragma mark - Audio
 
 - (void)audioDecoder:(AudioDecoder*)decoder decodedFrame:(AVFrame*)frame
 {
-	if (!_audioOutput.started) {
-		[_audioOutput startWithFrame:frame];
+	[self.delegate demuxer:self audioDecoded:frame];
+	_audioQueue.push(&frame);
+}
+
+- (AVFrame*)takeAudio
+{
+	AVFrame* frame = NULL;
+	if (_audioQueue.pop(&frame)) {
+		return frame;
+	} else {
+		return NULL;
 	}
-	if (_audioOutput.started) {
-		[_audioOutput writeFrame:frame];
-	}
-	av_frame_free(&frame);
 }
 
 #pragma mark - VTDecoder
