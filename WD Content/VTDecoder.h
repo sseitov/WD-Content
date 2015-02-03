@@ -26,6 +26,7 @@ extern "C" {
 
 @property (weak, nonatomic) id<VTDecoderDelegate> delegate;
 @property (readwrite, nonatomic) AVCodecContext* context;
+@property (nonatomic) AVCodecContext* audioContext;
 
 - (BOOL)openWithContext:(AVCodecContext*)context;
 - (void)close;

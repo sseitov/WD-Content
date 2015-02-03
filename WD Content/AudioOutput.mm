@@ -11,11 +11,11 @@
 #include "AudioRingBuffer.h"
 
 @interface AudioOutput () {
-	
+
+	AudioRingBuffer*					_ringBuffer;
 	AudioStreamBasicDescription			_dataFormat;
 	AudioQueueRef						_queue;
     AudioQueueTimelineRef				_timeLine;
-	AudioRingBuffer*					_ringBuffer;
 	AudioQueueBufferRef					_pool[AUDIO_POOL_SIZE];
 }
 
@@ -109,7 +109,9 @@ static void AudioOutputCallback(void *inClientData,
 
 - (void)enqueueFrame:(AVFrame*)frame
 {
-	writeRingBuffer(_ringBuffer, frame);
+	if (self.started) {
+		writeRingBuffer(_ringBuffer, frame);
+	}
 }
 
 - (void)reset

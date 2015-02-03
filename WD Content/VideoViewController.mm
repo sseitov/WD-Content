@@ -26,14 +26,14 @@ extern "C" {
 @property (weak, nonatomic) IBOutlet UIToolbar *topBar;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *titleItem;
 @property (weak, nonatomic) IBOutlet UIView *screen;
-@property (weak, nonatomic) IBOutlet UIToolbar *bottomBar;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *topBarSpace;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *bottomBarSpace;
+@property (weak, nonatomic) IBOutlet UISlider *timeLine;
 
 @property (nonatomic) BOOL barsHidden;
 @property (nonatomic) BOOL doAnimation;
 
 @property (strong, nonatomic) Demuxer* demuxer;
+@property (atomic) BOOL stopped;
 
 @property (strong, nonatomic) AVSampleBufferDisplayLayer *videoOutput;
 
@@ -111,10 +111,8 @@ extern "C" {
 	[UIView animateWithDuration:0.2 animations:^(){
 		if (_barsHidden) {
 			_topBarSpace.constant = 0;
-			_bottomBarSpace.constant = 0;
 		} else {
 			_topBarSpace.constant = -64;
-			_bottomBarSpace.constant = -44;
 		}
 		[self.view layoutIfNeeded];
 	} completion:^(BOOL) {
@@ -163,12 +161,13 @@ extern "C" {
 	CMTimebaseCreateWithMasterClock(CFAllocatorGetDefault(), CMClockGetHostTimeClock(),&tmBase);
 	_videoOutput.controlTimebase = tmBase;
 	CMTimebaseSetTime(_videoOutput.controlTimebase, kCMTimeZero);
-	CMTimebaseSetRate(_videoOutput.controlTimebase, 1000);
+	CMTimebaseSetRate(_videoOutput.controlTimebase, 1.0/av_q2d(_demuxer.audioContext->time_base));
 	
 	[_demuxer play:audioChannel];
-
+	self.stopped = NO;
+	
 	[_videoOutput requestMediaDataWhenReadyOnQueue:_videoOutputQueue usingBlock:^() {
-		while (_videoOutput && _videoOutput.isReadyForMoreMediaData) {
+		while (!self.stopped && _videoOutput.isReadyForMoreMediaData) {
 			CMSampleBufferRef buffer = [_demuxer takeVideo];
 			if (buffer) {
 				[_videoOutput enqueueSampleBuffer:buffer];
@@ -177,11 +176,13 @@ extern "C" {
 				break;
 			}
 		}
+		NSLog(@"");
 	}];
 }
 
 - (void)stop
 {
+	self.stopped = YES;
 	[_videoOutput stopRequestingMediaData];
 	[_demuxer close];
 }
@@ -189,7 +190,6 @@ extern "C" {
 - (IBAction)done:(id)sender
 {
 	[self stop];
-	[_demuxer close];
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 

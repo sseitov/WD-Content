@@ -22,9 +22,9 @@ extern "C" {
 
 - (BOOL)startWithFrame:(AVFrame*)frame;
 - (void)enqueueFrame:(AVFrame*)frame;
+- (void)stop;
 
 - (void)currentPTS:(int64_t*)ppts withTime:(int64_t*)ptime;
-- (void)stop;
 - (void)reset;
 - (void)flush:(int64_t)pts;
 - (double)getCurrentTime;

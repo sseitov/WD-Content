@@ -17,6 +17,7 @@
 	std::mutex		_mutex;
 	bool convert_byte_stream;
 	int numFrame;
+	int64_t startPts;
 }
 
 @end
@@ -540,6 +541,7 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
         VTSessionSetProperty(_session, kVTDecompressionPropertyKey_RealTime, kCFBooleanTrue);
 		_context = context;
 		numFrame = 0;
+		startPts = -1;
         return YES;
     } else {
         return NO;
@@ -570,20 +572,19 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 	if (!_context) {
 		return;
 	}
-/*
-	if (packet->pts == AV_NOPTS_VALUE) {
-		NSLog(@"packet has no pts");
-		return;
+
+	if (startPts < 0 && packet->pts != AV_NOPTS_VALUE)  {
+		startPts = packet->pts;
 	}
-*/
+
 	CMSampleTimingInfo timingInfo;
-	/*
-	timingInfo.presentationTimeStamp = CMTimeMake(packet->pts, 1000);
-	timingInfo.duration = CMTimeMake(packet->duration, 1000);
-	timingInfo.decodeTimeStamp = kCMTimeInvalid;
-*/
-	timingInfo.presentationTimeStamp = CMTimeMake(numFrame++, 1000);
-	timingInfo.duration = CMTimeMake(40, 1000);
+	if (packet->pts != AV_NOPTS_VALUE) {
+		timingInfo.presentationTimeStamp = CMTimeMake(packet->pts - startPts, 1.0/av_q2d(_audioContext->time_base));
+		timingInfo.duration = CMTimeMake(packet->duration, 1.0/av_q2d(_audioContext->time_base));
+	} else {
+		timingInfo.presentationTimeStamp = CMTimeMake(numFrame++, 1000);
+		timingInfo.duration = CMTimeMake(40, 1000);
+	}
 	timingInfo.decodeTimeStamp = kCMTimeInvalid;
 	
 	CMSampleBufferRef sampleBuff = NULL;
@@ -704,6 +705,6 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 		}
 		CFRelease(decodeBuffer);
 	} else {
-		NSLog(@"decode error %d", status);
+		NSLog(@"decode error %d", (int)status);
 	}
 }
