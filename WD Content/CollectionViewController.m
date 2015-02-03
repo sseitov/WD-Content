@@ -241,7 +241,7 @@
 			}
 		}];
 		[alertController addAction:action];
-		action = [UIAlertAction actionWithTitle:@"View Video" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+		action = [UIAlertAction actionWithTitle:@"Preview movie" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
 			[self performSegueWithIdentifier:@"ShowVideo" sender:node];
 		}];
 		[alertController addAction:action];

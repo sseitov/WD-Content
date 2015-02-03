@@ -9,12 +9,10 @@
 #import "VTDecoder.h"
 #import <VideoToolbox/VideoToolbox.h>
 #import <CoreVideo/CVHostTime.h>
-#include <mutex>
 
 @interface VTDecoder () {
     VTDecompressionSessionRef _session;
     CMVideoFormatDescriptionRef _videoFormat;
-	std::mutex		_mutex;
 	bool convert_byte_stream;
 	int numFrame;
 	int64_t startPts;
@@ -65,19 +63,19 @@ struct PpsHeader
 
 #pragma pack(pop)
 
-#define VDA_RB16(x)                          \
-((((const uint8_t*)(x))[0] <<  8) |        \
+#define VDA_RB16(x)                     \
+((((const uint8_t*)(x))[0] <<  8) |     \
 ((const uint8_t*)(x)) [1])
 
-#define VDA_RB24(x)                          \
-((((const uint8_t*)(x))[0] << 16) |        \
-(((const uint8_t*)(x))[1] <<  8) |        \
+#define VDA_RB24(x)                     \
+((((const uint8_t*)(x))[0] << 16) |     \
+(((const uint8_t*)(x))[1] <<  8) |		\
 ((const uint8_t*)(x))[2])
 
-#define VDA_RB32(x)                          \
-((((const uint8_t*)(x))[0] << 24) |        \
-(((const uint8_t*)(x))[1] << 16) |        \
-(((const uint8_t*)(x))[2] <<  8) |        \
+#define VDA_RB32(x)                     \
+((((const uint8_t*)(x))[0] << 24) |     \
+(((const uint8_t*)(x))[1] << 16) |      \
+(((const uint8_t*)(x))[2] <<  8) |      \
 ((const uint8_t*)(x))[3])
 
 static const uint8_t *avc_find_startcode_internal(const uint8_t *p, const uint8_t *end)
@@ -512,8 +510,6 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 
 - (BOOL)openWithContext:(AVCodecContext*)context
 {
-	std::unique_lock<std::mutex> lock(_mutex);
-	
 	_videoFormat = CreateFormat(context, &convert_byte_stream);
 	if (!_videoFormat) {
 		return NO;
@@ -550,7 +546,6 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 
 - (void)close
 {
-	std::unique_lock<std::mutex> lock(_mutex);
 	if (_context) {
 		avcodec_close(_context);
 	}
@@ -568,22 +563,16 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 
 - (void)decodePacket:(AVPacket*)packet
 {
-	std::unique_lock<std::mutex> lock(_mutex);
-	if (!_context) {
-		return;
-	}
-
 	if (startPts < 0 && packet->pts != AV_NOPTS_VALUE)  {
 		startPts = packet->pts;
 	}
-
 	CMSampleTimingInfo timingInfo;
 	if (packet->pts != AV_NOPTS_VALUE) {
 		timingInfo.presentationTimeStamp = CMTimeMake(packet->pts - startPts, 1.0/av_q2d(_audioContext->time_base));
 		timingInfo.duration = CMTimeMake(packet->duration, 1.0/av_q2d(_audioContext->time_base));
 	} else {
-		timingInfo.presentationTimeStamp = CMTimeMake(numFrame++, 1000);
-		timingInfo.duration = CMTimeMake(40, 1000);
+		NSLog(@"no pts");
+		return;
 	}
 	timingInfo.decodeTimeStamp = kCMTimeInvalid;
 	

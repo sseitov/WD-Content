@@ -215,14 +215,13 @@ enum {
 {
 	if (!_videoQueue.empty()) {
 		CMSampleBufferRef buffer = _videoQueue.front();
-/*
+
 		CMTime time = CMSampleBufferGetOutputDecodeTimeStamp(buffer);
 		if (time.timescale) {
-			double audioTime = _audioOutput.getCurrentTime;
 			double videoTime = (double)time.value / (double)time.timescale;
-			NSLog(@"time %f, audio %f, video %f", [[NSDate date] timeIntervalSinceDate:startDate], audioTime, videoTime);
+			NSLog(@"time %f, video %f", [[NSDate date] timeIntervalSinceDate:startDate], videoTime);
 		}
-*/
+
 		_videoQueue.pop();
 		return buffer;
 	} else {
