@@ -23,9 +23,10 @@ extern "C" {
 @interface AudioDecoder : NSObject
 
 @property (weak, nonatomic) id<AudioDecoderDelegate> delegate;
+@property (readwrite, nonatomic) AVCodecContext*	context;
 
 - (BOOL)openWithContext:(AVCodecContext*)context;
 - (void)close;
-- (void)decodePacket:(AVPacket)packet;
+- (void)decodePacket:(AVPacket*)packet;
 
 @end

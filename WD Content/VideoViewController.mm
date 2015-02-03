@@ -10,7 +10,6 @@
 
 #import "Demuxer.h"
 #import "MBProgressHUD.h"
-#import "AudioUnitOutput.h"
 
 #import <CoreMedia/CoreMedia.h>
 
@@ -18,7 +17,9 @@ extern "C" {
 #	include "libavformat/avformat.h"
 }
 
-@interface VideoViewController () <DemuxerDelegate, AudioUnitOutputDelegate> {
+#define IS_PAD ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
+
+@interface VideoViewController () <DemuxerDelegate> {
 	dispatch_queue_t _videoOutputQueue;
 }
 
@@ -35,7 +36,6 @@ extern "C" {
 @property (strong, nonatomic) Demuxer* demuxer;
 
 @property (strong, nonatomic) AVSampleBufferDisplayLayer *videoOutput;
-@property (strong, nonatomic) AudioUnitOutput *audioOutput;
 
 - (IBAction)done:(id)sender;
 
@@ -48,9 +48,6 @@ extern "C" {
     [super viewDidLoad];
 	
 	_titleItem.title = [_node.info title] ? _node.info.title : _node.name;
-
-	_audioOutput = [[AudioUnitOutput alloc] init];
-	_audioOutput.delegate = self;
 	
 	_videoOutputQueue = dispatch_queue_create("com.vchannel.WD-Content.VideoOutput", DISPATCH_QUEUE_SERIAL);
 	
@@ -62,20 +59,36 @@ extern "C" {
 	_demuxer.delegate = self;
 	
 	[MBProgressHUD showHUDAddedTo:self.view animated:YES];
-	[_demuxer openWithPath:_node.path completion:^(BOOL success) {
+	[_demuxer openWithPath:_node.path completion:^(NSArray* audioChannels) {
 		dispatch_async(dispatch_get_main_queue(), ^() {
 			[MBProgressHUD hideHUDForView:self.view animated:YES];
-			if (!success) {
+			if (!audioChannels) {
 				[self errorOpen];
 			} else {
-				CMTimebaseRef tmBase = nil;
-				CMTimebaseCreateWithMasterClock(CFAllocatorGetDefault(), CMClockGetHostTimeClock(),&tmBase);
-				_videoOutput.controlTimebase = tmBase;
-				CMTimebaseSetTime(_videoOutput.controlTimebase, kCMTimeZero);
-				AVCodecContext* context = [_demuxer videoContext];
-				CMTimebaseSetRate(_videoOutput.controlTimebase, context->time_base.den);
-				
-				[self play];
+				if (audioChannels.count > 1) {
+					UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"What do you want?"
+																							 message:@""
+																					  preferredStyle:UIAlertControllerStyleActionSheet];
+					for (NSDictionary *channel in audioChannels) {
+						UIAlertAction *action = [UIAlertAction actionWithTitle:[channel objectForKey:@"codec"]
+																		 style:UIAlertActionStyleDefault
+																	   handler:^(UIAlertAction *action) {
+																		   [self play:[[channel objectForKey:@"channel"] intValue]];
+																	   }];
+						[alertController addAction:action];
+					}
+					UIAlertAction *action = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
+					[alertController addAction:action];
+					
+					if(IS_PAD) {
+						UIPopoverController *popover = [[UIPopoverController alloc] initWithContentViewController:alertController];
+						[popover presentPopoverFromBarButtonItem:_titleItem permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+					} else {
+						[self presentViewController:alertController animated:YES completion:nil];
+					}
+				} else {
+					[self play:[[[audioChannels objectAtIndex:0] objectForKey:@"channel"] intValue]];
+				}
 			}
 		});
 	}];
@@ -144,9 +157,15 @@ extern "C" {
 	[self layoutScreen];
 }
 
-- (void)play
+- (void)play:(int)audioChannel
 {
-	[_demuxer play];
+	CMTimebaseRef tmBase = nil;
+	CMTimebaseCreateWithMasterClock(CFAllocatorGetDefault(), CMClockGetHostTimeClock(),&tmBase);
+	_videoOutput.controlTimebase = tmBase;
+	CMTimebaseSetTime(_videoOutput.controlTimebase, kCMTimeZero);
+	CMTimebaseSetRate(_videoOutput.controlTimebase, 1000);
+	
+	[_demuxer play:audioChannel];
 
 	[_videoOutput requestMediaDataWhenReadyOnQueue:_videoOutputQueue usingBlock:^() {
 		while (_videoOutput && _videoOutput.isReadyForMoreMediaData) {
@@ -163,7 +182,6 @@ extern "C" {
 
 - (void)stop
 {
-	[_audioOutput stop];
 	[_videoOutput stopRequestingMediaData];
 	[_demuxer close];
 }
@@ -175,21 +193,7 @@ extern "C" {
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
-#pragma mark - AudioUnitOutput delegate
-
-- (void)requestMoreData:(void (^)(AVFrame*))result
-{
-	result([_demuxer takeAudio]);
-}
-
 #pragma mark - Demuxer delegate
-
-- (void)demuxer:(Demuxer*)demuxer audioDecoded:(AVFrame*)frame
-{
-	if (!_audioOutput.started) {
-		[_audioOutput startWithFrame:frame];
-	}
-}
 
 - (void)demuxerDidStopped:(Demuxer *)demuxer
 {

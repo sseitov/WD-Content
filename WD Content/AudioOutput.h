@@ -21,7 +21,7 @@ extern "C" {
 @property (readwrite, nonatomic) BOOL started;
 
 - (BOOL)startWithFrame:(AVFrame*)frame;
-- (void)writeFrame:(AVFrame*)frame;
+- (void)enqueueFrame:(AVFrame*)frame;
 
 - (void)currentPTS:(int64_t*)ppts withTime:(int64_t*)ptime;
 - (void)stop;

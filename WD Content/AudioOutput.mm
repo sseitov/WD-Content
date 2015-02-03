@@ -107,11 +107,9 @@ static void AudioOutputCallback(void *inClientData,
 	}
 }
 
-- (void)writeFrame:(AVFrame*)frame
+- (void)enqueueFrame:(AVFrame*)frame
 {
-	if (_started) {
-		writeRingBuffer(_ringBuffer, frame);
-	}
+	writeRingBuffer(_ringBuffer, frame);
 }
 
 - (void)reset

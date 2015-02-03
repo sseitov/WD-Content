@@ -15,6 +15,8 @@
     VTDecompressionSessionRef _session;
     CMVideoFormatDescriptionRef _videoFormat;
 	std::mutex		_mutex;
+	bool convert_byte_stream;
+	int numFrame;
 }
 
 @end
@@ -61,6 +63,168 @@ struct PpsHeader
 };
 
 #pragma pack(pop)
+
+#define VDA_RB16(x)                          \
+((((const uint8_t*)(x))[0] <<  8) |        \
+((const uint8_t*)(x)) [1])
+
+#define VDA_RB24(x)                          \
+((((const uint8_t*)(x))[0] << 16) |        \
+(((const uint8_t*)(x))[1] <<  8) |        \
+((const uint8_t*)(x))[2])
+
+#define VDA_RB32(x)                          \
+((((const uint8_t*)(x))[0] << 24) |        \
+(((const uint8_t*)(x))[1] << 16) |        \
+(((const uint8_t*)(x))[2] <<  8) |        \
+((const uint8_t*)(x))[3])
+
+static const uint8_t *avc_find_startcode_internal(const uint8_t *p, const uint8_t *end)
+{
+	const uint8_t *a = p + 4 - ((intptr_t)p & 3);
+	
+	for (end -= 3; p < a && p < end; p++)
+	{
+		if (p[0] == 0 && p[1] == 0 && p[2] == 1)
+			return p;
+	}
+	
+	for (end -= 3; p < end; p += 4)
+	{
+		uint32_t x = *(const uint32_t*)p;
+		if ((x - 0x01010101) & (~x) & 0x80808080) // generic
+		{
+			if (p[1] == 0)
+			{
+				if (p[0] == 0 && p[2] == 1)
+					return p;
+				if (p[2] == 0 && p[3] == 1)
+					return p+1;
+			}
+			if (p[3] == 0)
+			{
+				if (p[2] == 0 && p[4] == 1)
+					return p+2;
+				if (p[4] == 0 && p[5] == 1)
+					return p+3;
+			}
+		}
+	}
+	
+	for (end += 3; p < end; p++)
+	{
+		if (p[0] == 0 && p[1] == 0 && p[2] == 1)
+			return p;
+	}
+	
+	return end + 3;
+}
+
+const uint8_t *avc_find_startcode(const uint8_t *p, const uint8_t *end)
+{
+	const uint8_t *out= avc_find_startcode_internal(p, end);
+	if (p<out && out<end && !out[-1])
+		out--;
+	return out;
+}
+
+const int avc_parse_nal_units(AVIOContext *pb, const uint8_t *buf_in, int size)
+{
+	const uint8_t *p = buf_in;
+	const uint8_t *end = p + size;
+	const uint8_t *nal_start, *nal_end;
+	
+	size = 0;
+	nal_start = avc_find_startcode(p, end);
+	while (nal_start < end)
+	{
+		while (!*(nal_start++));
+		nal_end = avc_find_startcode(nal_start, end);
+		avio_wb32(pb, (int)(nal_end - nal_start));
+		avio_write(pb, nal_start, (int)(nal_end - nal_start));
+		size += 4 + nal_end - nal_start;
+		nal_start = nal_end;
+	}
+	return size;
+}
+
+const int avc_parse_nal_units_buf(const uint8_t *buf_in, uint8_t **buf, int *size)
+{
+	AVIOContext *pb;
+	int ret = avio_open_dyn_buf(&pb);
+	if (ret < 0)
+		return ret;
+	
+	avc_parse_nal_units(pb, buf_in, *size);
+	
+	av_freep(buf);
+	*size = avio_close_dyn_buf(pb, buf);
+	return 0;
+}
+
+const int isom_write_avcc(AVIOContext *pb, const uint8_t *data, int len)
+{
+	// extradata from bytestream h264, convert to avcC atom data for bitstream
+	if (len > 6)
+	{
+		/* check for h264 start code */
+		if (VDA_RB32(data) == 0x00000001 || VDA_RB24(data) == 0x000001)
+		{
+			uint8_t *buf=NULL, *end, *start;
+			uint32_t sps_size=0, pps_size=0;
+			uint8_t *sps=0, *pps=0;
+			
+			int ret = avc_parse_nal_units_buf(data, &buf, &len);
+			if (ret < 0)
+				return ret;
+			start = buf;
+			end = buf + len;
+			
+			/* look for sps and pps */
+			while (buf < end)
+			{
+				unsigned int size;
+				uint8_t nal_type;
+				size = VDA_RB32(buf);
+				nal_type = buf[4] & 0x1f;
+				if (nal_type == 7) /* SPS */
+				{
+					sps = buf + 4;
+					sps_size = size;
+				}
+				else if (nal_type == 8) /* PPS */
+				{
+					pps = buf + 4;
+					pps_size = size;
+				}
+				buf += size + 4;
+			}
+			assert(sps);
+			
+			avio_w8(pb, 1); /* version */
+			avio_w8(pb, sps[1]); /* profile */
+			avio_w8(pb, sps[2]); /* profile compat */
+			avio_w8(pb, sps[3]); /* level */
+			avio_w8(pb, 0xff); /* 6 bits reserved (111111) + 2 bits nal size length - 1 (11) */
+			avio_w8(pb, 0xe1); /* 3 bits reserved (111) + 5 bits number of sps (00001) */
+			
+			avio_wb16(pb, sps_size);
+			avio_write(pb, sps, sps_size);
+			if (pps)
+			{
+				avio_w8(pb, 1); /* number of pps */
+				avio_wb16(pb, pps_size);
+				avio_write(pb, pps, pps_size);
+			}
+			av_free(start);
+		}
+		else
+		{
+			avio_write(pb, data, len);
+		}
+	}
+	return 0;
+}
 
 /* MPEG-4 esds (elementary stream descriptor) */
 typedef struct {
@@ -240,20 +404,24 @@ static CMFormatDescriptionRef CreateFormatDescriptionFromCodecData(CMVideoCodecT
 		return NULL;
 }
 
-static CMVideoFormatDescriptionRef CreateFormat(AVCodecContext* context)
+static CMVideoFormatDescriptionRef CreateFormat(AVCodecContext* context, bool* convert)
 {
 	CMVideoFormatDescriptionRef format = NULL;
 	OSStatus err = noErr;
 	switch (context->codec_id) {
 		case AV_CODEC_ID_MPEG4:
-			if (context->extradata_size) {	// avi format ?
-				unsigned int extrasize = context->extradata_size; // extra data for codec to use
-				uint8_t *extradata = context->extradata; // size of extra data
+			if (context->extradata_size)
+			{	// avi format ?
 				AVIOContext *pb;
-				if (avio_open_dyn_buf(&pb) < 0) {
+				quicktime_esds_t *esds;
+
+				unsigned int extrasize = context->extradata_size; // extra data for codec to use
+				uint8_t *extradata = (uint8_t*)context->extradata; // size of extra data
+				
+				if (avio_open_dyn_buf(&pb) < 0)
 					break;
-				}
-				quicktime_esds_t *esds = quicktime_set_esds(extradata, extrasize);
+				
+				esds = quicktime_set_esds(extradata, extrasize);
 				quicktime_write_esds(pb, esds);
 				
 				// unhook from ffmpeg's extradata
@@ -264,6 +432,7 @@ static CMVideoFormatDescriptionRef CreateFormat(AVCodecContext* context)
 				free(esds);
 				
 				format = CreateFormatDescriptionFromCodecData(kCMVideoCodecType_MPEG4Video, context->width, context->height, extradata, extrasize, 'esds');
+				
 				// done with the converted extradata, we MUST free using av_free
 				av_free(extradata);
 				return format;
@@ -282,13 +451,33 @@ static CMVideoFormatDescriptionRef CreateFormat(AVCodecContext* context)
 			break;
 		case AV_CODEC_ID_H264:
 		{
-			SpsHeader spsHeader = *((SpsHeader*)context->extradata);
+			uint8_t* extradata = NULL;;
+			if ((context->extradata[0] == 0 && context->extradata[1] == 0 && context->extradata[2] == 0 && context->extradata[3] == 1) ||
+				(context->extradata[0] == 0 && context->extradata[1] == 0 && context->extradata[2] == 1))
+			{
+				// video content is from x264 or from bytestream h264 (AnnexB format)
+				// NAL reformating to bitstream format required
+				AVIOContext *pb;
+				if (avio_open_dyn_buf(&pb) < 0)
+					break;
+				
+				// create a valid avcC atom data from ffmpeg's extradata
+				isom_write_avcc(pb, context->extradata, context->extradata_size);
+				
+				// extract the avcC atom data into extradata getting size into extrasize
+				avio_close_dyn_buf(pb, &extradata);
+				*convert = true;
+			} else {
+				extradata = context->extradata;
+				*convert = false;
+			}
+			SpsHeader spsHeader = *((SpsHeader*)extradata);
 			uint16_t spsLen = NTOHS(spsHeader.SPS_size);
-			const uint8_t *sps = context->extradata+sizeof(SpsHeader);
+			const uint8_t *sps = extradata+sizeof(SpsHeader);
 			
-			PpsHeader ppsHeader = *((PpsHeader*)(context->extradata + sizeof(SpsHeader)+spsLen));
+			PpsHeader ppsHeader = *((PpsHeader*)(extradata + sizeof(SpsHeader)+spsLen));
 			uint16_t ppsLen = NTOHS(ppsHeader.PPS_size);
-			const uint8_t *pps = context->extradata+sizeof(SpsHeader)+spsLen+sizeof(PpsHeader);
+			const uint8_t *pps = extradata+sizeof(SpsHeader)+spsLen+sizeof(PpsHeader);
 			
 			const uint8_t* const parameterSetPointers[2] = { sps , pps };
 			const size_t parameterSetSizes[2] = { spsLen, ppsLen };
@@ -324,7 +513,7 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 {
 	std::unique_lock<std::mutex> lock(_mutex);
 	
-	_videoFormat = CreateFormat(context);
+	_videoFormat = CreateFormat(context, &convert_byte_stream);
 	if (!_videoFormat) {
 		return NO;
 	}
@@ -350,6 +539,7 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
         VTSessionSetProperty(_session, kVTDecompressionPropertyKey_ThreadCount, (__bridge CFTypeRef)[NSNumber numberWithInt:4]);
         VTSessionSetProperty(_session, kVTDecompressionPropertyKey_RealTime, kCFBooleanTrue);
 		_context = context;
+		numFrame = 0;
         return YES;
     } else {
         return NO;
@@ -380,29 +570,57 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 	if (!_context) {
 		return;
 	}
-
+/*
 	if (packet->pts == AV_NOPTS_VALUE) {
 		NSLog(@"packet has no pts");
 		return;
 	}
-	
+*/
 	CMSampleTimingInfo timingInfo;
-	timingInfo.presentationTimeStamp = CMTimeMake(packet->pts, _context->time_base.den);
-	timingInfo.duration = CMTimeMake(packet->duration, _context->time_base.den);
+	/*
+	timingInfo.presentationTimeStamp = CMTimeMake(packet->pts, 1000);
+	timingInfo.duration = CMTimeMake(packet->duration, 1000);
+	timingInfo.decodeTimeStamp = kCMTimeInvalid;
+*/
+	timingInfo.presentationTimeStamp = CMTimeMake(numFrame++, 1000);
+	timingInfo.duration = CMTimeMake(40, 1000);
 	timingInfo.decodeTimeStamp = kCMTimeInvalid;
 	
 	CMSampleBufferRef sampleBuff = NULL;
  	CMBlockBufferRef newBBufOut = NULL;
-	OSStatus err = CMBlockBufferCreateWithMemoryBlock(
-													  NULL,             // CFAllocatorRef structureAllocator
-													  packet->data,       // void *memoryBlock
-													  packet->size,       // size_t blockLengt
-													  kCFAllocatorNull, // CFAllocatorRef blockAllocator
-													  NULL,             // const CMBlockBufferCustomBlockSource *customBlockSource
-													  0,                // size_t offsetToData
-													  packet->size,       // size_t dataLength
-													  kCMBlockBufferAlwaysCopyDataFlag,            // CMBlockBufferFlags flags
-													  &newBBufOut);     // CMBlockBufferRef *newBBufOut
+	OSStatus err = noErr;
+	if (convert_byte_stream) {
+		// convert demuxer packet from bytestream (AnnexB) to bitstream
+		AVIOContext *pb = NULL;
+		int demux_size = 0;
+		uint8_t *demux_buff = NULL;
+		if(avio_open_dyn_buf(&pb) < 0)
+			return;
+		demux_size = avc_parse_nal_units(pb, packet->data, packet->size);
+		demux_size = avio_close_dyn_buf(pb, &demux_buff);
+
+		err = CMBlockBufferCreateWithMemoryBlock(
+												 NULL,             // CFAllocatorRef structureAllocator
+												 demux_buff,       // void *memoryBlock
+												 demux_size,       // size_t blockLengt
+												 kCFAllocatorNull, // CFAllocatorRef blockAllocator
+												 NULL,             // const CMBlockBufferCustomBlockSource *customBlockSource
+												 0,                // size_t offsetToData
+												 demux_size,       // size_t dataLength
+												 kCMBlockBufferAlwaysCopyDataFlag,            // CMBlockBufferFlags flags
+												 &newBBufOut);     // CMBlockBufferRef *newBBufOut
+	} else {
+		err = CMBlockBufferCreateWithMemoryBlock(
+												 NULL,             // CFAllocatorRef structureAllocator
+												 packet->data,       // void *memoryBlock
+												 packet->size,       // size_t blockLengt
+												 kCFAllocatorNull, // CFAllocatorRef blockAllocator
+												 NULL,             // const CMBlockBufferCustomBlockSource *customBlockSource
+												 0,                // size_t offsetToData
+												 packet->size,       // size_t dataLength
+												 kCMBlockBufferAlwaysCopyDataFlag,            // CMBlockBufferFlags flags
+												 &newBBufOut);     // CMBlockBufferRef *newBBufOut
+	}
 	
 	if (err != noErr) {
 		NSLog(@"error CMBlockBufferCreateWithMemoryBlock");
@@ -421,6 +639,10 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 							   0,              // CMItemCount numSampleSizeEntries
 							   NULL,           // const size_t *sampleSizeArray
 							   &sampleBuff);      // CMSampleBufferRef *sBufOut
+	if (err != noErr) {
+		NSLog(@"error CMSampleBufferCreate");
+		return;
+	}
 	CFRelease(newBBufOut);
 
 	err = VTDecompressionSessionDecodeFrame(_session,
@@ -480,9 +702,8 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 		} else {
 			NSLog(@"error callback status");
 		}
+		CFRelease(decodeBuffer);
 	} else {
-		NSLog(@"decode error");
+		NSLog(@"decode error %d", status);
 	}
-	
-	CFRelease(decodeBuffer);
 }

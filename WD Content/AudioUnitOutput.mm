@@ -8,15 +8,17 @@
 
 #import "AudioUnitOutput.h"
 #include <AudioToolbox/AudioToolbox.h>
+#include <queue>
 
 @interface AudioUnitOutput () {
 	AUGraph auGraph;
 	AudioStreamBasicDescription mFormat;
-	AVFrame* lastFrame;
-	int lastOffset;
+	AVFrame* _lastFrame;
+	int _lastOffset;
+	std::queue<AVFrame*> _frameQueue;
 }
 
-- (void)fillSamples:(int)numSamples inBufferList:(AudioBufferList*)list;
+- (void)fillBufferList:(AudioBufferList*)list;
 
 @end
 
@@ -37,14 +39,7 @@ static BOOL HasError(OSStatus error, const char *operation)
 	NSLog(@"Error: %s (%s)\n", operation, errorString);
 	return YES;
 }
-/*
-struct AudioBuffer
-{
-	UInt32  mNumberChannels;
-	UInt32  mDataByteSize;
-	void*   mData;
-};
-*/
+
 static OSStatus converterRenderCallback(void *inRefCon,
 										AudioUnitRenderActionFlags *ioActionFlags,
 										const AudioTimeStamp *inTimeStamp,
@@ -53,54 +48,52 @@ static OSStatus converterRenderCallback(void *inRefCon,
 										AudioBufferList *ioData)
 {
 	AudioUnitOutput *output = (__bridge AudioUnitOutput*)inRefCon;
-	[output fillSamples:inNumberFrames inBufferList:ioData];
+	[output fillBufferList:ioData];
 	return noErr;
 }
 
 @implementation AudioUnitOutput
 
-int fillListFromFrame(AudioBufferList* list, int dstOffset, AVFrame *frame, int srcOffset, int count, int frameSize)
+- (BOOL)getLastFrame
 {
-	int rest = (frame->nb_samples > count) ? (frame->nb_samples - count) : count;
-	for (int buffer = 0; buffer < list->mNumberBuffers; buffer++) {
-		uint8_t* pDst = (uint8_t*)(list->mBuffers[buffer].mData) + dstOffset*frameSize;
-		uint8_t* pSrc = (uint8_t*)(frame->data[buffer]) + srcOffset*frameSize;
-		memcpy(pDst, pSrc, rest*frameSize);
+	if (_frameQueue.empty()) {
+		NSLog(@"no frame");
+		return NO;
+	} else {
+		if (_lastFrame) {
+			av_frame_free(&_lastFrame);
+		}
+		_lastFrame = _frameQueue.front();
+		_frameQueue.pop();
+		_lastOffset = 0;
+		return YES;
 	}
-	return (rest - count);
 }
 
-- (void)fillSamples:(int)numSamples inBufferList:(AudioBufferList*)list
+- (void)fillBufferList:(AudioBufferList*)list
 {
-/*
-	int rest = 0;
-	if (lastFrame) {
-		rest = fillListFromFrame(list, 0, lastFrame, lastOffset, numSamples, mFormat.mBytesPerPacket);
-		av_frame_free(&lastFrame);
-		lastFrame = nil;
-	}
-	numSamples -= rest;
-	if (numSamples > 0) {
-		[self.delegate requestMoreData:^(AVFrame* frame) {
-			if (frame) {
-				int count = fillListFromFrame(list, rest, frame, 0, numSamples, mFormat.mBytesPerPacket);
-				if (count < numSamples) {
-					lastFrame = frame;
-					lastOffset = count;
-				} else {
-					av_frame_free(&frame);
-				}
-			}
-		}];
-	}
-*/
-	NSLog(@"fill %d samples", numSamples);
-	[self.delegate requestMoreData:^(AVFrame* frame) {
-		if (frame) {
-			av_frame_free(&frame);
+	int restBytes = _lastFrame->linesize[0] - _lastOffset;
+	int bufferSize = list->mBuffers[0].mDataByteSize;
+	if (restBytes >= bufferSize) {
+		for (int i=0; i<list->mNumberBuffers; i++) {
+//			uint8_t *pData = (uint8_t*)list->mBuffers[i].mData;
+//			memcpy(pData, _lastFrame->data[i] + _lastOffset, bufferSize);
+			list->mBuffers[i].mData = _lastFrame->data[i] + _lastOffset;
 		}
-	}];
-
+		_lastOffset += bufferSize;
+	} else {
+		for (int i=0; i<list->mNumberBuffers; i++) {
+			uint8_t *pData = (uint8_t*)list->mBuffers[i].mData;
+			memcpy(pData, _lastFrame->data[i] + _lastOffset, restBytes);
+		}
+		bufferSize -= restBytes;
+		if (![self getLastFrame]) return;
+		for (int i=0; i<list->mNumberBuffers; i++) {
+			uint8_t *pData = (uint8_t*)list->mBuffers[i].mData+restBytes;
+			memcpy(pData, _lastFrame->data[i], bufferSize);
+		}
+		_lastOffset = bufferSize;
+	}
 }
 
 - (BOOL)startWithFrame:(AVFrame*)frame
@@ -114,7 +107,7 @@ int fillListFromFrame(AudioBufferList* list, int dstOffset, AVFrame *frame, int 
 	output_desc.componentFlags = 0;
 	output_desc.componentFlagsMask = 0;
 	output_desc.componentManufacturer = kAudioUnitManufacturer_Apple;
-	
+
 	// converter component
 	AudioComponentDescription converter_desc;
 	converter_desc.componentType = kAudioUnitType_FormatConverter;
@@ -147,8 +140,8 @@ int fillListFromFrame(AudioBufferList* list, int dstOffset, AVFrame *frame, int 
 									0,
 									&flag,
 									sizeof(flag)), "AudioUnitSetProperty kAudioOutputUnitProperty_EnableIO failed");
-	
-	// Apply format
+
+	// Apply output sample rate
 	AudioStreamBasicDescription desc;
 	UInt32 size = sizeof(desc);
 	CheckError(AudioUnitGetProperty(outputUnit,
@@ -158,12 +151,20 @@ int fillListFromFrame(AudioBufferList* list, int dstOffset, AVFrame *frame, int 
 									&desc,
 									&size), "AudioUnitSetProperty kAudioUnitProperty_StreamFormat for output input failed");
 	
-	CheckError(AudioUnitSetProperty(converterUnit,
+	desc.mSampleRate = frame->sample_rate;
+	
+	CheckError(AudioUnitSetProperty(outputUnit,
 									kAudioUnitProperty_StreamFormat,
-									kAudioUnitScope_Output,
+									kAudioUnitScope_Input,
 									0,
 									&desc,
 									size), "AudioUnitSetProperty kAudioUnitProperty_StreamFormat for converter output failed");
+	CheckError(AudioUnitSetProperty(outputUnit,
+									kAudioUnitProperty_StreamFormat,
+									kAudioUnitScope_Output,
+									1,
+									&desc,
+									size), "AudioUnitSetProperty kAudioUnitProperty_StreamFormat for input failed");
 
 	// Fill audio format from AVFRame
 	memset(&mFormat, 0, sizeof(mFormat));
@@ -265,24 +266,31 @@ int fillListFromFrame(AudioBufferList* list, int dstOffset, AVFrame *frame, int 
 									0,
 									&mFormat,
 									sizeof(mFormat)), "AudioUnitSetProperty kAudioUnitProperty_StreamFormat for converter input failed");
+	CheckError(AudioUnitSetProperty(converterUnit,
+									kAudioUnitProperty_StreamFormat,
+									kAudioUnitScope_Output,
+									0,
+									&desc,
+									sizeof(desc)), "AudioUnitSetProperty kAudioUnitProperty_StreamFormat for converter output failed");
 	
 	// Set output callback
-	AURenderCallbackStruct callbackStruct;
-	callbackStruct.inputProc = converterRenderCallback;
-	callbackStruct.inputProcRefCon = (__bridge void*)self;
+	AURenderCallbackStruct converterCallbackStruct;
+	converterCallbackStruct.inputProc = converterRenderCallback;
+	converterCallbackStruct.inputProcRefCon = (__bridge void*)self;
 	CheckError(AudioUnitSetProperty(converterUnit,
 									kAudioUnitProperty_SetRenderCallback,
 									kAudioUnitScope_Global,
 									0,
-									&callbackStruct,
-									sizeof(callbackStruct)), "AudioUnitSetProperty kAudioUnitProperty_SetRenderCallback failed");
+									&converterCallbackStruct,
+									sizeof(converterCallbackStruct)), "AudioUnitSetProperty kAudioUnitProperty_SetRenderCallback failed");
 	
-	lastFrame = NULL;
 	// Initialise & start
 	CheckError(AUGraphInitialize(auGraph), "AUGraphInitialize failed");
 	CheckError(AUGraphStart(auGraph), "AUGraphStart failed");
 	
+	_lastFrame = frame;
 	self.started = YES;
+	
 	return YES;
 }
 
@@ -292,7 +300,17 @@ int fillListFromFrame(AudioBufferList* list, int dstOffset, AVFrame *frame, int 
 	CheckError(AUGraphUninitialize(auGraph), "AUGraphUninitialize failed");
 	CheckError(AUGraphClose(auGraph), "AUGraphClose failed");
 	self.started = NO;
+	while (!_frameQueue.empty()) {
+		AVFrame* frame = _frameQueue.front();
+		av_frame_free(&frame);
+		_frameQueue.pop();
+	}
 	return YES;
+}
+
+- (void)enqueueFrame:(AVFrame*)frame
+{
+	_frameQueue.push(frame);
 }
 
 @end

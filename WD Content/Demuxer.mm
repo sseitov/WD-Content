@@ -10,6 +10,7 @@
 #import "DataModel.h"
 #import "VTDecoder.h"
 #import "AudioDecoder.h"
+#import "AudioOutput.h"
 
 #include <queue>
 #include "SynchroQueue.h"
@@ -21,17 +22,6 @@ extern "C" {
 #	include "libavfilter/avfilter.h"
 };
 
-#define QUEUE_SIZE	31
-
-class PacketQueue : public BlockedQueue<AVPacket> {
-public:
-	PacketQueue() : BlockedQueue<AVPacket>(QUEUE_SIZE) {}
-	virtual void free(AVPacket* packet)
-	{
-		av_free_packet(packet);
-	}
-};
-
 class VideoQueue : public SynchroQueue<CMSampleBufferRef> {
 public:
 	VideoQueue() : SynchroQueue<CMSampleBufferRef>() {}
@@ -41,26 +31,12 @@ public:
 	}
 };
 
-class AudioQueue : public SynchroQueue<AVFrame*> {
-public:
-	AudioQueue() : SynchroQueue<AVFrame*>() {}
-	virtual void free(AVFrame** ppFrame)
-	{
-		av_frame_free(ppFrame);
-	}
-};
-
 @interface Demuxer () <VTDecoderDelegate, AudioDecoderDelegate> {
 	
 	dispatch_queue_t	_demuxerQueue;
-	dispatch_queue_t	_decoderQueue;
 	
-	AVFormatContext*	_mediaContext;
-	std::mutex			_mediaMutex;
-	
-	PacketQueue			_packetQueue;
 	VideoQueue			_videoQueue;
-	AudioQueue			_audioQueue;
+	AudioOutput*		_audioOutput;
 }
 
 @property (strong, nonatomic) VTDecoder *videoDecoder;
@@ -68,6 +44,8 @@ public:
 
 @property (nonatomic) int audioIndex;
 @property (nonatomic) int videoIndex;
+
+@property (atomic) AVFormatContext*	mediaContext;
 
 @end
 
@@ -79,14 +57,24 @@ public:
 	if (self) {
 		_audioDecoder = [[AudioDecoder alloc] init];
 		_audioDecoder.delegate = self;
+		_audioOutput = [[AudioOutput alloc] init];
 		
 		_demuxerQueue = dispatch_queue_create("com.vchannel.WD-Content.Demuxer", DISPATCH_QUEUE_SERIAL);
-		_decoderQueue = dispatch_queue_create("com.vchannel.WD-Content.Decoder", DISPATCH_QUEUE_SERIAL);
 		
 		_videoDecoder = [[VTDecoder alloc] init];
 		_videoDecoder.delegate = self;
 	}
 	return self;
+}
+
+- (AVCodecContext*)videoContext
+{
+	return _videoDecoder.context;
+}
+
+- (AVCodecContext*)audioContext
+{
+	return _audioDecoder.context;
 }
 
 - (NSString*)sambaURL:(NSString*)path
@@ -110,28 +98,34 @@ public:
 	}
 }
 
-- (AVFormatContext*)loadMedia:(NSString*)url
+- (BOOL)loadMedia:(NSString*)url audioChannels:(NSMutableArray*)audioChannels
 {
+/*
 	NSString* sambaURL = [self sambaURL:url];
-	NSLog(@"open %@", sambaURL);
-	AVFormatContext* mediaContext = 0;
-	
-	int err = avformat_open_input(&mediaContext, [sambaURL UTF8String], NULL, NULL);
+	if (!sambaURL) {
+		return NO;
+	}
+*/
+	NSString* sambaURL = @"http://panels.telemarker.cc/stream/ort-tm.ts";
+
+	int err = avformat_open_input(&_mediaContext, [sambaURL UTF8String], NULL, NULL);
 	if ( err != 0) {
 		return NULL;
 	}
 	
 	// Retrieve stream information
-	avformat_find_stream_info(mediaContext, NULL);
+	avformat_find_stream_info(self.mediaContext, NULL);
 	
 	_audioIndex = -1;
 	_videoIndex = -1;
 	AVCodecContext* enc;
-	for (unsigned i=0; i<mediaContext->nb_streams; ++i) {
-		enc = mediaContext->streams[i]->codec;
+	
+	for (unsigned i=0; i<self.mediaContext->nb_streams; ++i) {
+		enc = self.mediaContext->streams[i]->codec;
 		if (enc->codec_type == AVMEDIA_TYPE_AUDIO) {
 			if ([_audioDecoder openWithContext:enc]) {
-				_audioIndex = i;
+				[audioChannels addObject:@{@"channel" : [NSNumber numberWithInt:i],
+										   @"codec" : [NSString stringWithFormat:@"%s, %d channels", enc->codec->long_name, enc->channels]}];
 			}
 		} else if (enc->codec_type == AVMEDIA_TYPE_VIDEO) {
 			if ([_videoDecoder openWithContext:enc]) {
@@ -141,138 +135,107 @@ public:
 	}
 
 	if (_audioIndex < 0 && _videoIndex < 0) {
-		return NULL;
+		return NO;
 	} else {
-		return mediaContext;
+		return YES;
 	}
 }
 
-- (void)openWithPath:(NSString*)path completion:(void (^)(BOOL))completion
+- (void)openWithPath:(NSString*)path completion:(void (^)(NSArray*))completion
 {
 	dispatch_async(_demuxerQueue, ^() {
-		_mediaContext = [self loadMedia:path];
-		if (!_mediaContext) {
-			completion(NO);
+		NSMutableArray *audioChannels = [NSMutableArray new];
+		if (![self loadMedia:path audioChannels:audioChannels]) {
+			completion(nil);
 		} else {
-			completion(YES);
+			completion(audioChannels);
 		}
 	});
 }
 
 - (BOOL)closed
 {
-	std::unique_lock<std::mutex> lock(_mediaMutex);
-	return (_mediaContext == NULL);
+	return (self.mediaContext == NULL);
 }
 
 - (void)close
 {
-	_packetQueue.stop();
+	[_audioOutput stop];
+	[_audioDecoder close];
 	_videoQueue.stop();
-	
-	std::unique_lock<std::mutex> lock(_mediaMutex);
-	avformat_close_input(&_mediaContext);
-	_mediaContext = NULL;
+	AVFormatContext *context = self.mediaContext;
+	self.mediaContext = NULL;
+	avformat_close_input(&context);
 }
 
-- (AVPacket)createAudioPacket:(AVPacket*)src
+- (void)play:(int)audioCahnnel
 {
-	AVPacket packet;
-	av_new_packet(&packet, src->size);
-	packet.pts = src->pts;
-	packet.dts = src->dts;
-	memcpy(packet.data, src->data, src->size);
-	packet.size = src->size;
-	packet.stream_index = _audioIndex;
-	packet.duration = src->duration;
-	return packet;
-}
-
-- (void)play
-{
-	__block NSCondition *started = [NSCondition new];
-	
-	// decoder thread
-	dispatch_async(_decoderQueue, ^() {
-		[started lock];
-		[started signal];
-		[started unlock];
-		AVPacket packet;
-		while (_packetQueue.pop(&packet)) {
-//			NSLog(@"queue size after pop %d", _packetQueue.size());
-			if (packet.stream_index == _audioIndex) {
-				AVPacket audioPacket = [self createAudioPacket:&packet];
-				[_audioDecoder decodePacket:audioPacket];
-			} else {
-				[_videoDecoder decodePacket:&packet];
-			}
-//			NSLog(@"packet sent into decoder");
-			av_free_packet(&packet);
-		}
-	});
-	[started lock];
-	[started wait];
-	[started unlock];
-	
-	av_read_play(_mediaContext);
+	_audioIndex = audioCahnnel;
+	av_read_play(self.mediaContext);
 	dispatch_async(_demuxerQueue, ^() {
 		while (!self.closed) {
 			AVPacket nextPacket;
-			if (av_read_frame(_mediaContext, &nextPacket) < 0) { // eof
+			if (av_read_frame(self.mediaContext, &nextPacket) < 0) { // eof
 				[self.delegate demuxerDidStopped:self];
 				break;
 			}
-			if ((nextPacket.stream_index == _audioIndex) || (nextPacket.stream_index == _videoIndex)) {
-				_packetQueue.push(&nextPacket);
-			} else {
-				av_free_packet(&nextPacket);
+
+			if (nextPacket.stream_index == _audioIndex) {
+				[_audioDecoder decodePacket:&nextPacket];
+			} else if (nextPacket.stream_index == _videoIndex) {
+				[_videoDecoder decodePacket:&nextPacket];
 			}
+			av_free_packet(&nextPacket);
 		}
 	});
 }
 
 - (void)pause
 {
-	av_read_pause(_mediaContext);
+	av_read_pause(self.mediaContext);
 }
 
 #pragma mark - Audio
 
 - (void)audioDecoder:(AudioDecoder*)decoder decodedFrame:(AVFrame*)frame
 {
-	[self.delegate demuxer:self audioDecoded:frame];
-	_audioQueue.push(&frame);
-}
-
-- (AVFrame*)takeAudio
-{
-	AVFrame* frame = NULL;
-	if (_audioQueue.pop(&frame)) {
-		return frame;
-	} else {
-		return NULL;
+	if (!_audioOutput.started) {
+		[_audioOutput startWithFrame:frame];
+	}
+	if (_audioOutput.started) {
+		[_audioOutput enqueueFrame:frame];
 	}
 }
 
 #pragma mark - VTDecoder
 
-- (AVCodecContext*)videoContext
-{
-	return _videoDecoder.context;
-}
-
 - (CMSampleBufferRef)takeVideo
 {
 	CMSampleBufferRef buffer = NULL;
-	if (_videoQueue.pop(&buffer)) {
+	if (!_videoQueue.pop(&buffer)) {
+		return NULL;
+	} else {
+		return buffer;
+	}
+/*
+	if (!_videoQueue.front(&buffer)) {
+		return NULL;
+	}
+	double audioTime = _audioOutput.getCurrentTime;
+	CMTime time = CMSampleBufferGetOutputDecodeTimeStamp(buffer);
+	double videoTime = (double)time.value / (double)time.timescale;
+	if (videoTime < audioTime) {
+		_videoQueue.pop(&buffer);
+		NSLog(@"audio %f, video %f", audioTime, videoTime);
 		return buffer;
 	} else {
 		return NULL;
-	}
+	}*/
 }
 
 - (void)videoDecoder:(VTDecoder*)decoder decodedBuffer:(CMSampleBufferRef)buffer
 {
+//	NSLog(@"video queue size %d", _videoQueue.size());
 	_videoQueue.push(&buffer);
 }
 

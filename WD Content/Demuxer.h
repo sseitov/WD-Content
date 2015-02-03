@@ -15,7 +15,6 @@ struct AVFrame;
 
 @protocol DemuxerDelegate <NSObject>
 
-- (void)demuxer:(Demuxer*)demuxer audioDecoded:(AVFrame*)frame;
 - (void)demuxerDidStopped:(Demuxer*)demuxer;
 
 @end
@@ -24,13 +23,13 @@ struct AVFrame;
 
 @property (weak, nonatomic) id<DemuxerDelegate> delegate;
 
-- (void)openWithPath:(NSString*)path completion:(void (^)(BOOL))completion;
+- (void)openWithPath:(NSString*)path completion:(void (^)(NSArray*))completion;
 - (void)close;
 
-- (void)play;
+- (void)play:(int)audioCahnnel;
 
 - (AVCodecContext*)videoContext;
+- (AVCodecContext*)audioContext;
 - (CMSampleBufferRef)takeVideo;
-- (AVFrame*)takeAudio;
 
 @end

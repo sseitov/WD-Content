@@ -228,8 +228,7 @@
 		[self.navigationController pushViewController:next animated:YES];
 	}
 	else {
-		[self performSegueWithIdentifier:@"ShowVideo" sender:node];
-/*		UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"What do you want?"
+		UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"What do you want?"
 																				 message:@""
 																		  preferredStyle:UIAlertControllerStyleActionSheet];
 
@@ -254,7 +253,7 @@
 			[popover presentPopoverFromRect:rect inView:view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
 		} else {
 			[self presentViewController:alertController animated:YES completion:nil];
-		}*/
+		}
 	}
 }
 

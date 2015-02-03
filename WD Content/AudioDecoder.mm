@@ -7,6 +7,7 @@
 //
 
 #import "AudioDecoder.h"
+
 extern "C" {
 #	include "libavcodec/avcodec.h"
 };
@@ -14,10 +15,8 @@ extern "C" {
 
 @interface AudioDecoder () {
 	std::mutex			_mutex;
-	dispatch_queue_t	_decoderQueue;
-	AVCodecContext*		_context;
+	NSOperationQueue	*_decoderQueue;
 }
-
 
 @end
 
@@ -27,9 +26,14 @@ extern "C" {
 {
 	self = [super init];
 	if (self) {
-		_decoderQueue = dispatch_queue_create("com.vchannel.WD-Content.AudioDecoder", DISPATCH_QUEUE_SERIAL);
+		_decoderQueue = [[NSOperationQueue alloc] init];
 	}
 	return self;
+}
+
+- (void)dealloc
+{
+	[self close];
 }
 
 - (BOOL)openWithContext:(AVCodecContext*)context
@@ -53,6 +57,7 @@ extern "C" {
 
 - (void)close
 {
+	[_decoderQueue cancelAllOperations];
 	std::unique_lock<std::mutex> lock(_mutex);
 	if (_context) {
 		avcodec_close(_context);
@@ -60,25 +65,20 @@ extern "C" {
 	_context = NULL;
 }
 
-- (void)decodePacket:(AVPacket)packet
+- (void)decodePacket:(AVPacket*)packet
 {
-	dispatch_async(_decoderQueue, ^() {
-		std::unique_lock<std::mutex> lock(_mutex);
-		if (_context) {
-			int got_frame = 0;
-			int len = -1;
-			AVFrame *frame = av_frame_alloc();
-			len = avcodec_decode_audio4(_context, frame, &got_frame, &packet);
-			if (len > 0 && got_frame) {
-				frame->pts = frame->pkt_dts;
-				if (frame->pts == AV_NOPTS_VALUE) {
-					frame->pts = frame->pkt_pts;
-				}
-				[self.delegate audioDecoder:self decodedFrame:frame];
-			}
-			av_free_packet((AVPacket*)&packet);
+	int got_frame = 0;
+	int len = -1;
+	static AVFrame frame;
+	avcodec_get_frame_defaults(&frame);
+	len = avcodec_decode_audio4(_context, &frame, &got_frame, packet);
+	if (len > 0 && got_frame) {
+		frame.pts = frame.pkt_dts;
+		if (frame.pts == AV_NOPTS_VALUE) {
+			frame.pts = frame.pkt_pts;
 		}
-	});
+		[self.delegate audioDecoder:self decodedFrame:&frame];
+	}
 }
 
 @end
