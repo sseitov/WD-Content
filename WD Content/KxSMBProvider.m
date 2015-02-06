@@ -405,7 +405,7 @@ static KxSMBProvider *gSmbProvider;
     KxSMBItemStat *stat = [[KxSMBItemStat alloc] init];
     stat.lastModified = [NSDate dateWithTimeIntervalSince1970: st.st_mtime];
     stat.lastAccess = [NSDate dateWithTimeIntervalSince1970: st.st_atime];
-    stat.size = st.st_size;
+    stat.size = (long)st.st_size;
     stat.mode = st.st_mode;    
     return stat;
     
@@ -669,7 +669,7 @@ static KxSMBProvider *gSmbProvider;
                  [fileHandle writeData:data];
                  
                  if (progress) {
-                     progress(smbFile, fileHandle.offsetInFile);
+                     progress(smbFile, (long)fileHandle.offsetInFile);
                  }
                  
                  [self readSMBFile:smbFile
@@ -874,7 +874,7 @@ static KxSMBProvider *gSmbProvider;
             if ([result isKindOfClass:[NSNumber class]]) {
                 
                 if (progress) {
-                    progress(smbFile, fileHandle.offsetInFile);
+                    progress(smbFile, (long)fileHandle.offsetInFile);
                 }
                 
                 [self  writeSMBFile:smbFile
@@ -1671,7 +1671,7 @@ static KxSMBProvider *gSmbProvider;
     
     while (bytesToRead > 0) {
         
-        int r = readFn(_context, _file, buffer, MIN(bytesToRead, sizeof(buffer)));
+        ssize_t r = readFn(_context, _file, buffer, MIN(bytesToRead, sizeof(buffer)));
         
         if (r == 0)
             break;
@@ -1706,7 +1706,7 @@ static KxSMBProvider *gSmbProvider;
     
     while (1) {
         
-        int r = readFn(_context, _file, buffer, sizeof(buffer));
+        ssize_t r = readFn(_context, _file, buffer, sizeof(buffer));
         
         if (r == 0)
             break;
@@ -1734,7 +1734,7 @@ static KxSMBProvider *gSmbProvider;
         if (error) return error;
     }
     
-    off_t r = smbc_getFunctionLseek(_context)(_context, _file, offset, whence);
+    off_t r = smbc_getFunctionLseek(_context)(_context, _file, offset, (int)whence);
     if (r < 0) {
         const int err = errno;
         return mkKxSMBError(errnoToSMBErr(err),
@@ -1757,7 +1757,7 @@ static KxSMBProvider *gSmbProvider;
     
     while (bytesToWrite > 0) {
         
-        int r = writeFn(_context, _file, bytes, bytesToWrite);
+        ssize_t r = writeFn(_context, _file, bytes, bytesToWrite);
         if (r == 0)
             break;
         
