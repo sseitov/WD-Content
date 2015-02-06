@@ -568,8 +568,8 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 	}
 	CMSampleTimingInfo timingInfo;
 	if (packet->pts != AV_NOPTS_VALUE) {
-		timingInfo.presentationTimeStamp = CMTimeMake(packet->pts - startPts, 1.0/av_q2d(_audioContext->time_base));
-		timingInfo.duration = CMTimeMake(packet->duration, 1.0/av_q2d(_audioContext->time_base));
+		timingInfo.presentationTimeStamp = CMTimeMake(packet->pts - startPts, 1.0/av_q2d(_timeBase));
+		timingInfo.duration = CMTimeMake(packet->duration, 1.0/av_q2d(_timeBase));
 	} else {
 		NSLog(@"no pts");
 		return;

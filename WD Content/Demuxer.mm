@@ -14,13 +14,6 @@
 
 #include <queue>
 
-extern "C" {
-#	include "libavcodec/avcodec.h"
-#	include "libavformat/avformat.h"
-#	include "libavformat/avio.h"
-#	include "libavfilter/avfilter.h"
-};
-
 enum {
 	ThreadStillWorking,
 	ThreadIsDone
@@ -65,14 +58,9 @@ enum {
 	return self;
 }
 
-- (AVCodecContext*)videoContext
+- (AVRational)timeBase
 {
-	return _videoDecoder.context;
-}
-
-- (AVCodecContext*)audioContext
-{
-	return _audioDecoder.context;
+	return _audioDecoder.context->time_base;
 }
 
 - (NSString*)sambaURL:(NSString*)path
@@ -104,7 +92,7 @@ enum {
 		return NO;
 	}
 /*
-	NSString* sambaURL = @"http://panels.telemarker.cc/stream/tvc-tm.ts";
+	NSString* sambaURL = @"http://panels.telemarker.cc/stream/ort-tm.ts";
 */
 	int err = avformat_open_input(&_mediaContext, [sambaURL UTF8String], NULL, NULL);
 	if ( err != 0) {
@@ -155,7 +143,7 @@ enum {
 {
 	_audioIndex = audioCahnnel;
 	_demuxerState = [[NSConditionLock alloc] initWithCondition:ThreadStillWorking];
-	_videoDecoder.audioContext = _audioDecoder.context;
+	_videoDecoder.timeBase = _audioDecoder.context->time_base;
 	av_read_play(self.mediaContext);
 	startDate = [NSDate date];
 	self.stopped = NO;
@@ -215,13 +203,13 @@ enum {
 {
 	if (!_videoQueue.empty()) {
 		CMSampleBufferRef buffer = _videoQueue.front();
-
+/*
 		CMTime time = CMSampleBufferGetOutputDecodeTimeStamp(buffer);
 		if (time.timescale) {
 			double videoTime = (double)time.value / (double)time.timescale;
 			NSLog(@"time %f, video %f", [[NSDate date] timeIntervalSinceDate:startDate], videoTime);
 		}
-
+*/
 		_videoQueue.pop();
 		return buffer;
 	} else {

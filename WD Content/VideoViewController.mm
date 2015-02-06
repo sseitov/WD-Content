@@ -16,11 +16,18 @@
 extern "C" {
 #	include "libavformat/avformat.h"
 }
+#include <mutex>
 
 #define IS_PAD ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
 
+enum {
+	LayerStillWorking,
+	LayerIsDone
+};
+
 @interface VideoViewController () <DemuxerDelegate> {
 	dispatch_queue_t _videoOutputQueue;
+	std::mutex		_mutex;
 }
 
 @property (weak, nonatomic) IBOutlet UIToolbar *topBar;
@@ -33,9 +40,10 @@ extern "C" {
 @property (nonatomic) BOOL doAnimation;
 
 @property (strong, nonatomic) Demuxer* demuxer;
-@property (atomic) BOOL stopped;
 
 @property (strong, nonatomic) AVSampleBufferDisplayLayer *videoOutput;
+@property (strong, nonatomic) NSConditionLock *layerState;
+@property (atomic) BOOL stopped;
 
 - (IBAction)done:(id)sender;
 
@@ -161,30 +169,46 @@ extern "C" {
 	CMTimebaseCreateWithMasterClock(CFAllocatorGetDefault(), CMClockGetHostTimeClock(),&tmBase);
 	_videoOutput.controlTimebase = tmBase;
 	CMTimebaseSetTime(_videoOutput.controlTimebase, kCMTimeZero);
-	CMTimebaseSetRate(_videoOutput.controlTimebase, 1.0/av_q2d(_demuxer.audioContext->time_base));
+	CMTimebaseSetRate(_videoOutput.controlTimebase, 1.0/av_q2d(_demuxer.timeBase));
 	
 	[_demuxer play:audioChannel];
+	
 	self.stopped = NO;
+	_layerState = [[NSConditionLock alloc] initWithCondition:LayerStillWorking];
 	
 	[_videoOutput requestMediaDataWhenReadyOnQueue:_videoOutputQueue usingBlock:^() {
-		while (!self.stopped && _videoOutput.isReadyForMoreMediaData) {
-			CMSampleBufferRef buffer = [_demuxer takeVideo];
-			if (buffer) {
-				[_videoOutput enqueueSampleBuffer:buffer];
-				CFRelease(buffer);
-			} else {
-				break;
+		[_layerState lock];
+		if (!self.stopped) {
+			while (_videoOutput.isReadyForMoreMediaData) {
+				CMSampleBufferRef buffer = [_demuxer takeVideo];
+				if (buffer) {
+					[_videoOutput enqueueSampleBuffer:buffer];
+					CFRelease(buffer);
+				} else {
+					break;
+				}
 			}
+			[_layerState unlockWithCondition:LayerStillWorking];
+		} else {
+			[_layerState unlockWithCondition:LayerIsDone];
 		}
-		NSLog(@"");
 	}];
 }
 
 - (void)stop
 {
 	self.stopped = YES;
-	[_videoOutput stopRequestingMediaData];
-	[_demuxer close];
+	
+	MBProgressHUD *hud = [[MBProgressHUD alloc] initWithView:self.view];
+	[self.view addSubview:hud];
+	[hud showAnimated:YES whileExecutingBlock:^{
+		[_layerState lockWhenCondition:LayerIsDone];
+		[_layerState unlock];
+		[_videoOutput stopRequestingMediaData];
+		[_demuxer close];
+	} completionBlock:^{
+		[hud removeFromSuperview];
+	}];
 }
 
 - (IBAction)done:(id)sender
