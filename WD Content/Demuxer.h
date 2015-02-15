@@ -30,9 +30,10 @@ extern "C" {
 @property (weak, nonatomic) id<DemuxerDelegate> delegate;
 
 - (void)openWithPath:(NSString*)path completion:(void (^)(NSArray*))completion;
+- (void)stop;
 - (void)close;
 
-- (void)play:(int)audioCahnnel;
+- (BOOL)play:(int)audioCahnnel;
 
 - (AVRational)timeBase;
 - (CMSampleBufferRef)takeVideo;

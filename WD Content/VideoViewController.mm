@@ -29,21 +29,16 @@ enum {
 	dispatch_queue_t _videoOutputQueue;
 	std::mutex		_mutex;
 }
-
-@property (weak, nonatomic) IBOutlet UIToolbar *topBar;
-@property (weak, nonatomic) IBOutlet UIBarButtonItem *titleItem;
-@property (weak, nonatomic) IBOutlet UIView *screen;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *topBarSpace;
-@property (weak, nonatomic) IBOutlet UISlider *timeLine;
+- (IBAction)chooseAudio:(id)sender;
 
 @property (nonatomic) BOOL barsHidden;
-@property (nonatomic) BOOL doAnimation;
 
 @property (strong, nonatomic) Demuxer* demuxer;
 
 @property (strong, nonatomic) AVSampleBufferDisplayLayer *videoOutput;
 @property (strong, nonatomic) NSConditionLock *layerState;
 @property (atomic) BOOL stopped;
+@property (strong, nonatomic) NSArray* audioChannels;
 
 - (IBAction)done:(id)sender;
 
@@ -55,7 +50,7 @@ enum {
 {
     [super viewDidLoad];
 	
-	_titleItem.title = [_node.info title] ? _node.info.title : _node.name;
+	self.title = [_node.info title] ? _node.info.title : _node.name;
 	
 	_videoOutputQueue = dispatch_queue_create("com.vchannel.WD-Content.VideoOutput", DISPATCH_QUEUE_SERIAL);
 	
@@ -74,60 +69,24 @@ enum {
 				[self errorOpen];
 			} else {
 				if (audioChannels.count > 1) {
-					UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"What do you want?"
-																							 message:@""
-																					  preferredStyle:UIAlertControllerStyleActionSheet];
-					for (NSDictionary *channel in audioChannels) {
-						UIAlertAction *action = [UIAlertAction actionWithTitle:[channel objectForKey:@"codec"]
-																		 style:UIAlertActionStyleDefault
-																	   handler:^(UIAlertAction *action) {
-																		   [self play:[[channel objectForKey:@"channel"] intValue]];
-																	   }];
-						[alertController addAction:action];
-					}
-					UIAlertAction *action = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
-					[alertController addAction:action];
-					
-					if(IS_PAD) {
-						UIPopoverController *popover = [[UIPopoverController alloc] initWithContentViewController:alertController];
-						[popover presentPopoverFromBarButtonItem:_titleItem permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
-					} else {
-						[self presentViewController:alertController animated:YES completion:nil];
-					}
+					_audioChannels = audioChannels;
+					[self selectChannel];
 				} else {
+					[self.navigationItem setRightBarButtonItem:nil animated:YES];
 					[self play:[[[audioChannels objectAtIndex:0] objectForKey:@"channel"] intValue]];
 				}
 			}
 		});
 	}];
 	UITapGestureRecognizer* tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapOnScreen:)];
-	[_screen addGestureRecognizer:tap];
-	_doAnimation = YES;
-	[self performSelector:@selector(showBars) withObject:nil afterDelay:2.0];
+	[self.view addGestureRecognizer:tap];
 }
 
 - (void)tapOnScreen:(UITapGestureRecognizer *)tap
 {
-	if (!_doAnimation) {
-		[self showBars];
-	}
-}
-
-- (void)showBars
-{
-	_doAnimation = YES;
-	[UIView animateWithDuration:0.2 animations:^(){
-		if (_barsHidden) {
-			_topBarSpace.constant = 0;
-		} else {
-			_topBarSpace.constant = -64;
-		}
-		[self.view layoutIfNeeded];
-	} completion:^(BOOL) {
-		_doAnimation = NO;
-		_barsHidden = !_barsHidden;
-		[self layoutScreen];
-	}];
+	_barsHidden = !_barsHidden;
+	[self.navigationController setNavigationBarHidden:_barsHidden animated:YES];
+	[self layoutScreen];
 }
 
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
@@ -148,9 +107,9 @@ enum {
 - (void)layoutScreen
 {
 	[_videoOutput removeFromSuperlayer];
-	_videoOutput.bounds = _screen.bounds;
-	_videoOutput.position = CGPointMake(CGRectGetMidX(_screen.bounds), CGRectGetMidY(_screen.bounds));
-	[_screen.layer addSublayer:_videoOutput];
+	_videoOutput.bounds = self.view.bounds;
+	_videoOutput.position = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds));
+	[self.view.layer addSublayer:_videoOutput];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -163,15 +122,50 @@ enum {
 	[self layoutScreen];
 }
 
+- (IBAction)chooseAudio:(id)sender
+{
+	[self stop];
+	[self selectChannel];
+}
+
+- (void)selectChannel
+{
+	UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Choose audio channel"
+																			 message:@""
+																	  preferredStyle:UIAlertControllerStyleActionSheet];
+	for (NSDictionary *channel in _audioChannels) {
+		UIAlertAction *action = [UIAlertAction actionWithTitle:[channel objectForKey:@"codec"]
+														 style:UIAlertActionStyleDefault
+													   handler:^(UIAlertAction *action) {
+														   [self play:[[channel objectForKey:@"channel"] intValue]];
+													   }];
+		[alertController addAction:action];
+	}
+	UIAlertAction *action = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
+	[alertController addAction:action];
+	
+	if(IS_PAD) {
+		UIPopoverController *popover = [[UIPopoverController alloc] initWithContentViewController:alertController];
+		[popover presentPopoverFromBarButtonItem:self.navigationItem.rightBarButtonItem permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+	} else {
+		[self presentViewController:alertController animated:YES completion:nil];
+	}
+}
+
 - (void)play:(int)audioChannel
 {
+	if (![_demuxer play:audioChannel]) {
+		[self errorOpen];
+		return;
+	}
+	
+	[self performSelector:@selector(tapOnScreen:) withObject:nil afterDelay:2.0];
+	
 	CMTimebaseRef tmBase = nil;
 	CMTimebaseCreateWithMasterClock(CFAllocatorGetDefault(), CMClockGetHostTimeClock(),&tmBase);
 	_videoOutput.controlTimebase = tmBase;
 	CMTimebaseSetTime(_videoOutput.controlTimebase, kCMTimeZero);
 	CMTimebaseSetRate(_videoOutput.controlTimebase, 1.0/av_q2d(_demuxer.timeBase));
-	
-	[_demuxer play:audioChannel];
 	
 	self.stopped = NO;
 	_layerState = [[NSConditionLock alloc] initWithCondition:LayerStillWorking];
@@ -205,15 +199,17 @@ enum {
 		[_layerState lockWhenCondition:LayerIsDone];
 		[_layerState unlock];
 		[_videoOutput stopRequestingMediaData];
-		[_demuxer close];
 	} completionBlock:^{
 		[hud removeFromSuperview];
 	}];
+	[_demuxer stop];
 }
 
 - (IBAction)done:(id)sender
 {
+	[MBProgressHUD hideHUDForView:self.view animated:YES];
 	[self stop];
+	[_demuxer close];
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -223,7 +219,11 @@ enum {
 {
 	dispatch_async(dispatch_get_main_queue(), ^() {
 		if (buffering) {
-			[MBProgressHUD showHUDAddedTo:self.view animated:YES];
+			MBProgressHUD *hud = [[MBProgressHUD alloc] initWithView:self.view];
+			hud.removeFromSuperViewOnHide = YES;
+			[self.view addSubview:hud];
+			hud.labelText = @"Buffering...";
+			[hud show:YES];
 		} else {
 			[MBProgressHUD hideHUDForView:self.view animated:YES];
 		}

@@ -333,74 +333,6 @@
             </objects>
             <point key="canvasLocation" x="-2518" y="3578"/>
         </scene>
-        <!--Video View Controller-->
-        <scene sceneID="g6x-Nu-Kr1">
-            <objects>
-                <viewController extendedLayoutIncludesOpaqueBars="YES" id="Ubj-eM-oIy" customClass="VideoViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="HTk-5K-F0J"/>
-                        <viewControllerLayoutGuide type="bottom" id="CbV-C1-7pL"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="Z1h-0b-sFS">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" barStyle="black" translatesAutoresizingMaskIntoConstraints="NO" id="fog-up-NTZ">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="44" id="FtB-WD-UYU"/>
-                                </constraints>
-                                <items>
-                                    <barButtonItem width="60" style="plain" id="zQS-Jv-2bF">
-                                        <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="lhn-px-a4c">
-                                            <rect key="frame" x="16" y="7" width="60" height="30"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <state key="normal" title="Done">
-                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                            </state>
-                                            <connections>
-                                                <action selector="done:" destination="Ubj-eM-oIy" eventType="touchUpInside" id="7lv-UV-vxw"/>
-                                            </connections>
-                                        </button>
-                                    </barButtonItem>
-                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="Kub-v4-QNv"/>
-                                    <barButtonItem title="Item" width="200" id="DNr-vX-dkF">
-                                        <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                    </barButtonItem>
-                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="gA5-oa-aWG"/>
-                                    <barButtonItem width="20" style="plain" systemItem="fixedSpace" id="TUO-Tp-LH8"/>
-                                </items>
-                            </toolbar>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3mf-Pl-zvM">
-                                <rect key="frame" x="0.0" y="44" width="600" height="556"/>
-                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
-                            </view>
-                        </subviews>
-                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
-                        <constraints>
-                            <constraint firstAttribute="trailingMargin" secondItem="fog-up-NTZ" secondAttribute="trailing" constant="-16" id="94F-rD-4eB"/>
-                            <constraint firstItem="fog-up-NTZ" firstAttribute="top" secondItem="HTk-5K-F0J" secondAttribute="bottom" id="Fl3-1K-68p"/>
-                            <constraint firstItem="3mf-Pl-zvM" firstAttribute="leading" secondItem="Z1h-0b-sFS" secondAttribute="leadingMargin" constant="-16" id="IH2-aO-zcU"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="3mf-Pl-zvM" secondAttribute="trailing" constant="-16" id="Ly2-Pb-3EX"/>
-                            <constraint firstItem="fog-up-NTZ" firstAttribute="leading" secondItem="Z1h-0b-sFS" secondAttribute="leadingMargin" constant="-16" id="OZe-MX-hpA"/>
-                            <constraint firstItem="CbV-C1-7pL" firstAttribute="top" secondItem="3mf-Pl-zvM" secondAttribute="bottom" id="gf2-bU-Q7o"/>
-                            <constraint firstItem="3mf-Pl-zvM" firstAttribute="top" secondItem="fog-up-NTZ" secondAttribute="bottom" id="ztp-s8-frD"/>
-                        </constraints>
-                    </view>
-                    <extendedEdge key="edgesForExtendedLayout" top="YES"/>
-                    <navigationItem key="navigationItem" id="4aN-RE-xch"/>
-                    <nil key="simulatedStatusBarMetrics"/>
-                    <connections>
-                        <outlet property="screen" destination="3mf-Pl-zvM" id="9cz-AQ-6Jb"/>
-                        <outlet property="titleItem" destination="DNr-vX-dkF" id="oNt-ee-tqC"/>
-                        <outlet property="topBar" destination="fog-up-NTZ" id="Fgq-bx-aF8"/>
-                        <outlet property="topBarSpace" destination="Fl3-1K-68p" id="NNv-NW-6SR"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Kxd-7G-wHP" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-1828" y="3578"/>
-        </scene>
         <!--Navigation Controller-->
         <scene sceneID="siK-cU-Mqe">
             <objects>
@@ -420,19 +352,49 @@
         <!--Navigation Controller-->
         <scene sceneID="4kw-4Z-W5h">
             <objects>
-                <navigationController navigationBarHidden="YES" id="PpX-dR-tli" sceneMemberID="viewController">
+                <navigationController id="PpX-dR-tli" sceneMemberID="viewController">
                     <nil key="simulatedStatusBarMetrics"/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" barStyle="black" id="dsH-QM-ukE">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="dsH-QM-ukE">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
-                        <segue destination="Ubj-eM-oIy" kind="relationship" relationship="rootViewController" id="IfN-bF-qlt"/>
+                        <segue destination="l7I-tR-PQG" kind="relationship" relationship="rootViewController" id="HAf-xN-hhr"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="VT6-gc-0kx" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-1828" y="2808"/>
+        </scene>
+        <!--Video View Controller-->
+        <scene sceneID="a85-RK-jMf">
+            <objects>
+                <viewController id="l7I-tR-PQG" customClass="VideoViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="hzW-Vi-7cs"/>
+                        <viewControllerLayoutGuide type="bottom" id="XuW-o3-y50"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="bU2-xg-tyz">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="pQ6-Kg-EgI">
+                        <barButtonItem key="leftBarButtonItem" style="plain" systemItem="done" id="ue3-Hh-5NE">
+                            <connections>
+                                <action selector="done:" destination="l7I-tR-PQG" id="PQa-4u-PYU"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" title="Audio channel" style="plain" id="7SF-LD-TtF">
+                            <connections>
+                                <action selector="chooseAudio:" destination="l7I-tR-PQG" id="MC2-1M-iuT"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="B0y-UG-eGY" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1828" y="3578"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="lpJ-1Y-cHV">

@@ -13,6 +13,7 @@
 #import "AudioOutput.h"
 
 #include <queue>
+#include <list>
 #include <mutex>
 
 enum {
@@ -23,7 +24,7 @@ enum {
 class PacketBuffer
 {
 protected:
-	std::queue<AVPacket>	_queue;
+	std::list<AVPacket>	_queue;
 	std::mutex				_mutex;
 	std::condition_variable _empty;
 	int						_timeIndex;
@@ -39,12 +40,17 @@ public:
 	~PacketBuffer()
 	{
 		_empty.notify_one();
+		while (!_queue.empty()) {
+			AVPacket packet = _queue.front();
+			av_free_packet(&packet);
+			_queue.pop_front();
+		}
 	}
-
+	
 	void push(AVPacket &packet)
 	{
 		std::unique_lock<std::mutex> lock(_mutex);
-		_queue.push(packet);
+		_queue.push_back(packet);
 		if (packet.stream_index == _timeIndex) {
 			_bufferTime++;
 		}
@@ -56,7 +62,7 @@ public:
 		std::unique_lock<std::mutex> lock(_mutex);
 		_empty.wait(lock, [this]() { return (!_queue.empty() && running);});
 		packet = _queue.front();
-		_queue.pop();
+		_queue.pop_front();
 		if (packet.stream_index == _timeIndex) {
 			_bufferTime--;
 		}
@@ -88,6 +94,7 @@ public:
 
 @property (atomic) AVFormatContext*	mediaContext;
 @property (strong, nonatomic) NSConditionLock *demuxerState;
+@property (strong, nonatomic) NSConditionLock *decoderState;
 @property (atomic) BOOL stopped;
 
 @end
@@ -161,11 +168,9 @@ public:
 	
 	for (unsigned i=0; i<self.mediaContext->nb_streams; ++i) {
 		enc = self.mediaContext->streams[i]->codec;
-		if (enc->codec_type == AVMEDIA_TYPE_AUDIO) {
-			if ([_audioDecoder openWithContext:enc]) {
-				[audioChannels addObject:@{@"channel" : [NSNumber numberWithInt:i],
-										   @"codec" : [NSString stringWithFormat:@"%s, %d channels", enc->codec->long_name, enc->channels]}];
-			}
+		if (enc->codec_type == AVMEDIA_TYPE_AUDIO && enc->codec_descriptor) {
+			[audioChannels addObject:@{@"channel" : [NSNumber numberWithInt:i],
+									   @"codec" : [NSString stringWithFormat:@"%s, %d channels", enc->codec_descriptor->long_name, enc->channels]}];
 		} else if (enc->codec_type == AVMEDIA_TYPE_VIDEO) {
 			if ([_videoDecoder openWithContext:enc]) {
 				_videoIndex = i;
@@ -173,11 +178,7 @@ public:
 		}
 	}
 
-	if (_audioIndex < 0 && _videoIndex < 0) {
-		return NO;
-	} else {
-		return YES;
-	}
+	return (_videoIndex >= 0);
 }
 
 - (void)openWithPath:(NSString*)path completion:(void (^)(NSArray*))completion
@@ -192,13 +193,19 @@ public:
 	});
 }
 
-- (void)play:(int)audioCahnnel
+- (BOOL)play:(int)audioCahnnel
 {
 	_audioIndex = audioCahnnel;
-	_demuxerState = [[NSConditionLock alloc] initWithCondition:ThreadStillWorking];
 	_packetBuffer = new PacketBuffer(_audioIndex);
-	av_read_play(self.mediaContext);
+	
+	AVCodecContext* enc = self.mediaContext->streams[audioCahnnel]->codec;
+	if (![_audioDecoder openWithContext:enc]) {
+		return NO;
+	}
+
 	self.stopped = NO;
+	
+	_decoderState = [[NSConditionLock alloc] initWithCondition:ThreadStillWorking];
 	
 	dispatch_async(_decoderQueue, ^() {
 		while (!self.stopped) {
@@ -213,7 +220,12 @@ public:
 			}
 			av_free_packet(&nextPacket);
 		}
+		[_decoderState lock];
+		[_decoderState unlockWithCondition:ThreadIsDone];
 	});
+	
+	_demuxerState = [[NSConditionLock alloc] initWithCondition:ThreadStillWorking];
+	av_read_play(self.mediaContext);
 	
 	dispatch_async(_networkQueue, ^() {
 		[self.delegate demuxer:self buffering:YES];
@@ -239,26 +251,40 @@ public:
 		[_demuxerState lock];
 		[_demuxerState unlockWithCondition:ThreadIsDone];
 	});
+	return YES;
+}
+
+- (void)stop
+{
+	if (self.stopped) {
+		return;
+	}
+	
+	self.stopped = YES;
+	
+	[_decoderState lockWhenCondition:ThreadIsDone];
+	[_decoderState unlock];
+	
+	[_demuxerState lockWhenCondition:ThreadIsDone];
+	[_demuxerState unlock];
+	
+	[_audioDecoder close];
+	[_audioOutput stop];
+	
+	delete _packetBuffer;
 }
 
 - (void)close
 {
-	self.stopped = YES;
-	[_demuxerState lockWhenCondition:ThreadIsDone];
-	[_demuxerState unlock];
-	
-	[_audioOutput stop];
-	[_audioDecoder close];
-	
-	delete _packetBuffer;
-	
-	avformat_close_input(&_mediaContext);
+	[self stop];
 	
 	while (!_videoQueue.empty()) {
 		CMSampleBufferRef buffer = _videoQueue.front();
 		CFRelease(buffer);
 		_videoQueue.pop();
 	}
+	
+	avformat_close_input(&_mediaContext);
 }
 
 #pragma mark - Audio

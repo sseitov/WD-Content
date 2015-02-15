@@ -10,15 +10,6 @@
 #import <VideoToolbox/VideoToolbox.h>
 #import <CoreVideo/CVHostTime.h>
 
-@interface VTDecoder () {
-    VTDecompressionSessionRef _session;
-    CMVideoFormatDescriptionRef _videoFormat;
-	bool convert_byte_stream;
-	int frameNumber;
-}
-
-@end
-
 /* extradata
  
  bits
@@ -505,10 +496,21 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
                                      CMTime presentationTimeStamp,
                                      CMTime presentationDuration );
 
+
+@interface VTDecoder () {
+	VTDecompressionSessionRef _session;
+	CMVideoFormatDescriptionRef _videoFormat;
+	bool convert_byte_stream;
+	int frameNumber;
+}
+
+@end
+
 @implementation VTDecoder
 
 - (BOOL)openWithContext:(AVCodecContext*)context
 {
+	convert_byte_stream = false;
 	_videoFormat = CreateFormat(context, &convert_byte_stream);
 	if (!_videoFormat) {
 		return NO;
@@ -544,7 +546,7 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 
 - (void)close
 {
-	if (_context) {
+ 	if (_context) {
 		avcodec_close(_context);
 	}
 	_context = NULL;
@@ -561,13 +563,9 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 
 - (void)decodePacket:(AVPacket*)packet
 {
-	static int64_t startPts;
-	if (frameNumber == 0) {
-		startPts = packet->pts;
-	}
 	CMSampleTimingInfo timingInfo;
 	if (packet->pts != AV_NOPTS_VALUE) {
-		timingInfo.presentationTimeStamp = CMTimeMake(packet->pts - startPts, 1.0/av_q2d(_context->time_base));
+		timingInfo.presentationTimeStamp = CMTimeMake(packet->pts, 1.0/av_q2d(_context->time_base));
 		frameNumber++;
 	} else {
 		timingInfo.presentationTimeStamp = CMTimeMake(frameNumber++, 25);

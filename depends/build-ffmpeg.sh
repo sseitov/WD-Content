@@ -21,12 +21,6 @@ SCRATCH="scratch"
 # must be an absolute path
 THIN=`pwd`/"thin"
 
-FDK_AAC=`pwd`/fdk-aac/fdk-aac-ios
-if [ "$FDK_AAC" ]
-then
-	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-libfdk-aac --enable-nonfree"
-fi
-
 COMPILE="y"
 LIPO="y"
 
@@ -82,12 +76,6 @@ then
 		CXXFLAGS="$CFLAGS"
 		LDFLAGS="$CFLAGS"
 
-		if [ "$FDK_AAC" ]
-		then
-		    CFLAGS="$CFLAGS -I$FDK_AAC/include"
-		    LDFLAGS="$LDFLAGS -L$FDK_AAC/lib"
-		fi
-		
 		# Add smbclient if exists
 		SMB_LIB="$SCRIPT_DIR/samba/source3/bin/$ARCH"
 		SMB_INC="$SCRIPT_DIR/libs/include"
