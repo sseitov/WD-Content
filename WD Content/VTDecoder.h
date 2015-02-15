@@ -26,7 +26,6 @@ extern "C" {
 
 @property (weak, nonatomic) id<VTDecoderDelegate> delegate;
 @property (readwrite, nonatomic) AVCodecContext* context;
-@property (nonatomic) AVRational timeBase;
 
 - (BOOL)openWithContext:(AVCodecContext*)context;
 - (void)close;

@@ -20,6 +20,7 @@ extern "C" {
 
 @protocol DemuxerDelegate <NSObject>
 
+- (void)demuxer:(Demuxer*)demuxer buffering:(BOOL)buffering;
 - (void)demuxerDidStopped:(Demuxer*)demuxer;
 
 @end

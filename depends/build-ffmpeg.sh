@@ -1,7 +1,7 @@
 #!/bin/sh
 
 echo "Pulling ..."
-git clone -b release/2.5 git://git.videolan.org/ffmpeg.git ffmpeg
+git clone git://git.videolan.org/ffmpeg.git ffmpeg
 
 CONFIGURE_FLAGS="--enable-cross-compile --enable-pthreads --disable-ffserver --disable-ffmpeg \
 		 --disable-ffprobe --disable-encoders --enable-neon --enable-swscale --enable-avfilter \
@@ -20,6 +20,12 @@ SCRIPT_DIR=$( (cd -P $(dirname $0) && pwd) )
 SCRATCH="scratch"
 # must be an absolute path
 THIN=`pwd`/"thin"
+
+FDK_AAC=`pwd`/fdk-aac/fdk-aac-ios
+if [ "$FDK_AAC" ]
+then
+	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-libfdk-aac --enable-nonfree"
+fi
 
 COMPILE="y"
 LIPO="y"
@@ -76,6 +82,12 @@ then
 		CXXFLAGS="$CFLAGS"
 		LDFLAGS="$CFLAGS"
 
+		if [ "$FDK_AAC" ]
+		then
+		    CFLAGS="$CFLAGS -I$FDK_AAC/include"
+		    LDFLAGS="$LDFLAGS -L$FDK_AAC/lib"
+		fi
+		
 		# Add smbclient if exists
 		SMB_LIB="$SCRIPT_DIR/samba/source3/bin/$ARCH"
 		SMB_INC="$SCRIPT_DIR/libs/include"

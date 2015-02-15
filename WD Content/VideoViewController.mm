@@ -65,7 +65,7 @@ enum {
 	
 	_demuxer = [[Demuxer alloc] init];
 	_demuxer.delegate = self;
-	
+
 	[MBProgressHUD showHUDAddedTo:self.view animated:YES];
 	[_demuxer openWithPath:_node.path completion:^(NSArray* audioChannels) {
 		dispatch_async(dispatch_get_main_queue(), ^() {
@@ -179,7 +179,7 @@ enum {
 	[_videoOutput requestMediaDataWhenReadyOnQueue:_videoOutputQueue usingBlock:^() {
 		[_layerState lock];
 		if (!self.stopped) {
-			while (_videoOutput.isReadyForMoreMediaData) {
+			while (!self.stopped && _videoOutput.isReadyForMoreMediaData) {
 				CMSampleBufferRef buffer = [_demuxer takeVideo];
 				if (buffer) {
 					[_videoOutput enqueueSampleBuffer:buffer];
@@ -218,6 +218,17 @@ enum {
 }
 
 #pragma mark - Demuxer delegate
+
+- (void)demuxer:(Demuxer*)demuxer buffering:(BOOL)buffering
+{
+	dispatch_async(dispatch_get_main_queue(), ^() {
+		if (buffering) {
+			[MBProgressHUD showHUDAddedTo:self.view animated:YES];
+		} else {
+			[MBProgressHUD hideHUDForView:self.view animated:YES];
+		}
+	});
+}
 
 - (void)demuxerDidStopped:(Demuxer *)demuxer
 {
