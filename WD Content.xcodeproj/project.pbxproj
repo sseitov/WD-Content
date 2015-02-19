@@ -11,6 +11,7 @@
 		2C0AB2B71A4AF06C0007D700 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C0AB2B61A4AF06C0007D700 /* Security.framework */; };
 		2C0AB2BA1A4B37F60007D700 /* DropboxClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0AB2B91A4B37F60007D700 /* DropboxClient.m */; };
 		2C0D90D51A95F1F100E13BC9 /* Decoder.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D90D41A95F1F100E13BC9 /* Decoder.mm */; };
+		2C0D90D71A96271400E13BC9 /* logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C0D90D61A96271400E13BC9 /* logo.png */; };
 		2C125EAA1848C74B00406FC3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C125EA91848C74B00406FC3 /* Foundation.framework */; };
 		2C125EAC1848C74B00406FC3 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C125EAB1848C74B00406FC3 /* CoreGraphics.framework */; };
 		2C125EAE1848C74B00406FC3 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C125EAD1848C74B00406FC3 /* UIKit.framework */; };
@@ -97,6 +98,7 @@
 		2C0AB2B91A4B37F60007D700 /* DropboxClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DropboxClient.m; sourceTree = "<group>"; };
 		2C0D90D31A95F1F100E13BC9 /* Decoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Decoder.h; sourceTree = "<group>"; };
 		2C0D90D41A95F1F100E13BC9 /* Decoder.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Decoder.mm; sourceTree = "<group>"; };
+		2C0D90D61A96271400E13BC9 /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo.png; sourceTree = "<group>"; };
 		2C125EA61848C74B00406FC3 /* WD Content.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "WD Content.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C125EA91848C74B00406FC3 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		2C125EAB1848C74B00406FC3 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -485,6 +487,7 @@
 		2CDF099719C58AD000A1B3B9 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				2C0D90D61A96271400E13BC9 /* logo.png */,
 				2C378CE719EA802D00C69ADA /* collection.png */,
 				2C378CE819EA802D00C69ADA /* list.png */,
 			);
@@ -594,6 +597,7 @@
 				2CA6BA011A4569B900AFF041 /* Main.storyboard in Resources */,
 				2C378CEA19EA802D00C69ADA /* collection.png in Resources */,
 				2CD030DB1A640ED7003B22CA /* LaunchScreen.xib in Resources */,
+				2C0D90D71A96271400E13BC9 /* logo.png in Resources */,
 				2C125EB41848C74B00406FC3 /* InfoPlist.strings in Resources */,
 				2C378CEB19EA802D00C69ADA /* list.png in Resources */,
 				2CA6BA0E1A45BF9700AFF041 /* default.css in Resources */,
@@ -744,8 +748,8 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Sergey Seitov (RXAUVFWR8G)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Sergey Seitov (RXAUVFWR8G)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Sergey Seitov (7TSVKXZ79P)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Sergey Seitov (7TSVKXZ79P)";
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -756,7 +760,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				PROVISIONING_PROFILE = "f0389d62-ea12-4baa-9c84-a093074bfadf";
+				PROVISIONING_PROFILE = "7eb12b62-373d-4845-902d-145223504c73";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -800,8 +804,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Sergey Seitov (RXAUVFWR8G)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Sergey Seitov (RXAUVFWR8G)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Sergey Seitov (7TSVKXZ79P)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Sergey Seitov (7TSVKXZ79P)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/sseitov/Documents/SDK/PixateFreestyle,
@@ -821,7 +825,7 @@
 					./depends/libs/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "f0389d62-ea12-4baa-9c84-a093074bfadf";
+				PROVISIONING_PROFILE = "7eb12b62-373d-4845-902d-145223504c73";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};
