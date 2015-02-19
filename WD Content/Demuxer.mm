@@ -13,7 +13,6 @@
 #import "AudioOutput.h"
 
 #include <queue>
-#include <list>
 #include <mutex>
 
 enum {
@@ -24,7 +23,7 @@ enum {
 class PacketBuffer
 {
 protected:
-	std::list<AVPacket>	_queue;
+	std::queue<AVPacket>	_queue;
 	std::mutex				_mutex;
 	std::condition_variable _empty;
 	int						_timeIndex;
@@ -33,7 +32,7 @@ protected:
 public:
 	bool					running;
 	
-	PacketBuffer(int audioIndex) : running(false), _timeIndex(audioIndex), _bufferTime(0)
+	PacketBuffer(int audioIndex) : running(true), _timeIndex(audioIndex), _bufferTime(0)
 	{
 	}
 	
@@ -43,14 +42,14 @@ public:
 		while (!_queue.empty()) {
 			AVPacket packet = _queue.front();
 			av_free_packet(&packet);
-			_queue.pop_front();
+			_queue.pop();
 		}
 	}
 	
 	void push(AVPacket &packet)
 	{
 		std::unique_lock<std::mutex> lock(_mutex);
-		_queue.push_back(packet);
+		_queue.push(packet);
 		if (packet.stream_index == _timeIndex) {
 			_bufferTime++;
 		}
@@ -62,7 +61,7 @@ public:
 		std::unique_lock<std::mutex> lock(_mutex);
 		_empty.wait(lock, [this]() { return (!_queue.empty() && running);});
 		packet = _queue.front();
-		_queue.pop_front();
+		_queue.pop();
 		if (packet.stream_index == _timeIndex) {
 			_bufferTime--;
 		}
@@ -195,16 +194,15 @@ public:
 
 - (BOOL)play:(int)audioCahnnel
 {
-	_audioIndex = audioCahnnel;
-	_packetBuffer = new PacketBuffer(_audioIndex);
-	
 	AVCodecContext* enc = self.mediaContext->streams[audioCahnnel]->codec;
 	if (![_audioDecoder openWithContext:enc]) {
 		return NO;
 	}
+	_audioIndex = audioCahnnel;
+	_packetBuffer = new PacketBuffer(_audioIndex);
 
 	self.stopped = NO;
-	
+
 	_decoderState = [[NSConditionLock alloc] initWithCondition:ThreadStillWorking];
 	
 	dispatch_async(_decoderQueue, ^() {
@@ -213,28 +211,26 @@ public:
 			_packetBuffer->pop(nextPacket);
 			if (nextPacket.stream_index == _audioIndex) {
 				[_audioDecoder decodePacket:&nextPacket];
-				av_free_packet(&nextPacket);
 			} else if (nextPacket.stream_index == _videoIndex) {
 				[_videoDecoder decodePacket:&nextPacket];
-				av_free_packet(&nextPacket);
 			}
 			av_free_packet(&nextPacket);
 		}
 		[_decoderState lock];
 		[_decoderState unlockWithCondition:ThreadIsDone];
 	});
-	
+
 	_demuxerState = [[NSConditionLock alloc] initWithCondition:ThreadStillWorking];
 	av_read_play(self.mediaContext);
 	
 	dispatch_async(_networkQueue, ^() {
-		[self.delegate demuxer:self buffering:YES];
 		while (!self.stopped) {
 			AVPacket nextPacket;
 			if (av_read_frame(self.mediaContext, &nextPacket) < 0) { // eof
 				[self.delegate demuxerDidStopped:self];
 				break;
 			}
+
 			if (nextPacket.stream_index == _audioIndex || nextPacket.stream_index == _videoIndex) {
 				_packetBuffer->push(nextPacket);
 				if (_packetBuffer->time() > 256 && !_packetBuffer->running) {
@@ -247,6 +243,7 @@ public:
 			} else {;
 				av_free_packet(&nextPacket);
 			}
+ 
 		}
 		[_demuxerState lock];
 		[_demuxerState unlockWithCondition:ThreadIsDone];
@@ -254,12 +251,8 @@ public:
 	return YES;
 }
 
-- (void)stop
+- (void)close
 {
-	if (self.stopped) {
-		return;
-	}
-	
 	self.stopped = YES;
 	
 	[_decoderState lockWhenCondition:ThreadIsDone];
@@ -272,11 +265,6 @@ public:
 	[_audioOutput stop];
 	
 	delete _packetBuffer;
-}
-
-- (void)close
-{
-	[self stop];
 	
 	while (!_videoQueue.empty()) {
 		CMSampleBufferRef buffer = _videoQueue.front();

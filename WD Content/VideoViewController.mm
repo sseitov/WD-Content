@@ -159,7 +159,7 @@ enum {
 		return;
 	}
 	
-	[self performSelector:@selector(tapOnScreen:) withObject:nil afterDelay:2.0];
+	[self tapOnScreen:nil];
 	
 	CMTimebaseRef tmBase = nil;
 	CMTimebaseCreateWithMasterClock(CFAllocatorGetDefault(), CMClockGetHostTimeClock(),&tmBase);
@@ -199,17 +199,15 @@ enum {
 		[_layerState lockWhenCondition:LayerIsDone];
 		[_layerState unlock];
 		[_videoOutput stopRequestingMediaData];
+		[_demuxer close];
 	} completionBlock:^{
 		[hud removeFromSuperview];
 	}];
-	[_demuxer stop];
 }
 
 - (IBAction)done:(id)sender
 {
-	[MBProgressHUD hideHUDForView:self.view animated:YES];
 	[self stop];
-	[_demuxer close];
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 

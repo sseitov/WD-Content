@@ -501,7 +501,6 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 	VTDecompressionSessionRef _session;
 	CMVideoFormatDescriptionRef _videoFormat;
 	bool convert_byte_stream;
-	int frameNumber;
 }
 
 @end
@@ -537,7 +536,6 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
         VTSessionSetProperty(_session, kVTDecompressionPropertyKey_ThreadCount, (__bridge CFTypeRef)[NSNumber numberWithInt:4]);
         VTSessionSetProperty(_session, kVTDecompressionPropertyKey_RealTime, kCFBooleanTrue);
 		_context = context;
-		frameNumber = 0;
         return YES;
     } else {
         return NO;
@@ -564,17 +562,8 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 - (void)decodePacket:(AVPacket*)packet
 {
 	CMSampleTimingInfo timingInfo;
-	if (packet->pts != AV_NOPTS_VALUE) {
-		timingInfo.presentationTimeStamp = CMTimeMake(packet->pts, 1.0/av_q2d(_context->time_base));
-		frameNumber++;
-	} else {
-		timingInfo.presentationTimeStamp = CMTimeMake(frameNumber++, 25);
-	}
-	if (packet->duration) {
-		timingInfo.duration = CMTimeMake(packet->duration, 1.0/av_q2d(_context->time_base));
-	} else {
-		timingInfo.duration = CMTimeMake(1, 25);
-	}
+	timingInfo.presentationTimeStamp = CMTimeMake(packet->pts, 1.0/av_q2d(_context->time_base));
+	timingInfo.duration = CMTimeMake(packet->duration, 1.0/av_q2d(_context->time_base));
 	timingInfo.decodeTimeStamp = kCMTimeInvalid;
 	
 	CMSampleBufferRef sampleBuff = NULL;
