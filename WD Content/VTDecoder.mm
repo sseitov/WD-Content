@@ -399,7 +399,10 @@ static CMVideoFormatDescriptionRef CreateFormat(AVCodecContext* context, bool* c
 				av_free(extradata);
 				CFRelease(data);
 				CFRelease(extradata_info);
-				return format;
+				
+				if (err == noErr) {
+					return format;
+				}
 			} else {
 				err = CMVideoFormatDescriptionCreate(NULL, kCMVideoCodecType_MPEG4Video, context->width, context->height, NULL, &format);
 				if (err == noErr) {
