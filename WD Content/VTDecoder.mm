@@ -351,48 +351,6 @@ void quicktime_write_esds(AVIOContext *pb, quicktime_esds_t *esds)
 	
 }
 
-union
-{
-	void* lpAddress;
-	// iOS <= 4.2
-	OSStatus (*FigVideoFormatDescriptionCreateWithSampleDescriptionExtensionAtom1)(
-																				   CFAllocatorRef allocator, UInt32 formatId, UInt32 width, UInt32 height,
-																				   UInt32 atomId, const UInt8 *data, CFIndex len, CMFormatDescriptionRef *formatDesc);
-	// iOS >= 4.3
-	OSStatus (*FigVideoFormatDescriptionCreateWithSampleDescriptionExtensionAtom2)(
-																				   CFAllocatorRef allocator, UInt32 formatId, UInt32 width, UInt32 height,
-																				   UInt32 atomId, const UInt8 *data, CFIndex len, CFDictionaryRef extensions, CMFormatDescriptionRef *formatDesc);
-} FigVideoHack;
-
-extern "C" OSStatus FigVideoFormatDescriptionCreateWithSampleDescriptionExtensionAtom(
-																				  CFAllocatorRef allocator, UInt32 formatId, UInt32 width, UInt32 height,
-																				  UInt32 atomId, const UInt8 *data, CFIndex len, CMFormatDescriptionRef *formatDesc);
-
-// helper function to create a avcC atom format descriptor
-static CMFormatDescriptionRef CreateFormatDescriptionFromCodecData(CMVideoCodecType format_id,
-																   int width, int height,
-																   const uint8_t *extradata, int extradata_size, uint32_t atom)
-{
-	CMFormatDescriptionRef fmt_desc = NULL;
-	OSStatus status;
-	FigVideoHack.lpAddress = (void*)FigVideoFormatDescriptionCreateWithSampleDescriptionExtensionAtom;
-	
-	status = FigVideoHack.FigVideoFormatDescriptionCreateWithSampleDescriptionExtensionAtom2(
-																							 NULL,
-																							 format_id,
-																							 width,
-																							 height,
-																							 atom,
-																							 extradata,
-																							 extradata_size,
-																							 NULL,
-																							 &fmt_desc);
-	if (status == noErr)
-		return fmt_desc;
-	else
-		return NULL;
-}
-
 static CMVideoFormatDescriptionRef CreateFormat(AVCodecContext* context, bool* convert)
 {
 	CMVideoFormatDescriptionRef format = NULL;
@@ -419,11 +377,28 @@ static CMVideoFormatDescriptionRef CreateFormat(AVCodecContext* context, bool* c
 				extrasize = avio_close_dyn_buf(pb, &extradata);
 				free(esds->decoderConfig);
 				free(esds);
+
+				CFMutableDictionaryRef decoderConfiguration = CFDictionaryCreateMutable(kCFAllocatorDefault,
+																						2,
+																						&kCFTypeDictionaryKeyCallBacks,
+																						&kCFTypeDictionaryValueCallBacks);
+				CFDataRef data = CFDataCreate(kCFAllocatorDefault, extradata, extrasize);
 				
-				format = CreateFormatDescriptionFromCodecData(kCMVideoCodecType_MPEG4Video, context->width, context->height, extradata, extrasize, 'esds');
+				CFMutableDictionaryRef extradata_info = CFDictionaryCreateMutable(kCFAllocatorDefault,
+																				  1,
+																				  &kCFTypeDictionaryKeyCallBacks,
+																				  &kCFTypeDictionaryValueCallBacks);
+				CFDictionarySetValue(extradata_info, CFSTR("esds"), data);
 				
+				CFDictionarySetValue(decoderConfiguration,
+									 kCMFormatDescriptionExtension_SampleDescriptionExtensionAtoms,
+									 extradata_info);
+				err = CMVideoFormatDescriptionCreate(NULL, kCMVideoCodecType_MPEG4Video, context->width, context->height, decoderConfiguration, &format);
+
 				// done with the converted extradata, we MUST free using av_free
 				av_free(extradata);
+				CFRelease(data);
+				CFRelease(extradata_info);
 				return format;
 			} else {
 				err = CMVideoFormatDescriptionCreate(NULL, kCMVideoCodecType_MPEG4Video, context->width, context->height, NULL, &format);
