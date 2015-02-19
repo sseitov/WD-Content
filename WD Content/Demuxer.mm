@@ -11,89 +11,30 @@
 #import "VTDecoder.h"
 #import "AudioDecoder.h"
 #import "AudioOutput.h"
+#import "Decoder.h"
 
 #include <queue>
 #include <mutex>
 
-enum {
-	ThreadStillWorking,
-	ThreadIsDone
-};
-
-class PacketBuffer
-{
-protected:
-	std::queue<AVPacket>	_queue;
-	std::mutex				_mutex;
-	std::condition_variable _empty;
-	int						_timeIndex;
-	int						_bufferTime;
-	
-public:
-	bool					running;
-	
-	PacketBuffer(int audioIndex) : running(true), _timeIndex(audioIndex), _bufferTime(0)
-	{
-	}
-	
-	~PacketBuffer()
-	{
-		_empty.notify_one();
-		while (!_queue.empty()) {
-			AVPacket packet = _queue.front();
-			av_free_packet(&packet);
-			_queue.pop();
-		}
-	}
-	
-	void push(AVPacket &packet)
-	{
-		std::unique_lock<std::mutex> lock(_mutex);
-		_queue.push(packet);
-		if (packet.stream_index == _timeIndex) {
-			_bufferTime++;
-		}
-		_empty.notify_one();
-	}
-	
-	void pop(AVPacket &packet)
-	{
-		std::unique_lock<std::mutex> lock(_mutex);
-		_empty.wait(lock, [this]() { return (!_queue.empty() && running);});
-		packet = _queue.front();
-		_queue.pop();
-		if (packet.stream_index == _timeIndex) {
-			_bufferTime--;
-		}
-	}
-	
-	int time()
-	{
-		std::unique_lock<std::mutex> lock(_mutex);
-		return _bufferTime;
-	}
-};
-
-@interface Demuxer () <VTDecoderDelegate, AudioDecoderDelegate> {
+@interface Demuxer () <VTDecoderDelegate, AudioDecoderDelegate, DecoderDelegate> {
 	
 	dispatch_queue_t	_networkQueue;
-	dispatch_queue_t	_decoderQueue;
-
-	PacketBuffer		*_packetBuffer;
 	
 	std::queue<CMSampleBufferRef>	_videoQueue;
 	AudioOutput*					_audioOutput;
+	std::mutex						_audioMutex;
 }
 
 @property (strong, nonatomic) VTDecoder *videoDecoder;
 @property (strong, nonatomic) AudioDecoder *audioDecoder;
+@property (strong, nonatomic) Decoder *decoder;
+@property (strong, nonatomic) NSCondition* decoderCondition;
 
 @property (nonatomic) int audioIndex;
 @property (nonatomic) int videoIndex;
 
 @property (atomic) AVFormatContext*	mediaContext;
 @property (strong, nonatomic) NSConditionLock *demuxerState;
-@property (strong, nonatomic) NSConditionLock *decoderState;
 @property (atomic) BOOL stopped;
 
 @end
@@ -109,17 +50,20 @@ public:
 		_audioOutput = [[AudioOutput alloc] init];
 		
 		_networkQueue = dispatch_queue_create("com.vchannel.WD-Content.SMBNetwork", DISPATCH_QUEUE_SERIAL);
-		_decoderQueue = dispatch_queue_create("com.vchannel.WD-Content.Decodfer", DISPATCH_QUEUE_SERIAL);
 		
 		_videoDecoder = [[VTDecoder alloc] init];
 		_videoDecoder.delegate = self;
+		
+		_decoder = [[Decoder alloc] init];
+		_decoder.delegate = self;
+		_decoderCondition = [[NSCondition alloc] init];
 	}
 	return self;
 }
 
 - (AVRational)timeBase
 {
-	return _videoDecoder.context->time_base;
+	return _audioDecoder.context->time_base;
 }
 
 - (NSString*)sambaURL:(NSString*)path
@@ -192,33 +136,33 @@ public:
 	});
 }
 
+- (BOOL)changeAudio:(int)audioCahnnel
+{
+	std::unique_lock<std::mutex> lock(_audioMutex);
+	[_audioOutput stop];
+	AVCodecContext* enc = self.mediaContext->streams[audioCahnnel]->codec;
+	[_audioDecoder close];
+	if (![_audioDecoder openWithContext:enc]) {
+		enc = self.mediaContext->streams[_audioIndex]->codec;
+		[_audioDecoder openWithContext:enc];
+		return NO;
+	}
+	_audioIndex = audioCahnnel;
+	[_decoder changeAudio:_audioIndex];
+	return YES;
+}
+
 - (BOOL)play:(int)audioCahnnel
 {
 	AVCodecContext* enc = self.mediaContext->streams[audioCahnnel]->codec;
 	if (![_audioDecoder openWithContext:enc]) {
 		return NO;
 	}
-	_audioIndex = audioCahnnel;
-	_packetBuffer = new PacketBuffer(_audioIndex);
-
-	self.stopped = NO;
-
-	_decoderState = [[NSConditionLock alloc] initWithCondition:ThreadStillWorking];
 	
-	dispatch_async(_decoderQueue, ^() {
-		while (!self.stopped) {
-			AVPacket nextPacket;
-			_packetBuffer->pop(nextPacket);
-			if (nextPacket.stream_index == _audioIndex) {
-				[_audioDecoder decodePacket:&nextPacket];
-			} else if (nextPacket.stream_index == _videoIndex) {
-				[_videoDecoder decodePacket:&nextPacket];
-			}
-			av_free_packet(&nextPacket);
-		}
-		[_decoderState lock];
-		[_decoderState unlockWithCondition:ThreadIsDone];
-	});
+	_audioIndex = audioCahnnel;
+	[_decoder startWithAudio:_audioIndex];
+ 
+	self.stopped = NO;
 
 	_demuxerState = [[NSConditionLock alloc] initWithCondition:ThreadStillWorking];
 	av_read_play(self.mediaContext);
@@ -230,20 +174,28 @@ public:
 				[self.delegate demuxerDidStopped:self];
 				break;
 			}
-
+			
 			if (nextPacket.stream_index == _audioIndex || nextPacket.stream_index == _videoIndex) {
-				_packetBuffer->push(nextPacket);
-				if (_packetBuffer->time() > 256 && !_packetBuffer->running) {
-					_packetBuffer->running = true;
-					[self.delegate demuxer:self buffering:NO];
-				} else if (_packetBuffer->time() < 16 && _packetBuffer->running) {
-					_packetBuffer->running = false;
-					[self.delegate demuxer:self buffering:YES];
+			
+				switch ([_decoder pushPacket:&nextPacket]) {
+					case StartBuffering:
+						[self.delegate demuxer:self buffering:YES];
+						break;
+					case StopBuffering:
+						[self.delegate demuxer:self buffering:NO];
+						break;
+					default:
+						break;
 				}
-			} else {;
+			} else {
 				av_free_packet(&nextPacket);
 			}
- 
+			
+			[_decoderCondition lock];
+			while (_decoder.size > 512) {
+				[_decoderCondition wait];
+			}
+			[_decoderCondition unlock];
 		}
 		[_demuxerState lock];
 		[_demuxerState unlockWithCondition:ThreadIsDone];
@@ -254,17 +206,14 @@ public:
 - (void)close
 {
 	self.stopped = YES;
-	
-	[_decoderState lockWhenCondition:ThreadIsDone];
-	[_decoderState unlock];
+
+	[_decoder stop];
 	
 	[_demuxerState lockWhenCondition:ThreadIsDone];
 	[_demuxerState unlock];
 	
 	[_audioDecoder close];
 	[_audioOutput stop];
-	
-	delete _packetBuffer;
 	
 	while (!_videoQueue.empty()) {
 		CMSampleBufferRef buffer = _videoQueue.front();
@@ -273,6 +222,22 @@ public:
 	}
 	
 	avformat_close_input(&_mediaContext);
+}
+
+#pragma mark - Decoder
+
+- (void)decodePacket:(AVPacket*)packet
+{
+	std::unique_lock<std::mutex> lock(_audioMutex);
+	if (packet->stream_index == _audioIndex) {
+		[_audioDecoder decodePacket:packet];
+	} else if (packet->stream_index == _videoIndex) {
+		[_videoDecoder decodePacket:packet];
+	}
+	av_free_packet(packet);
+	[_decoderCondition lock];
+	[_decoderCondition signal];
+	[_decoderCondition unlock];
 }
 
 #pragma mark - Audio

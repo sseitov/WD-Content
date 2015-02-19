@@ -70,7 +70,26 @@ enum {
 			} else {
 				if (audioChannels.count > 1) {
 					_audioChannels = audioChannels;
-					[self selectChannel];
+					UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Choose audio channel"
+																							 message:@""
+																					  preferredStyle:UIAlertControllerStyleActionSheet];
+					for (NSDictionary *channel in _audioChannels) {
+						UIAlertAction *action = [UIAlertAction actionWithTitle:[channel objectForKey:@"codec"]
+																		 style:UIAlertActionStyleDefault
+																	   handler:^(UIAlertAction *action) {
+																		   [self play:[[channel objectForKey:@"channel"] intValue]];
+																	   }];
+						[alertController addAction:action];
+					}
+					UIAlertAction *action = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
+					[alertController addAction:action];
+					
+					if(IS_PAD) {
+						UIPopoverController *popover = [[UIPopoverController alloc] initWithContentViewController:alertController];
+						[popover presentPopoverFromBarButtonItem:self.navigationItem.rightBarButtonItem permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+					} else {
+						[self presentViewController:alertController animated:YES completion:nil];
+					}
 				} else {
 					[self.navigationItem setRightBarButtonItem:nil animated:YES];
 					[self play:[[[audioChannels objectAtIndex:0] objectForKey:@"channel"] intValue]];
@@ -124,12 +143,6 @@ enum {
 
 - (IBAction)chooseAudio:(id)sender
 {
-	[self stop];
-	[self selectChannel];
-}
-
-- (void)selectChannel
-{
 	UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Choose audio channel"
 																			 message:@""
 																	  preferredStyle:UIAlertControllerStyleActionSheet];
@@ -137,7 +150,9 @@ enum {
 		UIAlertAction *action = [UIAlertAction actionWithTitle:[channel objectForKey:@"codec"]
 														 style:UIAlertActionStyleDefault
 													   handler:^(UIAlertAction *action) {
-														   [self play:[[channel objectForKey:@"channel"] intValue]];
+														   if ([_demuxer changeAudio:[[channel objectForKey:@"channel"] intValue]]) {
+															   CMTimebaseSetRate(_videoOutput.controlTimebase, 1.0/av_q2d(_demuxer.timeBase));
+														   }
 													   }];
 		[alertController addAction:action];
 	}
