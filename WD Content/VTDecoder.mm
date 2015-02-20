@@ -21,7 +21,7 @@ static CMVideoFormatDescriptionRef CreateFormat(AVCodecContext* context, bool* c
 	switch (context->codec_id) {
 		case AV_CODEC_ID_MPEG4:
 			if (context->extradata_size)
-			{	// avi format ?
+			{
 				AVIOContext *pb;
 				quicktime_esds_t *esds;
 
@@ -45,8 +45,8 @@ static CMVideoFormatDescriptionRef CreateFormat(AVCodecContext* context, bool* c
 																						2,
 																						&kCFTypeDictionaryKeyCallBacks,
 																						&kCFTypeDictionaryValueCallBacks);
-				CFDataRef data = CFDataCreate(kCFAllocatorDefault, extradata, extrasize);
 				
+				CFDataRef data = CFDataCreate(kCFAllocatorDefault, extradata, extrasize);
 				CFMutableDictionaryRef extradata_info = CFDictionaryCreateMutable(kCFAllocatorDefault,
 																				  1,
 																				  &kCFTypeDictionaryKeyCallBacks,
@@ -56,6 +56,7 @@ static CMVideoFormatDescriptionRef CreateFormat(AVCodecContext* context, bool* c
 				CFDictionarySetValue(decoderConfiguration,
 									 kCMFormatDescriptionExtension_SampleDescriptionExtensionAtoms,
 									 extradata_info);
+				
 				err = CMVideoFormatDescriptionCreate(NULL, kCMVideoCodecType_MPEG4Video, context->width, context->height, decoderConfiguration, &format);
 
 				// done with the converted extradata, we MUST free using av_free
@@ -142,6 +143,7 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 	VTDecompressionSessionRef _session;
 	CMVideoFormatDescriptionRef _videoFormat;
 	bool convert_byte_stream;
+	bool hasPts;
 }
 
 @end
@@ -155,7 +157,7 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 	if (!_videoFormat) {
 		return NO;
 	}
-
+	
     NSDictionary* destinationPixelBufferAttributes = @{
                                                        (id)kCVPixelBufferPixelFormatTypeKey : [NSNumber numberWithInt:kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange],
                                                        (id)kCVPixelBufferWidthKey : [NSNumber numberWithInt:context->width],
@@ -177,6 +179,7 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
         VTSessionSetProperty(_session, kVTDecompressionPropertyKey_ThreadCount, (__bridge CFTypeRef)[NSNumber numberWithInt:4]);
         VTSessionSetProperty(_session, kVTDecompressionPropertyKey_RealTime, kCFBooleanTrue);
 		_context = context;
+		hasPts = false;
         return YES;
     } else {
         return NO;
@@ -202,9 +205,15 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 
 - (void)decodePacket:(AVPacket*)packet
 {
+	if (!hasPts && packet->pts != AV_NOPTS_VALUE) {
+		hasPts = true;
+	}
+	int64_t pts = hasPts ? packet->pts : packet->dts;
+	int duration = packet->duration > 0 ? packet->duration : 1;
+	
 	CMSampleTimingInfo timingInfo;
-	timingInfo.presentationTimeStamp = CMTimeMake(packet->pts, 1.0/av_q2d(_context->time_base));
-	timingInfo.duration = CMTimeMake(packet->duration, 1.0/av_q2d(_context->time_base));
+	timingInfo.presentationTimeStamp = CMTimeMake(pts, 1.0/av_q2d(_context->time_base));
+	timingInfo.duration = CMTimeMake(duration, 1.0/av_q2d(_context->time_base));
 	timingInfo.decodeTimeStamp = kCMTimeInvalid;
 	
 	CMSampleBufferRef sampleBuff = NULL;

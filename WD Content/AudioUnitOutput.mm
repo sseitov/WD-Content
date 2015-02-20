@@ -8,14 +8,17 @@
 
 #import "AudioUnitOutput.h"
 #include <AudioToolbox/AudioToolbox.h>
-#include <queue>
+
+extern "C" {
+#	include "libavcodec/avcodec.h"
+#	include "libavformat/avformat.h"
+};
 
 @interface AudioUnitOutput () {
 	AUGraph auGraph;
 	AudioStreamBasicDescription mFormat;
 	AVFrame* _lastFrame;
 	int _lastOffset;
-	std::queue<AVFrame*> _frameQueue;
 }
 
 - (void)fillBufferList:(AudioBufferList*)list;
@@ -56,22 +59,22 @@ static OSStatus converterRenderCallback(void *inRefCon,
 
 - (BOOL)getLastFrame
 {
-	if (_frameQueue.empty()) {
-		NSLog(@"no frame");
-		return NO;
-	} else {
+	[self.delegate requestNextFrame:^(AVFrame* frame) {
 		if (_lastFrame) {
 			av_frame_free(&_lastFrame);
 		}
-		_lastFrame = _frameQueue.front();
-		_frameQueue.pop();
+		_lastFrame = frame;
 		_lastOffset = 0;
-		return YES;
-	}
+	}];
+	return (_lastFrame != NULL);
 }
 
 - (void)fillBufferList:(AudioBufferList*)list
 {
+	if (!_lastFrame) {
+		if (![self getLastFrame]) return;
+	}
+	
 	int restBytes = _lastFrame->linesize[0] - _lastOffset;
 	int bufferSize = list->mBuffers[0].mDataByteSize;
 	if (restBytes >= bufferSize) {
@@ -300,17 +303,7 @@ static OSStatus converterRenderCallback(void *inRefCon,
 	CheckError(AUGraphUninitialize(auGraph), "AUGraphUninitialize failed");
 	CheckError(AUGraphClose(auGraph), "AUGraphClose failed");
 	self.started = NO;
-	while (!_frameQueue.empty()) {
-		AVFrame* frame = _frameQueue.front();
-		av_frame_free(&frame);
-		_frameQueue.pop();
-	}
 	return YES;
-}
-
-- (void)enqueueFrame:(AVFrame*)frame
-{
-	_frameQueue.push(frame);
 }
 
 @end

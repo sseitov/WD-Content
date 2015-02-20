@@ -65,20 +65,23 @@ static void AudioOutputCallback(void *inClientData,
 		_dataFormat.mChannelsPerFrame = frame->channels;
 	}
 	
-	if (frame->format == AV_SAMPLE_FMT_FLTP) {//
+	if (frame->format == AV_SAMPLE_FMT_FLTP) {
 		_dataFormat.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagIsPacked;
-	} else if (frame->format == AV_SAMPLE_FMT_S16) {
+	} else if (frame->format == AV_SAMPLE_FMT_S16 || frame->format == AV_SAMPLE_FMT_S16P) {
 		_dataFormat.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
 	} else {
 		NSLog(@"UNKNOWN SAMPLE FORMAT %d", frame->format);
 		return NO;
 	}
+	
 	_dataFormat.mBytesPerPacket = _dataFormat.mBytesPerFrame = (_dataFormat.mBitsPerChannel / 8) * _dataFormat.mChannelsPerFrame;
 	_dataFormat.mFramesPerPacket = 1;
 	
 	int bufferSize;
 	if (frame->channels == 1 || frame->format == AV_SAMPLE_FMT_S16) {
 		bufferSize = av_samples_get_buffer_size(NULL, _dataFormat.mChannelsPerFrame, frame->nb_samples, (AVSampleFormat)frame->format, 1);
+	} else if (frame->format == AV_SAMPLE_FMT_S16P) {
+		bufferSize = frame->nb_samples*sizeof(StereoShortSample);
 	} else {
 		bufferSize = frame->nb_samples*sizeof(StereoFloatSample);
 	}

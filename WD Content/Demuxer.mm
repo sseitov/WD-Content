@@ -171,7 +171,6 @@
 		while (!self.stopped) {
 			AVPacket nextPacket;
 			if (av_read_frame(self.mediaContext, &nextPacket) < 0) { // eof
-				[self.delegate demuxerDidStopped:self];
 				break;
 			}
 			
@@ -250,7 +249,8 @@
 - (void)audioDecoder:(AudioDecoder*)decoder decodedFrame:(AVFrame*)frame
 {
 	if (!_audioOutput.started) {
-		[_audioOutput startWithFrame:frame];
+		if (![_audioOutput startWithFrame:frame]) {
+		}
 	}
 	if (_audioOutput.started) {
 		[_audioOutput enqueueFrame:frame];

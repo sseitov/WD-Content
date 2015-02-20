@@ -8,17 +8,20 @@
 
 #import <Foundation/Foundation.h>
 
-extern "C" {
-#	include "libavcodec/avcodec.h"
-#	include "libavformat/avformat.h"
-};
+struct AVFrame;
+
+@protocol AudioUnitOutputDelegate <NSObject>
+
+- (void)requestNextFrame:(void (^)(AVFrame*))result;
+
+@end
 
 @interface AudioUnitOutput : NSObject
 
+@property (weak, nonatomic) id<AudioUnitOutputDelegate> delegate;
 @property (readwrite, atomic) BOOL started;
 
 - (BOOL)startWithFrame:(AVFrame*)frame;
 - (BOOL)stop;
-- (void)enqueueFrame:(AVFrame*)frame;
 
 @end

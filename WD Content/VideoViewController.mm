@@ -243,9 +243,4 @@ enum {
 	});
 }
 
-- (void)demuxerDidStopped:(Demuxer *)demuxer
-{
-	NSLog(@"demuxer finished");
-}
-
 @end

@@ -73,6 +73,14 @@ void writeRingBuffer(AudioRingBuffer* rb, AVFrame* audioFrame)
 	
 	if (audioFrame->channels == 1 || audioFrame->format == AV_SAMPLE_FMT_S16) {
 		memcpy(output, audioFrame->data[0], rb->_bufferSize);
+	} else if (audioFrame->format == AV_SAMPLE_FMT_S16P) {
+		StereoShortSample* outputBuffer = (StereoShortSample*)output;
+		uint16_t* leftChannel = (uint16_t*)audioFrame->data[0];
+		uint16_t* rightChannel = (uint16_t*)audioFrame->data[1];
+		for (int i=0; i<audioFrame->nb_samples; i++) {
+			outputBuffer[i].left = leftChannel[i];
+			outputBuffer[i].right = rightChannel[i];
+		}
 	} else { // downmix float multichannel
 		StereoFloatSample* outputBuffer = (StereoFloatSample*)output;
 		if (audioFrame->channels == 6) {

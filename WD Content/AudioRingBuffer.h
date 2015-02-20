@@ -17,6 +17,12 @@ extern "C" {
 #	include "libavformat/avformat.h"
 };
 
+struct StereoShortSample
+{
+	uint16_t left;
+	uint16_t right;
+};
+
 struct StereoFloatSample
 {
 	float left;
