@@ -9,12 +9,9 @@
 #import <Foundation/Foundation.h>
 #import <CoreMedia/CoreMedia.h>
 
-extern "C" {
-#	include "libavcodec/avcodec.h"
-#	include "libavformat/avio.h"
-}
-
 @class VTDecoder;
+struct AVCodecContext;
+struct AVPacket;
 
 @protocol VTDecoderDelegate <NSObject>
 

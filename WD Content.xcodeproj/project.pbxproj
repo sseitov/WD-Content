@@ -8,9 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		2C0644F119CD9867002F5F49 /* SearchInfoTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0644F019CD9867002F5F49 /* SearchInfoTableViewController.m */; };
+		2C08E4601A9719A300EAE058 /* VideoUtility.c in Sources */ = {isa = PBXBuildFile; fileRef = 2C08E45E1A9719A300EAE058 /* VideoUtility.c */; };
 		2C0AB2B71A4AF06C0007D700 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C0AB2B61A4AF06C0007D700 /* Security.framework */; };
 		2C0AB2BA1A4B37F60007D700 /* DropboxClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0AB2B91A4B37F60007D700 /* DropboxClient.m */; };
-		2C0D90D51A95F1F100E13BC9 /* Decoder.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D90D41A95F1F100E13BC9 /* Decoder.mm */; };
+		2C0D90D51A95F1F100E13BC9 /* DecodeBuffer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2C0D90D41A95F1F100E13BC9 /* DecodeBuffer.mm */; };
 		2C0D90D71A96271400E13BC9 /* logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C0D90D61A96271400E13BC9 /* logo.png */; };
 		2C125EAA1848C74B00406FC3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C125EA91848C74B00406FC3 /* Foundation.framework */; };
 		2C125EAC1848C74B00406FC3 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C125EAB1848C74B00406FC3 /* CoreGraphics.framework */; };
@@ -93,11 +94,13 @@
 /* Begin PBXFileReference section */
 		2C0644EF19CD9867002F5F49 /* SearchInfoTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SearchInfoTableViewController.h; path = "WD Content/SearchInfoTableViewController.h"; sourceTree = "<group>"; };
 		2C0644F019CD9867002F5F49 /* SearchInfoTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SearchInfoTableViewController.m; path = "WD Content/SearchInfoTableViewController.m"; sourceTree = "<group>"; };
+		2C08E45E1A9719A300EAE058 /* VideoUtility.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = VideoUtility.c; sourceTree = "<group>"; };
+		2C08E45F1A9719A300EAE058 /* VideoUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoUtility.h; sourceTree = "<group>"; };
 		2C0AB2B61A4AF06C0007D700 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		2C0AB2B81A4B37F60007D700 /* DropboxClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DropboxClient.h; sourceTree = "<group>"; };
 		2C0AB2B91A4B37F60007D700 /* DropboxClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DropboxClient.m; sourceTree = "<group>"; };
-		2C0D90D31A95F1F100E13BC9 /* Decoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Decoder.h; sourceTree = "<group>"; };
-		2C0D90D41A95F1F100E13BC9 /* Decoder.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Decoder.mm; sourceTree = "<group>"; };
+		2C0D90D31A95F1F100E13BC9 /* DecodeBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DecodeBuffer.h; sourceTree = "<group>"; };
+		2C0D90D41A95F1F100E13BC9 /* DecodeBuffer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DecodeBuffer.mm; sourceTree = "<group>"; };
 		2C0D90D61A96271400E13BC9 /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo.png; sourceTree = "<group>"; };
 		2C125EA61848C74B00406FC3 /* WD Content.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "WD Content.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C125EA91848C74B00406FC3 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -397,10 +400,12 @@
 				2C719D131A7E46D500CB0B00 /* AudioUnitOutput.mm */,
 				2C58753B1A6AF7DC0069F3F1 /* AudioDecoder.h */,
 				2C58753C1A6AF7DC0069F3F1 /* AudioDecoder.mm */,
+				2C08E45E1A9719A300EAE058 /* VideoUtility.c */,
+				2C08E45F1A9719A300EAE058 /* VideoUtility.h */,
 				2C5875361A6AF1590069F3F1 /* VTDecoder.h */,
 				2C5875371A6AF1590069F3F1 /* VTDecoder.mm */,
-				2C0D90D31A95F1F100E13BC9 /* Decoder.h */,
-				2C0D90D41A95F1F100E13BC9 /* Decoder.mm */,
+				2C0D90D31A95F1F100E13BC9 /* DecodeBuffer.h */,
+				2C0D90D41A95F1F100E13BC9 /* DecodeBuffer.mm */,
 				2C7FD8BE1A6CF62100718477 /* Demuxer.h */,
 				2C7FD8BF1A6CF62100718477 /* Demuxer.mm */,
 				2C5875001A6AC25D0069F3F1 /* VideoViewController.h */,
@@ -623,6 +628,7 @@
 				ED2194B619C9AA800053C8B3 /* AFHTTPRequestOperation.m in Sources */,
 				ED2194BC19C9AA800053C8B3 /* AFURLRequestSerialization.m in Sources */,
 				ED2194BB19C9AA800053C8B3 /* AFURLConnectionOperation.m in Sources */,
+				2C08E4601A9719A300EAE058 /* VideoUtility.c in Sources */,
 				2C5875031A6AC25D0069F3F1 /* VideoViewController.mm in Sources */,
 				2C0AB2BA1A4B37F60007D700 /* DropboxClient.m in Sources */,
 				ED2194BE19C9AA800053C8B3 /* AFURLSessionManager.m in Sources */,
@@ -643,7 +649,7 @@
 				2CA6B9F81A4567B800AFF041 /* UIViewController+AMSlideMenu.m in Sources */,
 				2C125EB61848C74B00406FC3 /* main.m in Sources */,
 				2C719D141A7E46D500CB0B00 /* AudioUnitOutput.mm in Sources */,
-				2C0D90D51A95F1F100E13BC9 /* Decoder.mm in Sources */,
+				2C0D90D51A95F1F100E13BC9 /* DecodeBuffer.mm in Sources */,
 				2CA6B9F31A4567B800AFF041 /* AMSlideMenuLeftMenuSegue.m in Sources */,
 				ED2194BA19C9AA800053C8B3 /* AFSecurityPolicy.m in Sources */,
 				ED2194B719C9AA800053C8B3 /* AFHTTPRequestOperationManager.m in Sources */,

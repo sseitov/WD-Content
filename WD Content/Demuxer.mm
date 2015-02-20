@@ -11,12 +11,12 @@
 #import "VTDecoder.h"
 #import "AudioDecoder.h"
 #import "AudioOutput.h"
-#import "Decoder.h"
+#import "DecodeBuffer.h"
 
 #include <queue>
 #include <mutex>
 
-@interface Demuxer () <VTDecoderDelegate, AudioDecoderDelegate, DecoderDelegate> {
+@interface Demuxer () <VTDecoderDelegate, AudioDecoderDelegate, DecodeBufferDelegate> {
 	
 	dispatch_queue_t	_networkQueue;
 	
@@ -27,8 +27,8 @@
 
 @property (strong, nonatomic) VTDecoder *videoDecoder;
 @property (strong, nonatomic) AudioDecoder *audioDecoder;
-@property (strong, nonatomic) Decoder *decoder;
-@property (strong, nonatomic) NSCondition* decoderCondition;
+@property (strong, nonatomic) DecodeBuffer *buffer;
+@property (strong, nonatomic) NSCondition *bufferCondition;
 
 @property (nonatomic) int audioIndex;
 @property (nonatomic) int videoIndex;
@@ -54,9 +54,9 @@
 		_videoDecoder = [[VTDecoder alloc] init];
 		_videoDecoder.delegate = self;
 		
-		_decoder = [[Decoder alloc] init];
-		_decoder.delegate = self;
-		_decoderCondition = [[NSCondition alloc] init];
+		_buffer = [[DecodeBuffer alloc] init];
+		_buffer.delegate = self;
+		_bufferCondition = [[NSCondition alloc] init];
 	}
 	return self;
 }
@@ -148,7 +148,7 @@
 		return NO;
 	}
 	_audioIndex = audioCahnnel;
-	[_decoder changeAudio:_audioIndex];
+	[_buffer changeAudio:_audioIndex];
 	return YES;
 }
 
@@ -160,7 +160,7 @@
 	}
 	
 	_audioIndex = audioCahnnel;
-	[_decoder startWithAudio:_audioIndex];
+	[_buffer startWithAudio:_audioIndex];
  
 	self.stopped = NO;
 
@@ -177,7 +177,7 @@
 			
 			if (nextPacket.stream_index == _audioIndex || nextPacket.stream_index == _videoIndex) {
 			
-				switch ([_decoder pushPacket:&nextPacket]) {
+				switch ([_buffer pushPacket:&nextPacket]) {
 					case StartBuffering:
 						[self.delegate demuxer:self buffering:YES];
 						break;
@@ -191,11 +191,11 @@
 				av_free_packet(&nextPacket);
 			}
 			
-			[_decoderCondition lock];
-			while (_decoder.size > 512) {
-				[_decoderCondition wait];
+			[_bufferCondition lock];
+			while (_buffer.size > 512 && !self.stopped) {
+				[_bufferCondition wait];
 			}
-			[_decoderCondition unlock];
+			[_bufferCondition unlock];
 		}
 		[_demuxerState lock];
 		[_demuxerState unlockWithCondition:ThreadIsDone];
@@ -206,15 +206,20 @@
 - (void)close
 {
 	self.stopped = YES;
-
-	[_decoder stop];
 	
+	[_bufferCondition lock];
+	[_bufferCondition signal];
+	[_bufferCondition unlock];
+
 	[_demuxerState lockWhenCondition:ThreadIsDone];
 	[_demuxerState unlock];
+	
+	[_buffer stop];
 	
 	[_audioDecoder close];
 	[_audioOutput stop];
 	
+	[_videoDecoder close];
 	while (!_videoQueue.empty()) {
 		CMSampleBufferRef buffer = _videoQueue.front();
 		CFRelease(buffer);
@@ -235,9 +240,9 @@
 		[_videoDecoder decodePacket:packet];
 	}
 	av_free_packet(packet);
-	[_decoderCondition lock];
-	[_decoderCondition signal];
-	[_decoderCondition unlock];
+	[_bufferCondition lock];
+	[_bufferCondition signal];
+	[_bufferCondition unlock];
 }
 
 #pragma mark - Audio

@@ -6,9 +6,16 @@
 //  Copyright (c) 2015 Sergey Seitov. All rights reserved.
 //
 
-#import "Decoder.h"
+#import "DecodeBuffer.h"
 #include <list>
 #include <mutex>
+
+extern "C" {
+#	include "libavcodec/avcodec.h"
+#	include "libavformat/avformat.h"
+#	include "libavformat/avio.h"
+#	include "libavfilter/avfilter.h"
+};
 
 class PacketBuffer
 {
@@ -91,7 +98,7 @@ public:
 	}
 };
 
-@interface Decoder () {
+@interface DecodeBuffer () {
 	
 	dispatch_queue_t	_decoderQueue;
 	PacketBuffer		_buffer;
@@ -102,7 +109,7 @@ public:
 
 @end
 
-@implementation Decoder
+@implementation DecodeBuffer
 
 - (id)init
 {
@@ -146,7 +153,7 @@ public:
 	[_decoderState unlock];
 }
 
-- (enum DecoderState)pushPacket:(AVPacket*)packet
+- (enum DecodeBufferState)pushPacket:(AVPacket*)packet
 {
 	_buffer.push(packet);
 //	NSLog(@"buffer size %d", _buffer.time());
