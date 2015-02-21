@@ -13,9 +13,12 @@ extern "C" {
 #	include "libavcodec/avcodec.h"
 };
 
-@interface AudioDecoder ()
+@interface AudioDecoder () {
+	
+}
 
 @property (strong, nonatomic) AudioOutput *audioOutput;
+@property (atomic) double previouseTime;
 
 @end
 
@@ -27,6 +30,7 @@ extern "C" {
 	if (self) {
 		self.decoderThread = dispatch_queue_create("com.vchannel.WD-Content.AudioDecoder", DISPATCH_QUEUE_SERIAL);
 		_audioOutput = [[AudioOutput alloc] init];
+		self.previouseTime = 0;
 	}
 	return self;
 }
@@ -38,7 +42,9 @@ extern "C" {
 
 - (double)currentTime
 {
-	return _audioOutput.getCurrentTime;
+	double t = (self.previouseTime + _audioOutput.getCurrentTime);
+//	NSLog(@"audio time %f", t);
+	return t;
 }
 
 - (BOOL)openWithContext:(AVCodecContext*)codecContext
@@ -97,6 +103,7 @@ extern "C" {
 - (void)stop
 {
 	[super stop];
+	self.previouseTime += _audioOutput.getCurrentTime;
 	[_audioOutput stop];
 }
 

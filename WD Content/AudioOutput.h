@@ -8,27 +8,15 @@
 
 #import <Foundation/Foundation.h>
 
-extern "C" {
-#	include "libavcodec/avcodec.h"
-#	include "libavformat/avformat.h"
-};
-
-#define AUDIO_POOL_SIZE 4
+struct AVFrame;
 
 @interface AudioOutput : NSObject
 
-@property (readonly, nonatomic) int64_t currentPTS;
 @property (readwrite, nonatomic) BOOL started;
 
 - (BOOL)startWithFrame:(AVFrame*)frame;
 - (void)enqueueFrame:(AVFrame*)frame;
 - (void)stop;
-
-- (void)currentPTS:(int64_t*)ppts withTime:(int64_t*)ptime;
-- (void)reset;
-- (void)flush;
 - (double)getCurrentTime;
-
-- (int)decodedPacketCount;
 
 @end

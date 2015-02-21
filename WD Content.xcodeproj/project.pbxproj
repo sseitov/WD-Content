@@ -117,14 +117,6 @@
 		2C17010A1848F68200A37516 /* Cell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Cell.m; path = "WD Content/Cell.m"; sourceTree = "<group>"; };
 		2C170111184925F800A37516 /* KxSMBProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KxSMBProvider.h; sourceTree = "<group>"; };
 		2C170112184925F800A37516 /* KxSMBProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KxSMBProvider.m; sourceTree = "<group>"; };
-		2C1701151849266700A37516 /* libsmbclient.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsmbclient.a; path = libs/libsmbclient.a; sourceTree = "<group>"; };
-		2C1701161849266700A37516 /* libsmbclient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = libsmbclient.h; path = libs/libsmbclient.h; sourceTree = "<group>"; };
-		2C1701171849266700A37516 /* libtalloc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtalloc.a; path = libs/libtalloc.a; sourceTree = "<group>"; };
-		2C1701181849266700A37516 /* libtdb.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtdb.a; path = libs/libtdb.a; sourceTree = "<group>"; };
-		2C1701191849266700A37516 /* libtevent.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtevent.a; path = libs/libtevent.a; sourceTree = "<group>"; };
-		2C17011A1849266700A37516 /* libwbclient.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libwbclient.a; path = libs/libwbclient.a; sourceTree = "<group>"; };
-		2C17011B1849266700A37516 /* talloc_stack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = talloc_stack.h; path = libs/talloc_stack.h; sourceTree = "<group>"; };
-		2C17011C1849266700A37516 /* talloc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = talloc.h; path = libs/talloc.h; sourceTree = "<group>"; };
 		2C170122184926EF00A37516 /* libresolv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.dylib; path = usr/lib/libresolv.dylib; sourceTree = SDKROOT; };
 		2C1701241849270200A37516 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
 		2C1701261849271A00A37516 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
@@ -157,7 +149,6 @@
 		2C5875391A6AF2390069F3F1 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		2C58753B1A6AF7DC0069F3F1 /* AudioDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioDecoder.h; sourceTree = "<group>"; };
 		2C58753C1A6AF7DC0069F3F1 /* AudioDecoder.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AudioDecoder.mm; sourceTree = "<group>"; };
-		2C5AE1671A988E7B0050B44D /* PacketBuffer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PacketBuffer.h; sourceTree = "<group>"; };
 		2C605E4D1A6BC08000736968 /* AudioOutput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioOutput.h; sourceTree = "<group>"; };
 		2C605E4E1A6BC08000736968 /* AudioOutput.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AudioOutput.mm; sourceTree = "<group>"; };
 		2C605E4F1A6BC08000736968 /* AudioRingBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioRingBuffer.h; sourceTree = "<group>"; };
@@ -188,10 +179,10 @@
 		2CA6B9EF1A4567B800AFF041 /* AMSlideMenuRightTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AMSlideMenuRightTableViewController.m; path = "WD Content/AMSlideMenu/AMSlideMenuRightTableViewController.m"; sourceTree = "<group>"; };
 		2CA6B9F01A4567B800AFF041 /* UIViewController+AMSlideMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIViewController+AMSlideMenu.h"; path = "WD Content/AMSlideMenu/UIViewController+AMSlideMenu.h"; sourceTree = "<group>"; };
 		2CA6B9F11A4567B800AFF041 /* UIViewController+AMSlideMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIViewController+AMSlideMenu.m"; path = "WD Content/AMSlideMenu/UIViewController+AMSlideMenu.m"; sourceTree = "<group>"; };
-		2CA6B9F91A4567DD00AFF041 /* LeftMenuVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LeftMenuVC.h; sourceTree = "<group>"; };
-		2CA6B9FA1A4567DD00AFF041 /* LeftMenuVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LeftMenuVC.m; sourceTree = "<group>"; };
-		2CA6B9FB1A4567DD00AFF041 /* MainVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainVC.h; sourceTree = "<group>"; };
-		2CA6B9FC1A4567DD00AFF041 /* MainVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainVC.m; sourceTree = "<group>"; };
+		2CA6B9F91A4567DD00AFF041 /* LeftMenuVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LeftMenuVC.h; path = "WD Content/LeftMenuVC.h"; sourceTree = "<group>"; };
+		2CA6B9FA1A4567DD00AFF041 /* LeftMenuVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LeftMenuVC.m; path = "WD Content/LeftMenuVC.m"; sourceTree = "<group>"; };
+		2CA6B9FB1A4567DD00AFF041 /* MainVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MainVC.h; path = "WD Content/MainVC.h"; sourceTree = "<group>"; };
+		2CA6B9FC1A4567DD00AFF041 /* MainVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MainVC.m; path = "WD Content/MainVC.m"; sourceTree = "<group>"; };
 		2CA6BA021A4569B900AFF041 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		2CA6BA051A456A1A00AFF041 /* UIColor+CreateMethods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIColor+CreateMethods.h"; path = "WD Content/AMSlideMenu/Categories/UIColor+CreateMethods.h"; sourceTree = "<group>"; };
 		2CA6BA061A456A1A00AFF041 /* UIColor+CreateMethods.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIColor+CreateMethods.m"; path = "WD Content/AMSlideMenu/Categories/UIColor+CreateMethods.m"; sourceTree = "<group>"; };
@@ -230,8 +221,8 @@
 		ED2194B319C9AA800053C8B3 /* AFURLResponseSerialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AFURLResponseSerialization.m; path = AFNetworking/AFURLResponseSerialization.m; sourceTree = "<group>"; };
 		ED2194B419C9AA800053C8B3 /* AFURLSessionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AFURLSessionManager.h; path = AFNetworking/AFURLSessionManager.h; sourceTree = "<group>"; };
 		ED2194B519C9AA800053C8B3 /* AFURLSessionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AFURLSessionManager.m; path = AFNetworking/AFURLSessionManager.m; sourceTree = "<group>"; };
-		EDDC271819C6F051004D5F14 /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
-		EDDC271919C6F051004D5F14 /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
+		EDDC271819C6F051004D5F14 /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MBProgressHUD.h; path = "WD Content/MBProgressHUD.h"; sourceTree = "<group>"; };
+		EDDC271919C6F051004D5F14 /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MBProgressHUD.m; path = "WD Content/MBProgressHUD.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -277,8 +268,9 @@
 			isa = PBXGroup;
 			children = (
 				2C4D610B1A992D9400E0A365 /* Under Construction */,
+				2C4D610E1A99335200E0A365 /* MBProgressHUD */,
+				2CA88710187EA7CB0074B73E /* Network */,
 				2CA6B9E21A45679F00AFF041 /* AMSlideMenu */,
-				2C1701141849261800A37516 /* Samba */,
 				2C125EAF1848C74B00406FC3 /* WD Content */,
 				2C1701101849251D00A37516 /* Resources */,
 				2C125EB01848C74B00406FC3 /* Supporting Files */,
@@ -335,19 +327,12 @@
 		2C125EAF1848C74B00406FC3 /* WD Content */ = {
 			isa = PBXGroup;
 			children = (
-				2C5874FD1A6AC2470069F3F1 /* Video */,
-				2CA88710187EA7CB0074B73E /* Network */,
-				2CA88716187EA88C0074B73E /* CoreData */,
+				2C5874FD1A6AC2470069F3F1 /* Movie Player */,
+				2CA88716187EA88C0074B73E /* Storage */,
 				2CA88711187EA8080074B73E /* Settings */,
 				EDDC271719C6EA85004D5F14 /* Content */,
-				2CA6B9F91A4567DD00AFF041 /* LeftMenuVC.h */,
-				2CA6B9FA1A4567DD00AFF041 /* LeftMenuVC.m */,
-				2CA6B9FB1A4567DD00AFF041 /* MainVC.h */,
-				2CA6B9FC1A4567DD00AFF041 /* MainVC.m */,
 				2C125EB81848C74B00406FC3 /* AppDelegate.h */,
 				2C125EB91848C74B00406FC3 /* AppDelegate.m */,
-				EDDC271819C6F051004D5F14 /* MBProgressHUD.h */,
-				EDDC271919C6F051004D5F14 /* MBProgressHUD.m */,
 			);
 			path = "WD Content";
 			sourceTree = "<group>";
@@ -376,21 +361,6 @@
 			name = Resources;
 			sourceTree = "<group>";
 		};
-		2C1701141849261800A37516 /* Samba */ = {
-			isa = PBXGroup;
-			children = (
-				2C1701161849266700A37516 /* libsmbclient.h */,
-				2C17011B1849266700A37516 /* talloc_stack.h */,
-				2C17011C1849266700A37516 /* talloc.h */,
-				2C1701151849266700A37516 /* libsmbclient.a */,
-				2C1701171849266700A37516 /* libtalloc.a */,
-				2C1701181849266700A37516 /* libtdb.a */,
-				2C1701191849266700A37516 /* libtevent.a */,
-				2C17011A1849266700A37516 /* libwbclient.a */,
-			);
-			name = Samba;
-			sourceTree = "<group>";
-		};
 		2C4D610B1A992D9400E0A365 /* Under Construction */ = {
 			isa = PBXGroup;
 			children = (
@@ -400,7 +370,7 @@
 			name = "Under Construction";
 			sourceTree = "<group>";
 		};
-		2C5874FD1A6AC2470069F3F1 /* Video */ = {
+		2C4D610C1A99307C00E0A365 /* Audio */ = {
 			isa = PBXGroup;
 			children = (
 				2C605E4D1A6BC08000736968 /* AudioOutput.h */,
@@ -409,11 +379,35 @@
 				2C605E501A6BC08000736968 /* AudioRingBuffer.mm */,
 				2C58753B1A6AF7DC0069F3F1 /* AudioDecoder.h */,
 				2C58753C1A6AF7DC0069F3F1 /* AudioDecoder.mm */,
+			);
+			name = Audio;
+			sourceTree = "<group>";
+		};
+		2C4D610D1A99309400E0A365 /* Video */ = {
+			isa = PBXGroup;
+			children = (
 				2C08E45E1A9719A300EAE058 /* VideoUtility.c */,
 				2C08E45F1A9719A300EAE058 /* VideoUtility.h */,
 				2C5875361A6AF1590069F3F1 /* VTDecoder.h */,
 				2C5875371A6AF1590069F3F1 /* VTDecoder.mm */,
-				2C5AE1671A988E7B0050B44D /* PacketBuffer.h */,
+			);
+			name = Video;
+			sourceTree = "<group>";
+		};
+		2C4D610E1A99335200E0A365 /* MBProgressHUD */ = {
+			isa = PBXGroup;
+			children = (
+				EDDC271819C6F051004D5F14 /* MBProgressHUD.h */,
+				EDDC271919C6F051004D5F14 /* MBProgressHUD.m */,
+			);
+			name = MBProgressHUD;
+			sourceTree = "<group>";
+		};
+		2C5874FD1A6AC2470069F3F1 /* Movie Player */ = {
+			isa = PBXGroup;
+			children = (
+				2C4D610D1A99309400E0A365 /* Video */,
+				2C4D610C1A99307C00E0A365 /* Audio */,
 				2C4D61081A98C4E900E0A365 /* Decoder.h */,
 				2C4D61091A98C4E900E0A365 /* Decoder.mm */,
 				2C7FD8BE1A6CF62100718477 /* Demuxer.h */,
@@ -421,7 +415,7 @@
 				2C5875001A6AC25D0069F3F1 /* VideoViewController.h */,
 				2C5875011A6AC25D0069F3F1 /* VideoViewController.mm */,
 			);
-			name = Video;
+			name = "Movie Player";
 			sourceTree = "<group>";
 		};
 		2CA6B9E21A45679F00AFF041 /* AMSlideMenu */ = {
@@ -443,6 +437,10 @@
 				2CA6B9EF1A4567B800AFF041 /* AMSlideMenuRightTableViewController.m */,
 				2CA6B9F01A4567B800AFF041 /* UIViewController+AMSlideMenu.h */,
 				2CA6B9F11A4567B800AFF041 /* UIViewController+AMSlideMenu.m */,
+				2CA6B9F91A4567DD00AFF041 /* LeftMenuVC.h */,
+				2CA6B9FA1A4567DD00AFF041 /* LeftMenuVC.m */,
+				2CA6B9FB1A4567DD00AFF041 /* MainVC.h */,
+				2CA6B9FC1A4567DD00AFF041 /* MainVC.m */,
 			);
 			name = AMSlideMenu;
 			sourceTree = "<group>";
@@ -466,6 +464,7 @@
 				ED2194A019C9A9690053C8B3 /* TMDB.m */,
 			);
 			name = Network;
+			path = "WD Content";
 			sourceTree = "<group>";
 		};
 		2CA88711187EA8080074B73E /* Settings */ = {
@@ -483,7 +482,7 @@
 			name = Settings;
 			sourceTree = "<group>";
 		};
-		2CA88716187EA88C0074B73E /* CoreData */ = {
+		2CA88716187EA88C0074B73E /* Storage */ = {
 			isa = PBXGroup;
 			children = (
 				ED04A5C419D172C00079C787 /* MetaInfo.h */,
@@ -496,7 +495,7 @@
 				2C0AB2B81A4B37F60007D700 /* DropboxClient.h */,
 				2C0AB2B91A4B37F60007D700 /* DropboxClient.m */,
 			);
-			name = CoreData;
+			name = Storage;
 			sourceTree = "<group>";
 		};
 		2CDF099719C58AD000A1B3B9 /* Images */ = {

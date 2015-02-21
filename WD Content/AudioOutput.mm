@@ -10,6 +10,13 @@
 #include <AudioToolbox/AudioToolbox.h>
 #include "AudioRingBuffer.h"
 
+extern "C" {
+#	include "libavcodec/avcodec.h"
+#	include "libavformat/avformat.h"
+};
+
+#define AUDIO_POOL_SIZE 4
+
 @interface AudioOutput () {
 
 	AudioRingBuffer*					_ringBuffer;
@@ -35,21 +42,6 @@ static void AudioOutputCallback(void *inClientData,
 }
 
 @implementation AudioOutput
-
-- (void)currentPTS:(int64_t*)ppts withTime:(int64_t*)ptime
-{
-	if (_ringBuffer != NULL)
-		ringBufferPTSWithTime(_ringBuffer, ppts, ptime);
-	else {
-		*ppts = AV_NOPTS_VALUE;
-		*ptime = AV_NOPTS_VALUE;
-	}
-}
-
-- (int64_t)currentPTS
-{
-	return (_ringBuffer ? ringBufferPTS(_ringBuffer) : AV_NOPTS_VALUE);
-}
 
 - (BOOL)startWithFrame:(AVFrame*)frame
 {
@@ -117,20 +109,6 @@ static void AudioOutputCallback(void *inClientData,
 	}
 }
 
-- (void)reset
-{
-	if (_ringBuffer) {
-		resetRingBuffer(_ringBuffer);
-	}
-}
-
-- (void)flush
-{
-	if (_ringBuffer) {
-		flushRingBuffer(_ringBuffer);
-	}
-}
-
 - (void)stop
 {
 	if (!_started) return;
@@ -159,15 +137,6 @@ static void AudioOutputCallback(void *inClientData,
 		return timeInterval;
 	} else {
 		return 0;
-	}
-}
-
-- (int)decodedPacketCount
-{
-	if (_ringBuffer == NULL) {
-		return 0;
-	} else {
-		return ringBufferCount(_ringBuffer);
 	}
 }
 

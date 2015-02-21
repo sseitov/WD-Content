@@ -10,10 +10,12 @@
 #import "DataModel.h"
 #import "AudioDecoder.h"
 #import "VTDecoder.h"
+#include <mutex>
 
 @interface Demuxer () <DecoderDelegate> {
 	
 	dispatch_queue_t	_networkQueue;
+	std::mutex			_audioMutex;
 }
 
 @property (strong, nonatomic) VTDecoder *videoDecoder;
@@ -119,14 +121,19 @@
 
 - (BOOL)changeAudio:(int)audioCahnnel
 {
-	AVCodecContext* enc = self.mediaContext->streams[audioCahnnel]->codec;
+	std::unique_lock<std::mutex> lock(_audioMutex);
+	
+	[_audioDecoder stop];
 	[_audioDecoder close];
-	if (![_audioDecoder openWithContext:enc]) {
+	AVCodecContext* enc = self.mediaContext->streams[audioCahnnel]->codec;
+	if (![self.audioDecoder openWithContext:enc]) {
 		enc = self.mediaContext->streams[_audioIndex]->codec;
 		[_audioDecoder openWithContext:enc];
+		[_audioDecoder start];
 		return NO;
 	}
 	self.audioIndex = audioCahnnel;
+	[_audioDecoder start];
 	return YES;
 }
 
@@ -153,6 +160,8 @@
 			if (av_read_frame(self.mediaContext, &nextPacket) < 0) { // eof
 				break;
 			}
+			
+			std::unique_lock<std::mutex> lock(_audioMutex);
 			
 			if (nextPacket.stream_index == self.audioIndex) {
 				[_audioDecoder push:&nextPacket];

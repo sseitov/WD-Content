@@ -7,55 +7,33 @@
 //
 
 #include "AudioRingBuffer.h"
-#include "Util.h"
 
-#include <mach/mach_time.h>
-
-static int64_t getUptimeInMilliseconds()
-{
-	const int64_t kOneMillion = 1000 * 1000;
-	static mach_timebase_info_data_t s_timebase_info;
-	
-	if (s_timebase_info.denom == 0) {
-		(void) mach_timebase_info(&s_timebase_info);
-	}
-	
-	// mach_absolute_time() returns billionth of seconds,
-	// so divide by one million to get milliseconds
-	return (int64_t)((mach_absolute_time() * s_timebase_info.numer) / (kOneMillion * s_timebase_info.denom));
-}
+extern "C" {
+#	include "libavcodec/avcodec.h"
+#	include "libavformat/avformat.h"
+};
 
 AudioRingBuffer::AudioRingBuffer(int elementsCount, int bufferSize)
 :_count(elementsCount+1), _bufferSize(bufferSize), _start(0), _end(0), _stopped(false)
 {
 	_data = (char*)calloc(_count, _bufferSize);
-	_framePTS = (int64_t*)calloc(_count, sizeof(int64_t));
-	for (int i=0; i<_count; i++) {
-		_framePTS[i] = AV_NOPTS_VALUE;
-	}
-	_currentPTSTime = _currentPTS = AV_NOPTS_VALUE;
 }
 
 AudioRingBuffer::~AudioRingBuffer()
 {
 	free(_data);
-	free(_framePTS);
 }
 
 bool readRingBuffer(AudioRingBuffer* rb, AudioQueueBufferRef& buffer)
 {
 	std::unique_lock<std::mutex> lock(rb->_mutex);
 	if (!rb->_overflow.wait_for(lock,  std::chrono::milliseconds(10), [&rb]() { return (!rb->isEmpty() || rb->_stopped);})) {
-		rb->_currentPTS = AV_NOPTS_VALUE;
-		rb->_currentPTSTime = AV_NOPTS_VALUE;
 		return false;
 	}
 	if (rb->_stopped) return false;
 	
 	buffer->mAudioDataByteSize = rb->_bufferSize;
 	memcpy(buffer->mAudioData, rb->_data + rb->_start*rb->_bufferSize, rb->_bufferSize);
-	rb->_currentPTS = rb->_framePTS[rb->_start];
-	rb->_currentPTSTime = getUptimeInMilliseconds();
 	
 	rb->_start = (rb->_start + 1) % rb->_count;
 	rb->_overflow.notify_one();
@@ -103,43 +81,5 @@ void writeRingBuffer(AudioRingBuffer* rb, AVFrame* audioFrame)
 			}
 		}
 	}
-	rb->_framePTS[rb->_end] = audioFrame->pts;
     rb->_end = (rb->_end + 1) % rb->_count;
 }
-
-void resetRingBuffer(AudioRingBuffer* rb)
-{
-	std::unique_lock<std::mutex> lock(rb->_mutex);
-	rb->_stopped = true;
-	rb->_overflow.notify_one();
-}
-
-void flushRingBuffer(AudioRingBuffer* rb)
-{
-	std::unique_lock<std::mutex> lock(rb->_mutex);
-	rb->_start = rb->_end = 0;
-	rb->_overflow.notify_one();
-}
-
-void ringBufferPTSWithTime(AudioRingBuffer* rb, int64_t* ppts, int64_t* ptime)
-{
-	std::unique_lock<std::mutex> lock(rb->_mutex);
-	*ppts = rb->_currentPTS;
-	*ptime = rb->_currentPTSTime;
-}
-
-int64_t ringBufferPTS(AudioRingBuffer* rb)
-{
-	std::unique_lock<std::mutex> lock(rb->_mutex);
-	return rb->_currentPTS;
-}
-
-int ringBufferCount(AudioRingBuffer* rb)
-{
-	if (rb->_end > rb->_start) {
-		return rb->_end - rb->_start;
-	} else {
-		return rb->_end + rb->_count - rb->_start;
-	}
-}
-

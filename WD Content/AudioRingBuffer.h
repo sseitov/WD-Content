@@ -12,11 +12,6 @@
 #include <AudioToolbox/AudioToolbox.h>
 #include <mutex>
 
-extern "C" {
-#	include "libavcodec/avcodec.h"
-#	include "libavformat/avformat.h"
-};
-
 struct StereoShortSample
 {
 	uint16_t left;
@@ -37,9 +32,6 @@ struct AudioRingBuffer
     int						_end;			// index at which to write new element
 	bool					_stopped;
     char*					_data;			// raw data
-	int64_t*				_framePTS;		// array of frame pts
-	int64_t					_currentPTS;
-	int64_t					_currentPTSTime;
 	
 	std::mutex				_mutex;
 	std::condition_variable _overflow;
@@ -51,12 +43,9 @@ struct AudioRingBuffer
 	bool isEmpty() { return _end == _start; }
 };
 
+struct AVFrame;
+
 bool readRingBuffer(AudioRingBuffer* rb, AudioQueueBufferRef& buffer);
 void writeRingBuffer(AudioRingBuffer* rb, AVFrame* audioFrame);
-void resetRingBuffer(AudioRingBuffer* rb);
-void flushRingBuffer(AudioRingBuffer* rb);
-int64_t ringBufferPTS(AudioRingBuffer* rb);
-void ringBufferPTSWithTime(AudioRingBuffer* rb, int64_t* ppts, int64_t* ptime);
-int ringBufferCount(AudioRingBuffer* rb);
 
 #endif /* defined(__vTV__RingBuffer__) */
