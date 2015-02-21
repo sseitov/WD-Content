@@ -21,7 +21,7 @@ extern "C" {
 	int _lastOffset;
 }
 
-- (void)fillBufferList:(AudioBufferList*)list;
+- (BOOL)fillBufferList:(AudioBufferList*)list numSamples:(int)numSamples;
 
 @end
 
@@ -51,7 +51,9 @@ static OSStatus converterRenderCallback(void *inRefCon,
 										AudioBufferList *ioData)
 {
 	AudioUnitOutput *output = (__bridge AudioUnitOutput*)inRefCon;
-	[output fillBufferList:ioData];
+	if (![output fillBufferList:ioData numSamples:inNumberFrames]) {
+		*ioActionFlags |= kAudioUnitRenderAction_OutputIsSilence;
+	}
 	return noErr;
 }
 
@@ -69,34 +71,27 @@ static OSStatus converterRenderCallback(void *inRefCon,
 	return (_lastFrame != NULL);
 }
 
-- (void)fillBufferList:(AudioBufferList*)list
+- (BOOL)fillBufferList:(AudioBufferList*)list numSamples:(int)numSamples
 {
-	if (!_lastFrame) {
-		if (![self getLastFrame]) return;
+	int offset = 0;
+	while (numSamples > 0) {
+		int restSamples = _lastFrame->nb_samples - _lastOffset;
+		if (restSamples <= 0) {
+			if (![self getLastFrame]) return NO;
+		}
+		
+		int count = (numSamples <= restSamples) ? numSamples : restSamples;
+		for (int i=0; i<list->mNumberBuffers; i++) {
+			memcpy((uint8_t*)(list->mBuffers[i].mData)+offset*mFormat.mBytesPerFrame,
+				   _lastFrame->data[i] + _lastOffset*mFormat.mBytesPerFrame,
+				   count*mFormat.mBytesPerFrame);
+		}
+		
+		_lastOffset += count;
+		offset += count;
+		numSamples -= count;
 	}
-	
-	int restBytes = _lastFrame->linesize[0] - _lastOffset;
-	int bufferSize = list->mBuffers[0].mDataByteSize;
-	if (restBytes >= bufferSize) {
-		for (int i=0; i<list->mNumberBuffers; i++) {
-//			uint8_t *pData = (uint8_t*)list->mBuffers[i].mData;
-//			memcpy(pData, _lastFrame->data[i] + _lastOffset, bufferSize);
-			list->mBuffers[i].mData = _lastFrame->data[i] + _lastOffset;
-		}
-		_lastOffset += bufferSize;
-	} else {
-		for (int i=0; i<list->mNumberBuffers; i++) {
-			uint8_t *pData = (uint8_t*)list->mBuffers[i].mData;
-			memcpy(pData, _lastFrame->data[i] + _lastOffset, restBytes);
-		}
-		bufferSize -= restBytes;
-		if (![self getLastFrame]) return;
-		for (int i=0; i<list->mNumberBuffers; i++) {
-			uint8_t *pData = (uint8_t*)list->mBuffers[i].mData+restBytes;
-			memcpy(pData, _lastFrame->data[i], bufferSize);
-		}
-		_lastOffset = bufferSize;
-	}
+	return YES;
 }
 
 - (BOOL)startWithFrame:(AVFrame*)frame
