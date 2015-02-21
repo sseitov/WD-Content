@@ -33,6 +33,7 @@ NSString* const ErrorDBAccountNotification = @"ErrorDBAccountNotification";
 	[TMDB sharedInstance].apiKey = TMDB_API_KEY;
 	
 	[[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error: nil];
+//	[[AVAudioSession sharedInstance] setPreferredIOBufferDuration:0.018 error:nil];
 	[[AVAudioSession sharedInstance] setActive:YES error:nil];
 	
 	avformat_network_init();

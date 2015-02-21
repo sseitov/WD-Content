@@ -9,6 +9,9 @@
 #import "VTDecoder.h"
 #import <VideoToolbox/VideoToolbox.h>
 
+#include <queue>
+#include <mutex>
+
 extern "C" {
 #	include "VideoUtility.h"
 #	include "libavcodec/avcodec.h"
@@ -140,15 +143,36 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 
 
 @interface VTDecoder () {
+	std::queue<CMSampleBufferRef>	_queue;
+	std::mutex						_mutex;
+
 	VTDecompressionSessionRef _session;
 	CMVideoFormatDescriptionRef _videoFormat;
 	bool convert_byte_stream;
+	int numFrame;
 	bool hasPts;
 }
+
+@property (strong, nonatomic) NSCondition* decoderCondition;
 
 @end
 
 @implementation VTDecoder
+
+- (id)init
+{
+	self = [super init];
+	if (self) {
+		self.decoderThread = dispatch_queue_create("com.vchannel.WD-Content.VideoDecoder", DISPATCH_QUEUE_SERIAL);
+		_decoderCondition = [[NSCondition alloc] init];
+	}
+	return self;
+}
+
+- (NSString*)name
+{
+	return @"VideoDecoder";
+}
 
 - (BOOL)openWithContext:(AVCodecContext*)context
 {
@@ -178,7 +202,8 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
     if (status == noErr) {
         VTSessionSetProperty(_session, kVTDecompressionPropertyKey_ThreadCount, (__bridge CFTypeRef)[NSNumber numberWithInt:4]);
         VTSessionSetProperty(_session, kVTDecompressionPropertyKey_RealTime, kCFBooleanTrue);
-		_context = context;
+		self.context = context;
+		numFrame = 0;
 		hasPts = false;
         return YES;
     } else {
@@ -188,10 +213,7 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 
 - (void)close
 {
- 	if (_context) {
-		avcodec_close(_context);
-	}
-	_context = NULL;
+	[super close];
     if (_session) {
         VTDecompressionSessionInvalidate(_session);
         CFRelease(_session);
@@ -205,15 +227,14 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 
 - (void)decodePacket:(AVPacket*)packet
 {
-	if (!hasPts && packet->pts != AV_NOPTS_VALUE) {
-		hasPts = true;
-	}
-	int64_t pts = hasPts ? packet->pts : packet->dts;
-	int duration = packet->duration > 0 ? packet->duration : 1;
+//	NSLog(@"pts %lld, (%d / %d) = %f", packet->pts, self.context->time_base.num, self.context->time_base.den, av_q2d(self.context->time_base));
+
+	double pts_scale = av_q2d(self.context->pkt_timebase) / (1.0/25.0);
+	int64_t pts = (packet->pts != AV_NOPTS_VALUE) ? packet->pts*pts_scale : AV_NOPTS_VALUE;
 	
 	CMSampleTimingInfo timingInfo;
-	timingInfo.presentationTimeStamp = CMTimeMake(pts, 1.0/av_q2d(_context->time_base));
-	timingInfo.duration = CMTimeMake(duration, 1.0/av_q2d(_context->time_base));
+	timingInfo.presentationTimeStamp = CMTimeMake(pts, 1);
+	timingInfo.duration = CMTimeMake(1, 1);
 	timingInfo.decodeTimeStamp = kCMTimeInvalid;
 	
 	CMSampleBufferRef sampleBuff = NULL;
@@ -288,6 +309,55 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
     }
 }
 
+- (void)put:(CMSampleBufferRef)buffer
+{
+	std::unique_lock<std::mutex> lock(_mutex);
+	_queue.push(buffer);
+}
+
+- (CMSampleBufferRef)takeWithTime:(double)time
+{
+	std::unique_lock<std::mutex> lock(_mutex);
+	if (_queue.empty()) {
+		return NULL;
+	} else {
+		[_decoderCondition lock];
+		CMSampleBufferRef buffer = _queue.front();
+		CMTime t = CMSampleBufferGetPresentationTimeStamp(buffer);
+		if (t.value == AV_NOPTS_VALUE) {
+			_queue.pop();
+			[_decoderCondition signal];
+		} else {
+			double vt = t.value / 25.0;
+//			NSLog(@"pts %lld, video %f, audio %f", t.value, vt, time);
+			if (vt > time) {
+				buffer = NULL;
+			} else {
+				_queue.pop();
+				[_decoderCondition signal];
+			}
+		}
+		[_decoderCondition unlock];
+		return buffer;
+	}
+}
+- (BOOL)threadStep
+{
+	AVPacket packet;
+	if ([self pop:&packet]) {
+		[_decoderCondition lock];
+		while (_queue.size() > 32) {
+			[_decoderCondition wait];
+		}
+		[self decodePacket:&packet];
+		av_free_packet(&packet);
+		[_decoderCondition unlock];
+		return YES;
+	} else {
+		return NO;
+	}
+}
+
 @end
 
 void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
@@ -325,7 +395,7 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
                                                         &sampleBuffer);
             CFRelease(videoInfo);
             if (status == noErr) {
-                [decoder.delegate videoDecoder:decoder decodedBuffer:sampleBuffer];
+                [decoder put:sampleBuffer];
 			} else {
 				NSLog(@"error CMSampleBufferCreateForImageBuffer");
 			}

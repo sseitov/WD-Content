@@ -7,12 +7,39 @@
 //
 
 #import "AudioDecoder.h"
+#import "AudioOutput.h"
 
 extern "C" {
 #	include "libavcodec/avcodec.h"
 };
 
+@interface AudioDecoder ()
+
+@property (strong, nonatomic) AudioOutput *audioOutput;
+
+@end
+
 @implementation AudioDecoder
+
+- (id)init
+{
+	self = [super init];
+	if (self) {
+		self.decoderThread = dispatch_queue_create("com.vchannel.WD-Content.AudioDecoder", DISPATCH_QUEUE_SERIAL);
+		_audioOutput = [[AudioOutput alloc] init];
+	}
+	return self;
+}
+
+- (NSString*)name
+{
+	return @"AudioDecoder";
+}
+
+- (double)currentTime
+{
+	return _audioOutput.getCurrentTime;
+}
 
 - (BOOL)openWithContext:(AVCodecContext*)codecContext
 {
@@ -32,18 +59,51 @@ extern "C" {
 	return YES;
 }
 
-- (void)close
+- (void)push:(AVPacket*)packet
 {
-	if (self.context) {
-		avcodec_close(self.context);
+	[super push:packet];
+	size_t size = [self size];
+	if (size > 256 && !self.running) {
+		[self pause:NO];
+		[self.delegate decoder:self changeState:StopBuffering];
 	}
-	self.context = NULL;
+	if (size < 16 && self.running) {
+		[self pause:YES];
+		[self.delegate decoder:self changeState:StartBuffering];
+	}
 }
 
-- (void)decodePacket:(AVPacket*)packet
+- (BOOL)threadStep
+{
+	AVPacket packet;
+	if ([self pop:&packet]) {
+		AVFrame* frame = [self decodePacket:&packet];
+		av_free_packet(&packet);
+		if (frame) {
+			if (!_audioOutput.started) {
+				[_audioOutput startWithFrame:frame];
+			}
+			if (_audioOutput.started) {
+				[_audioOutput enqueueFrame:frame];
+			}
+			av_frame_free(&frame);
+		}
+		return YES;
+	} else {
+		return NO;
+	}
+}
+
+- (void)stop
+{
+	[super stop];
+	[_audioOutput stop];
+}
+
+- (AVFrame*)decodePacket:(AVPacket*)packet
 {
 	if (!self.context) {
-		return;
+		return NULL;
 	}
 	int got_frame = 0;
 	int len = -1;
@@ -54,7 +114,9 @@ extern "C" {
 		if (frame->pts == AV_NOPTS_VALUE) {
 			frame->pts = frame->pkt_pts;
 		}
-		[self.delegate audioDecoder:self decodedFrame:frame];
+		return frame;
+	} else {
+		return NULL;
 	}
 }
 

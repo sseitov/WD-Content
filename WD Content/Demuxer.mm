@@ -8,34 +8,26 @@
 
 #import "Demuxer.h"
 #import "DataModel.h"
-#import "VTDecoder.h"
 #import "AudioDecoder.h"
-#import "AudioOutput.h"
-#import "DecodeBuffer.h"
+#import "VTDecoder.h"
 
-#include <queue>
-#include <mutex>
-
-@interface Demuxer () <VTDecoderDelegate, AudioDecoderDelegate, DecodeBufferDelegate> {
+@interface Demuxer () <DecoderDelegate> {
 	
 	dispatch_queue_t	_networkQueue;
-	
-	std::queue<CMSampleBufferRef>	_videoQueue;
-	AudioOutput*					_audioOutput;
-	std::mutex						_audioMutex;
 }
 
 @property (strong, nonatomic) VTDecoder *videoDecoder;
 @property (strong, nonatomic) AudioDecoder *audioDecoder;
-@property (strong, nonatomic) DecodeBuffer *buffer;
-@property (strong, nonatomic) NSCondition *bufferCondition;
 
-@property (nonatomic) int audioIndex;
+@property (atomic) int audioIndex;
 @property (nonatomic) int videoIndex;
 
 @property (atomic) AVFormatContext*	mediaContext;
-@property (strong, nonatomic) NSConditionLock *demuxerState;
+
+@property (strong, nonatomic) NSCondition *demuxerState;
+@property (strong, nonatomic) NSConditionLock *threadState;
 @property (atomic) BOOL stopped;
+@property (atomic) BOOL buffering;
 
 @end
 
@@ -47,23 +39,12 @@
 	if (self) {
 		_audioDecoder = [[AudioDecoder alloc] init];
 		_audioDecoder.delegate = self;
-		_audioOutput = [[AudioOutput alloc] init];
-		
-		_networkQueue = dispatch_queue_create("com.vchannel.WD-Content.SMBNetwork", DISPATCH_QUEUE_SERIAL);
-		
 		_videoDecoder = [[VTDecoder alloc] init];
 		_videoDecoder.delegate = self;
 		
-		_buffer = [[DecodeBuffer alloc] init];
-		_buffer.delegate = self;
-		_bufferCondition = [[NSCondition alloc] init];
+		_networkQueue = dispatch_queue_create("com.vchannel.WD-Content.SMBNetwork", DISPATCH_QUEUE_SERIAL);
 	}
 	return self;
-}
-
-- (AVRational)timeBase
-{
-	return _audioDecoder.context->time_base;
 }
 
 - (NSString*)sambaURL:(NSString*)path
@@ -95,7 +76,7 @@
 		return NO;
 	}
 /*
-	NSString* sambaURL = @"http://panels.telemarker.cc/stream/tvc-tm.ts";
+	NSString* sambaURL = @"http://panels.telemarker.cc/stream/ort-tm.ts";
 */
 	int err = avformat_open_input(&_mediaContext, [sambaURL UTF8String], NULL, NULL);
 	if ( err != 0) {
@@ -138,8 +119,6 @@
 
 - (BOOL)changeAudio:(int)audioCahnnel
 {
-	std::unique_lock<std::mutex> lock(_audioMutex);
-	[_audioOutput stop];
 	AVCodecContext* enc = self.mediaContext->streams[audioCahnnel]->codec;
 	[_audioDecoder close];
 	if (![_audioDecoder openWithContext:enc]) {
@@ -147,8 +126,7 @@
 		[_audioDecoder openWithContext:enc];
 		return NO;
 	}
-	_audioIndex = audioCahnnel;
-	[_buffer changeAudio:_audioIndex];
+	self.audioIndex = audioCahnnel;
 	return YES;
 }
 
@@ -159,12 +137,14 @@
 		return NO;
 	}
 	
-	_audioIndex = audioCahnnel;
-	[_buffer startWithAudio:_audioIndex];
+	self.audioIndex = audioCahnnel;
  
 	self.stopped = NO;
 
-	_demuxerState = [[NSConditionLock alloc] initWithCondition:ThreadStillWorking];
+	[_audioDecoder start];
+	[_videoDecoder start];
+	
+	_threadState = [[NSConditionLock alloc] initWithCondition:ThreadStillWorking];
 	av_read_play(self.mediaContext);
 	
 	dispatch_async(_networkQueue, ^() {
@@ -174,30 +154,21 @@
 				break;
 			}
 			
-			if (nextPacket.stream_index == _audioIndex || nextPacket.stream_index == _videoIndex) {
-			
-				switch ([_buffer pushPacket:&nextPacket]) {
-					case StartBuffering:
-						[self.delegate demuxer:self buffering:YES];
-						break;
-					case StopBuffering:
-						[self.delegate demuxer:self buffering:NO];
-						break;
-					default:
-						break;
-				}
+			if (nextPacket.stream_index == self.audioIndex) {
+				[_audioDecoder push:&nextPacket];
+			} else if (nextPacket.stream_index == self.videoIndex) {
+				[_videoDecoder push:&nextPacket];
 			} else {
 				av_free_packet(&nextPacket);
 			}
-			
-			[_bufferCondition lock];
-			while (_buffer.size > 512 && !self.stopped) {
-				[_bufferCondition wait];
+			[_demuxerState lock];
+			while (_audioDecoder.isFull && _videoDecoder.isFull) {
+				[_demuxerState wait];
 			}
-			[_bufferCondition unlock];
+			[_demuxerState unlock];
 		}
-		[_demuxerState lock];
-		[_demuxerState unlockWithCondition:ThreadIsDone];
+		[_threadState lock];
+		[_threadState unlockWithCondition:ThreadIsDone];
 	});
 	return YES;
 }
@@ -206,74 +177,45 @@
 {
 	self.stopped = YES;
 	
-	[_bufferCondition lock];
-	[_bufferCondition signal];
-	[_bufferCondition unlock];
-
-	[_demuxerState lockWhenCondition:ThreadIsDone];
-	[_demuxerState unlock];
-	
-	[_buffer stop];
-	
+	[_audioDecoder stop];
 	[_audioDecoder close];
-	[_audioOutput stop];
-	
+	[_videoDecoder stop];
 	[_videoDecoder close];
-	while (!_videoQueue.empty()) {
-		CMSampleBufferRef buffer = _videoQueue.front();
-		CFRelease(buffer);
-		_videoQueue.pop();
-	}
+	
+	[_threadState lockWhenCondition:ThreadIsDone];
+	[_threadState unlock];
 	
 	avformat_close_input(&_mediaContext);
 }
 
-#pragma mark - Decoder
-
-- (void)decodePacket:(AVPacket*)packet
-{
-	std::unique_lock<std::mutex> lock(_audioMutex);
-	if (packet->stream_index == _audioIndex) {
-		[_audioDecoder decodePacket:packet];
-	} else if (packet->stream_index == _videoIndex) {
-		[_videoDecoder decodePacket:packet];
-	}
-	av_free_packet(packet);
-	[_bufferCondition lock];
-	[_bufferCondition signal];
-	[_bufferCondition unlock];
-}
-
-#pragma mark - Audio
-
-- (void)audioDecoder:(AudioDecoder*)decoder decodedFrame:(AVFrame*)frame
-{
-	if (!_audioOutput.started) {
-		if (![_audioOutput startWithFrame:frame]) {
-		}
-	}
-	if (_audioOutput.started) {
-		[_audioOutput enqueueFrame:frame];
-	}
-	av_frame_free(&frame);
-}
-
-#pragma mark - VTDecoder
-
 - (CMSampleBufferRef)takeVideo
 {
-	if (!_videoQueue.empty()) {
-		CMSampleBufferRef buffer = _videoQueue.front();
-		_videoQueue.pop();
-		return buffer;
-	} else {
+	if (self.buffering) {
 		return NULL;
+	} else {
+		return [_videoDecoder takeWithTime:_audioDecoder.currentTime];
 	}
 }
 
-- (void)videoDecoder:(VTDecoder*)decoder decodedBuffer:(CMSampleBufferRef)buffer
+- (void)decoder:(Decoder*)decoder changeState:(enum DecoderState)state
 {
-	_videoQueue.push(buffer);
+	switch (state) {
+		case Continue:
+			[_demuxerState lock];
+			[_demuxerState signal];
+			[_demuxerState unlock];
+			break;
+		case StartBuffering:
+			[self.delegate demuxer:self buffering:YES];
+			self.buffering = YES;
+			break;
+		case StopBuffering:
+			[self.delegate demuxer:self buffering:NO];
+			self.buffering = NO;
+			break;
+		default:
+			break;
+	}
 }
 
 @end

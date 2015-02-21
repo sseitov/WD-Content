@@ -124,7 +124,7 @@ static void AudioOutputCallback(void *inClientData,
 	}
 }
 
-- (void)flush:(int64_t)pts
+- (void)flush
 {
 	if (_ringBuffer) {
 		flushRingBuffer(_ringBuffer);

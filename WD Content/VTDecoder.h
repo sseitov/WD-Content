@@ -7,25 +7,11 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "Decoder.h"
 #import <CoreMedia/CoreMedia.h>
 
-@class VTDecoder;
-struct AVCodecContext;
-struct AVPacket;
+@interface VTDecoder : Decoder
 
-@protocol VTDecoderDelegate <NSObject>
-
-- (void)videoDecoder:(VTDecoder*)decoder decodedBuffer:(CMSampleBufferRef)buffer;
-
-@end
-
-@interface VTDecoder : NSObject
-
-@property (weak, nonatomic) id<VTDecoderDelegate> delegate;
-@property (readwrite, nonatomic) AVCodecContext* context;
-
-- (BOOL)openWithContext:(AVCodecContext*)context;
-- (void)close;
-- (void)decodePacket:(AVPacket*)packet;
+- (CMSampleBufferRef)takeWithTime:(double)time;
 
 @end

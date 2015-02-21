@@ -34,7 +34,7 @@ extern "C" {
 - (BOOL)play:(int)audioCahnnel;
 - (BOOL)changeAudio:(int)audioCahnnel;
 
-- (AVRational)timeBase;
 - (CMSampleBufferRef)takeVideo;
 
 @end
+

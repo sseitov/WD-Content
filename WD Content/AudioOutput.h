@@ -26,7 +26,7 @@ extern "C" {
 
 - (void)currentPTS:(int64_t*)ppts withTime:(int64_t*)ptime;
 - (void)reset;
-- (void)flush:(int64_t)pts;
+- (void)flush;
 - (double)getCurrentTime;
 
 - (int)decodedPacketCount;

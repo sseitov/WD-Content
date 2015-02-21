@@ -58,6 +58,12 @@ enum {
 	_videoOutput.videoGravity = AVLayerVideoGravityResizeAspect;
 	_videoOutput.backgroundColor = [[UIColor blackColor] CGColor];
 	
+	CMTimebaseRef tmBase = nil;
+	CMTimebaseCreateWithMasterClock(CFAllocatorGetDefault(), CMClockGetHostTimeClock(),&tmBase);
+	_videoOutput.controlTimebase = tmBase;
+	CMTimebaseSetTime(_videoOutput.controlTimebase, kCMTimeZero);
+	CMTimebaseSetRate(_videoOutput.controlTimebase, 25.0);
+
 	_demuxer = [[Demuxer alloc] init];
 	_demuxer.delegate = self;
 
@@ -123,6 +129,16 @@ enum {
 	[alert show];
 }
 
+- (void)errorChange
+{
+	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
+													message:@"Error change audio format"
+												   delegate:self
+										  cancelButtonTitle:@"Ok"
+										  otherButtonTitles:nil];
+	[alert show];
+}
+
 - (void)layoutScreen
 {
 	[_videoOutput removeFromSuperlayer];
@@ -150,8 +166,8 @@ enum {
 		UIAlertAction *action = [UIAlertAction actionWithTitle:[channel objectForKey:@"codec"]
 														 style:UIAlertActionStyleDefault
 													   handler:^(UIAlertAction *action) {
-														   if ([_demuxer changeAudio:[[channel objectForKey:@"channel"] intValue]]) {
-															   CMTimebaseSetRate(_videoOutput.controlTimebase, 1.0/av_q2d(_demuxer.timeBase));
+														   if (![_demuxer changeAudio:[[channel objectForKey:@"channel"] intValue]]) {
+															   [self errorChange];
 														   }
 													   }];
 		[alertController addAction:action];
@@ -175,13 +191,7 @@ enum {
 	}
 	
 	[self tapOnScreen:nil];
-	
-	CMTimebaseRef tmBase = nil;
-	CMTimebaseCreateWithMasterClock(CFAllocatorGetDefault(), CMClockGetHostTimeClock(),&tmBase);
-	_videoOutput.controlTimebase = tmBase;
-	CMTimebaseSetTime(_videoOutput.controlTimebase, kCMTimeZero);
-	CMTimebaseSetRate(_videoOutput.controlTimebase, 1.0/av_q2d(_demuxer.timeBase));
-	
+
 	self.stopped = NO;
 	_layerState = [[NSConditionLock alloc] initWithCondition:LayerStillWorking];
 	
