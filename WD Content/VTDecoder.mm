@@ -149,8 +149,7 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 	VTDecompressionSessionRef _session;
 	CMVideoFormatDescriptionRef _videoFormat;
 	bool convert_byte_stream;
-	int numFrame;
-	bool hasPts;
+	bool was_pts;
 }
 
 @property (strong, nonatomic) NSCondition* decoderCondition;
@@ -203,8 +202,7 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
         VTSessionSetProperty(_session, kVTDecompressionPropertyKey_ThreadCount, (__bridge CFTypeRef)[NSNumber numberWithInt:4]);
         VTSessionSetProperty(_session, kVTDecompressionPropertyKey_RealTime, kCFBooleanTrue);
 		self.context = context;
-		numFrame = 0;
-		hasPts = false;
+		was_pts = false;
         return YES;
     } else {
         return NO;
@@ -227,10 +225,15 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 
 - (void)decodePacket:(AVPacket*)packet
 {
-//	NSLog(@"pts %lld, (%d / %d) = %f", packet->pts, self.context->time_base.num, self.context->time_base.den, av_q2d(self.context->time_base));
-
+//	NSLog(@"1) pts %lld, (%d / %d)", packet->dts, self.context->time_base.num, self.context->time_base.den);
+//	NSLog(@"2) pts %lld, (%d / %d)", packet->dts, self.context->pkt_timebase.num, self.context->pkt_timebase.den);
+	
+	if (!was_pts && packet->pts != AV_NOPTS_VALUE) {
+		was_pts = true;
+	}
 	double pts_scale = av_q2d(self.context->pkt_timebase) / (1.0/25.0);
-	int64_t pts = (packet->pts != AV_NOPTS_VALUE) ? packet->pts*pts_scale : AV_NOPTS_VALUE;
+	int64_t pts = was_pts ? packet->pts : packet->dts;
+	pts = (pts == AV_NOPTS_VALUE) ? AV_NOPTS_VALUE : pts*pts_scale;
 	
 	CMSampleTimingInfo timingInfo;
 	timingInfo.presentationTimeStamp = CMTimeMake(pts, 1);
@@ -329,7 +332,7 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 			[_decoderCondition signal];
 		} else {
 			double vt = t.value / 25.0;
-//			NSLog(@"pts %lld, video %f, audio %f", t.value, vt, time);
+//			NSLog(@"video %f, audio %f", vt, time);
 			if (vt > time) {
 				buffer = NULL;
 			} else {

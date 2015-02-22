@@ -36,7 +36,6 @@ enum {
 @property (strong, nonatomic) Demuxer* demuxer;
 
 @property (strong, nonatomic) AVSampleBufferDisplayLayer *videoOutput;
-@property (strong, nonatomic) NSConditionLock *layerState;
 @property (atomic) BOOL stopped;
 @property (strong, nonatomic) NSArray* audioChannels;
 
@@ -193,10 +192,8 @@ enum {
 	[self tapOnScreen:nil];
 
 	self.stopped = NO;
-	_layerState = [[NSConditionLock alloc] initWithCondition:LayerStillWorking];
 	
 	[_videoOutput requestMediaDataWhenReadyOnQueue:_videoOutputQueue usingBlock:^() {
-		[_layerState lock];
 		if (!self.stopped) {
 			while (!self.stopped && _videoOutput.isReadyForMoreMediaData) {
 				CMSampleBufferRef buffer = [_demuxer takeVideo];
@@ -207,9 +204,6 @@ enum {
 					break;
 				}
 			}
-			[_layerState unlockWithCondition:LayerStillWorking];
-		} else {
-			[_layerState unlockWithCondition:LayerIsDone];
 		}
 	}];
 }
@@ -221,8 +215,6 @@ enum {
 	MBProgressHUD *hud = [[MBProgressHUD alloc] initWithView:self.view];
 	[self.view addSubview:hud];
 	[hud showAnimated:YES whileExecutingBlock:^{
-		[_layerState lockWhenCondition:LayerIsDone];
-		[_layerState unlock];
 		[_videoOutput stopRequestingMediaData];
 		[_demuxer close];
 	} completionBlock:^{
