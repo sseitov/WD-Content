@@ -290,3 +290,25 @@ void quicktime_write_esds(AVIOContext *pb, quicktime_esds_t *esds)
 	
 }
 
+bool convertAvcc(uint8_t* data, int dataSize, uint8_t** pDst)
+{
+	if ((data[0] == 0 && data[1] == 0 && data[2] == 0 && data[3] == 1) || (data[0] == 0 && data[1] == 0 && data[2] == 1))
+	{
+		// video content is from x264 or from bytestream h264 (AnnexB format)
+		// NAL reformating to bitstream format required
+		AVIOContext *pb;
+		if (avio_open_dyn_buf(&pb) < 0)
+			return false;
+		
+		// create a valid avcC atom data from ffmpeg's extradata
+		isom_write_avcc(pb, data, dataSize);
+		
+		// extract the avcC atom data into extradata getting size into extrasize
+		avio_close_dyn_buf(pb, pDst);
+		return true;
+	} else {
+		*pDst = data;
+		return false;
+	}
+}
+

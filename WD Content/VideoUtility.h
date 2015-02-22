@@ -10,6 +10,7 @@
 #define __WD_Content__VideoUtility__
 
 #include <_types.h>
+#include <stdbool.h>
 
 #include "libavformat/avio.h"
 
@@ -58,7 +59,7 @@ struct PpsHeader
 #pragma pack(pop)
 
 const int avc_parse_nal_units(AVIOContext *pb, const uint8_t *buf_in, int size);
-const int isom_write_avcc(AVIOContext *pb, const uint8_t *data, int len);
+bool convertAvcc(uint8_t* data, int dataSize, uint8_t** pDst);
 
 /* MPEG-4 esds (elementary stream descriptor) */
 typedef struct {

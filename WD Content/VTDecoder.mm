@@ -17,58 +17,47 @@ extern "C" {
 #	include "libavcodec/avcodec.h"
 }
 
+static NSData* esdsInfo(uint8_t* data, int size)
+{
+	AVIOContext *pb;
+	quicktime_esds_t *esds;
+	
+	if (avio_open_dyn_buf(&pb) < 0)
+		return nil;
+	
+	esds = quicktime_set_esds(data, size);
+	quicktime_write_esds(pb, esds);
+	
+	// unhook from ffmpeg's extradata
+	data = NULL;
+	// extract the esds atom decoderConfig from extradata
+	size = avio_close_dyn_buf(pb, &data);
+	free(esds->decoderConfig);
+	free(esds);
+	
+	NSData* info = [NSData dataWithBytes:data length:size];
+	av_free(data);
+	
+	return info;
+}
+
 static CMVideoFormatDescriptionRef CreateFormat(AVCodecContext* context, bool* convert)
 {
 	CMVideoFormatDescriptionRef format = NULL;
 	OSStatus err = noErr;
 	switch (context->codec_id) {
 		case AV_CODEC_ID_MPEG4:
-			if (context->extradata_size)
-			{
-				AVIOContext *pb;
-				quicktime_esds_t *esds;
-
-				unsigned int extrasize = context->extradata_size; // extra data for codec to use
-				uint8_t *extradata = (uint8_t*)context->extradata; // size of extra data
-				
-				if (avio_open_dyn_buf(&pb) < 0)
-					break;
-				
-				esds = quicktime_set_esds(extradata, extrasize);
-				quicktime_write_esds(pb, esds);
-				
-				// unhook from ffmpeg's extradata
-				extradata = NULL;
-				// extract the esds atom decoderConfig from extradata
-				extrasize = avio_close_dyn_buf(pb, &extradata);
-				free(esds->decoderConfig);
-				free(esds);
-
-				CFMutableDictionaryRef decoderConfiguration = CFDictionaryCreateMutable(kCFAllocatorDefault,
-																						2,
-																						&kCFTypeDictionaryKeyCallBacks,
-																						&kCFTypeDictionaryValueCallBacks);
-				
-				CFDataRef data = CFDataCreate(kCFAllocatorDefault, extradata, extrasize);
-				CFMutableDictionaryRef extradata_info = CFDictionaryCreateMutable(kCFAllocatorDefault,
-																				  1,
-																				  &kCFTypeDictionaryKeyCallBacks,
-																				  &kCFTypeDictionaryValueCallBacks);
-				CFDictionarySetValue(extradata_info, CFSTR("esds"), data);
-				
-				CFDictionarySetValue(decoderConfiguration,
-									 kCMFormatDescriptionExtension_SampleDescriptionExtensionAtoms,
-									 extradata_info);
-				
-				err = CMVideoFormatDescriptionCreate(NULL, kCMVideoCodecType_MPEG4Video, context->width, context->height, decoderConfiguration, &format);
-
-				// done with the converted extradata, we MUST free using av_free
-				av_free(extradata);
-				CFRelease(data);
-				CFRelease(extradata_info);
-				
-				if (err == noErr) {
-					return format;
+			NSLog(@"AV_CODEC_ID_MPEG4");
+			if (context->extradata_size) {
+				NSData* info = esdsInfo(context->extradata, context->extradata_size);
+				if (info) {
+					NSDictionary *extradata_info = @{ @"esds" : info};
+					NSDictionary *decoderConfiguration = @{(id)kCMFormatDescriptionExtension_SampleDescriptionExtensionAtoms : extradata_info};
+					err = CMVideoFormatDescriptionCreate(NULL, kCMVideoCodecType_MPEG4Video, context->width, context->height,
+														 (__bridge CFDictionaryRef)decoderConfiguration, &format);
+					if (err == noErr) {
+						return format;
+					}
 				}
 			} else {
 				err = CMVideoFormatDescriptionCreate(NULL, kCMVideoCodecType_MPEG4Video, context->width, context->height, NULL, &format);
@@ -78,33 +67,21 @@ static CMVideoFormatDescriptionRef CreateFormat(AVCodecContext* context, bool* c
 			}
 			break;
 		case AV_CODEC_ID_MPEG2VIDEO:
+			NSLog(@"AV_CODEC_ID_MPEG2VIDEO");
+//			NSDictionary *profile = @{(id)kCMFormatDescriptionConformsToMPEG2VideoProfile : [NSNumber numberWithInt:kCMMPEG2VideoProfile_HDV_720p25]};
+//			NSDictionary *decoderConfiguration = @{(id)kCMFormatDescriptionExtension_OriginalCompressionSettings : profile};
 			err = CMVideoFormatDescriptionCreate(NULL, kCMVideoCodecType_MPEG2Video, context->width, context->height, NULL, &format);
+//												 (__bridge CFDictionaryRef)decoderConfiguration, &format);
 			if (err == noErr) {
 				return format;
 			}
 			break;
 		case AV_CODEC_ID_H264:
 		{
-			uint8_t* extradata = NULL;;
-			if ((context->extradata[0] == 0 && context->extradata[1] == 0 && context->extradata[2] == 0 && context->extradata[3] == 1) ||
-				(context->extradata[0] == 0 && context->extradata[1] == 0 && context->extradata[2] == 1))
-			{
-				// video content is from x264 or from bytestream h264 (AnnexB format)
-				// NAL reformating to bitstream format required
-				AVIOContext *pb;
-				if (avio_open_dyn_buf(&pb) < 0)
-					break;
-				
-				// create a valid avcC atom data from ffmpeg's extradata
-				isom_write_avcc(pb, context->extradata, context->extradata_size);
-				
-				// extract the avcC atom data into extradata getting size into extrasize
-				avio_close_dyn_buf(pb, &extradata);
-				*convert = true;
-			} else {
-				extradata = context->extradata;
-				*convert = false;
-			}
+			NSLog(@"AV_CODEC_ID_H264");
+			uint8_t* extradata = NULL;
+			*convert = convertAvcc(context->extradata, context->extradata_size, &extradata);
+			
 			SpsHeader spsHeader = *((SpsHeader*)extradata);
 			uint16_t spsLen = NTOHS(spsHeader.SPS_size);
 			const uint8_t *sps = extradata+sizeof(SpsHeader);
@@ -177,25 +154,26 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 {
 	convert_byte_stream = false;
 	_videoFormat = CreateFormat(context, &convert_byte_stream);
+	
 	if (!_videoFormat) {
 		return NO;
 	}
 	
-    NSDictionary* destinationPixelBufferAttributes = @{
-                                                       (id)kCVPixelBufferPixelFormatTypeKey : [NSNumber numberWithInt:kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange],
-                                                       (id)kCVPixelBufferWidthKey : [NSNumber numberWithInt:context->width],
-                                                       (id)kCVPixelBufferHeightKey : [NSNumber numberWithInt:context->height],
-                                                       (id)kCVPixelBufferOpenGLCompatibilityKey : [NSNumber numberWithBool:YES]
-                                                       };
+	NSDictionary* destinationPixelBufferAttributes = @{
+													   (id)kCVPixelBufferPixelFormatTypeKey : [NSNumber numberWithInt:kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange],
+													   (id)kCVPixelBufferWidthKey : [NSNumber numberWithInt:context->width],
+													   (id)kCVPixelBufferHeightKey : [NSNumber numberWithInt:context->height],
+													   (id)kCVPixelBufferOpenGLCompatibilityKey : [NSNumber numberWithBool:YES]
+													   };
 
     VTDecompressionOutputCallbackRecord outputCallback;
     outputCallback.decompressionOutputCallback = DeompressionDataCallbackHandler;
     outputCallback.decompressionOutputRefCon = (__bridge void*)self;
-    
+	
     OSStatus status = VTDecompressionSessionCreate(NULL,
                                           _videoFormat,
                                           NULL,
-                                          (__bridge CFDictionaryRef)destinationPixelBufferAttributes,
+												   (__bridge CFDictionaryRef)destinationPixelBufferAttributes,
                                           &outputCallback,
                                           &_session);
     if (status == noErr) {
@@ -223,14 +201,88 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
     }
 }
 
+- (void)decodeMpeg2Packet:(AVPacket*)packet timing:(CMSampleTimingInfo)timing
+{
+	int got_frame = 0;
+	static AVFrame frame;
+	avcodec_get_frame_defaults(&frame);
+	int len = avcodec_decode_video2(self.context, &frame, &got_frame, packet);
+	if (len <= 0 || !got_frame) {
+		return;
+	}
+	
+	CVPixelBufferRef imageBuffer = NULL;
+	
+	void *planeBaseAddress[3];
+	size_t planeWidth[3];
+	size_t planeHeight[3];
+	size_t planeBytesPerRow[3];
+
+	planeBaseAddress[0] = frame.data[0];
+	planeWidth[0] = frame.width;
+	planeHeight[0] = frame.height;
+	planeBytesPerRow[0] = frame.linesize[0];
+
+	planeBaseAddress[1] = frame.data[1];
+	planeWidth[1] = frame.width/2;
+	planeHeight[1] = frame.height/2;
+	planeBytesPerRow[1] = frame.linesize[1];
+	
+	planeBaseAddress[2] = frame.data[2];
+	planeWidth[2] = frame.width/2;
+	planeHeight[2] = frame.height/2;
+	planeBytesPerRow[2] = frame.linesize[2];
+	
+	OSStatus err = CVPixelBufferCreateWithPlanarBytes(
+													  NULL,
+													  frame.width,
+													  frame.height,
+													  kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,
+													  NULL,
+													  0,
+													  3,
+													  planeBaseAddress,
+													  planeWidth,
+													  planeHeight,
+													  planeBytesPerRow,
+													  NULL,
+													  NULL,
+													  NULL,
+													  &imageBuffer);
+	if (err != noErr) {
+		NSLog(@"error CVPixelBufferCreateWithPlanarBytes");
+		return;
+	}
+	CMVideoFormatDescriptionRef videoInfo = NULL;
+	err = CMVideoFormatDescriptionCreateForImageBuffer(NULL, imageBuffer, &videoInfo);
+	if (err != noErr) {
+		NSLog(@"error CMVideoFormatDescriptionCreateForImageBuffer");
+		return;
+	}
+
+	CMSampleBufferRef sampleBuffer = NULL;
+	err = CMSampleBufferCreateForImageBuffer(kCFAllocatorDefault,
+												imageBuffer,
+												true,
+												NULL,
+												NULL,
+												videoInfo,
+												&timing,
+												&sampleBuffer);
+	CFRelease(videoInfo);
+	if (err == noErr) {
+		[self put:sampleBuffer];
+	} else {
+		NSLog(@"error CMSampleBufferCreateForImageBuffer");
+	}
+}
+
 - (void)decodePacket:(AVPacket*)packet
 {
-//	NSLog(@"1) pts %lld, (%d / %d)", packet->dts, self.context->time_base.num, self.context->time_base.den);
-//	NSLog(@"2) pts %lld, (%d / %d)", packet->dts, self.context->pkt_timebase.num, self.context->pkt_timebase.den);
-	
 	if (!was_pts && packet->pts != AV_NOPTS_VALUE) {
 		was_pts = true;
 	}
+	
 	double pts_scale = av_q2d(self.context->pkt_timebase) / (1.0/25.0);
 	int64_t pts = was_pts ? packet->pts : packet->dts;
 	pts = (pts == AV_NOPTS_VALUE) ? AV_NOPTS_VALUE : pts*pts_scale;
@@ -239,60 +291,55 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 	timingInfo.presentationTimeStamp = CMTimeMake(pts, 1);
 	timingInfo.duration = CMTimeMake(1, 1);
 	timingInfo.decodeTimeStamp = kCMTimeInvalid;
+
 	
-	CMSampleBufferRef sampleBuff = NULL;
- 	CMBlockBufferRef newBBufOut = NULL;
-	OSStatus err = noErr;
+	int demux_size = 0;
+	uint8_t *demux_buff = NULL;
 	if (convert_byte_stream) {
 		// convert demuxer packet from bytestream (AnnexB) to bitstream
 		AVIOContext *pb = NULL;
-		int demux_size = 0;
-		uint8_t *demux_buff = NULL;
 		if(avio_open_dyn_buf(&pb) < 0)
 			return;
 		demux_size = avc_parse_nal_units(pb, packet->data, packet->size);
 		demux_size = avio_close_dyn_buf(pb, &demux_buff);
 
-		err = CMBlockBufferCreateWithMemoryBlock(
-												 NULL,             // CFAllocatorRef structureAllocator
-												 demux_buff,       // void *memoryBlock
-												 demux_size,       // size_t blockLengt
-												 kCFAllocatorNull, // CFAllocatorRef blockAllocator
-												 NULL,             // const CMBlockBufferCustomBlockSource *customBlockSource
-												 0,                // size_t offsetToData
-												 demux_size,       // size_t dataLength
-												 kCMBlockBufferAlwaysCopyDataFlag,            // CMBlockBufferFlags flags
-												 &newBBufOut);     // CMBlockBufferRef *newBBufOut
 	} else {
-		err = CMBlockBufferCreateWithMemoryBlock(
-												 NULL,             // CFAllocatorRef structureAllocator
-												 packet->data,       // void *memoryBlock
-												 packet->size,       // size_t blockLengt
-												 kCFAllocatorNull, // CFAllocatorRef blockAllocator
-												 NULL,             // const CMBlockBufferCustomBlockSource *customBlockSource
-												 0,                // size_t offsetToData
-												 packet->size,       // size_t dataLength
-												 kCMBlockBufferAlwaysCopyDataFlag,            // CMBlockBufferFlags flags
-												 &newBBufOut);     // CMBlockBufferRef *newBBufOut
+		demux_buff = packet->data;
+		demux_size = packet->size;
 	}
+	
+	CMBlockBufferRef newBBufOut = NULL;
+	OSStatus err = noErr;
+	err = CMBlockBufferCreateWithMemoryBlock(
+											 NULL,             // CFAllocatorRef structureAllocator
+											 demux_buff,       // void *memoryBlock
+											 demux_size,       // size_t blockLengt
+											 kCFAllocatorNull, // CFAllocatorRef blockAllocator
+											 NULL,             // const CMBlockBufferCustomBlockSource *customBlockSource
+											 0,                // size_t offsetToData
+											 demux_size,       // size_t dataLength
+											 kCMBlockBufferAlwaysCopyDataFlag,            // CMBlockBufferFlags flags
+											 &newBBufOut);     // CMBlockBufferRef *newBBufOut
 	
 	if (err != noErr) {
 		NSLog(@"error CMBlockBufferCreateWithMemoryBlock");
 		return;
 	}
+	
+	CMSampleBufferRef sampleBuff = NULL;
 	err = CMSampleBufferCreate(
-							   kCFAllocatorDefault,           // CFAllocatorRef allocator
-							   newBBufOut,     // CMBlockBufferRef dataBuffer
-							   YES,           // Boolean dataReady
-							   NULL,              // CMSampleBufferMakeDataReadyCallback makeDataReadyCallback
-							   NULL,              // void *makeDataReadyRefcon
-							   _videoFormat,       // CMFormatDescriptionRef formatDescription
-							   1,              // CMItemCount numSamples
-							   1,              // CMItemCount numSampleTimingEntries
-							   &timingInfo,           // const CMSampleTimingInfo *sampleTimingArray
-							   0,              // CMItemCount numSampleSizeEntries
-							   NULL,           // const size_t *sampleSizeArray
-							   &sampleBuff);      // CMSampleBufferRef *sBufOut
+							   kCFAllocatorDefault,		// CFAllocatorRef allocator
+							   newBBufOut,				// CMBlockBufferRef dataBuffer
+							   YES,						// Boolean dataReady
+							   NULL,					// CMSampleBufferMakeDataReadyCallback makeDataReadyCallback
+							   NULL,					// void *makeDataReadyRefcon
+							   _videoFormat,			// CMFormatDescriptionRef formatDescription
+							   1,						// CMItemCount numSamples
+							   1,						// CMItemCount numSampleTimingEntries
+							   &timingInfo,				// const CMSampleTimingInfo *sampleTimingArray
+							   0,						// CMItemCount numSampleSizeEntries
+							   NULL,					// const size_t *sampleSizeArray
+							   &sampleBuff);			// CMSampleBufferRef *sBufOut
 	if (err != noErr) {
 		NSLog(@"error CMSampleBufferCreate");
 		return;
@@ -344,6 +391,7 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 		return buffer;
 	}
 }
+
 - (BOOL)threadStep
 {
 	AVPacket packet;
