@@ -68,10 +68,7 @@ static CMVideoFormatDescriptionRef CreateFormat(AVCodecContext* context, bool* c
 			break;
 		case AV_CODEC_ID_MPEG2VIDEO:
 			NSLog(@"AV_CODEC_ID_MPEG2VIDEO");
-//			NSDictionary *profile = @{(id)kCMFormatDescriptionConformsToMPEG2VideoProfile : [NSNumber numberWithInt:kCMMPEG2VideoProfile_HDV_720p25]};
-//			NSDictionary *decoderConfiguration = @{(id)kCMFormatDescriptionExtension_OriginalCompressionSettings : profile};
 			err = CMVideoFormatDescriptionCreate(NULL, kCMVideoCodecType_MPEG2Video, context->width, context->height, NULL, &format);
-//												 (__bridge CFDictionaryRef)decoderConfiguration, &format);
 			if (err == noErr) {
 				return format;
 			}
@@ -200,7 +197,7 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
         _videoFormat = NULL;
     }
 }
-
+/*
 - (void)decodeMpeg2Packet:(AVPacket*)packet timing:(CMSampleTimingInfo)timing
 {
 	int got_frame = 0;
@@ -276,7 +273,7 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 		NSLog(@"error CMSampleBufferCreateForImageBuffer");
 	}
 }
-
+*/
 - (void)decodePacket:(AVPacket*)packet
 {
 	if (!was_pts && packet->pts != AV_NOPTS_VALUE) {
