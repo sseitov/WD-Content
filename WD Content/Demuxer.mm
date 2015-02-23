@@ -10,6 +10,7 @@
 #import "DataModel.h"
 #import "AudioDecoder.h"
 #import "VTDecoder.h"
+#include "ConditionLock.h"
 #include <mutex>
 
 #define TV_STREAM	0
@@ -18,6 +19,9 @@
 	
 	dispatch_queue_t	_networkQueue;
 	std::mutex			_audioMutex;
+#if TV_STREAM
+	int64_t	_startPts;
+#endif
 }
 
 @property (strong, nonatomic) VTDecoder *videoDecoder;
@@ -154,6 +158,9 @@
 	[_videoDecoder start];
 	
 	_threadState = [[NSConditionLock alloc] initWithCondition:ThreadStillWorking];
+#if TV_STREAM
+	_startPts = -1;
+#endif
 	av_read_play(self.mediaContext);
 	
 	dispatch_async(_networkQueue, ^() {
@@ -169,21 +176,20 @@
 				[_audioDecoder push:&nextPacket];
 			} else if (nextPacket.stream_index == self.videoIndex) {
 #if TV_STREAM
-				static int64_t startPts = -1;
-				if (startPts < 0) {
-					startPts = nextPacket.pts;
+				if (_startPts < 0) {
+					_startPts = nextPacket.pts;
 				}
-				nextPacket.pts -= startPts;
+				nextPacket.pts -= _startPts;
 #endif
 				[_videoDecoder push:&nextPacket];
 			} else {
 				av_free_packet(&nextPacket);
 			}
-			[_demuxerState lock];
-			while (_audioDecoder.isFull && _videoDecoder.isFull) {
+			
+			ConditionLock locker(_demuxerState);
+			while (_audioDecoder.isFull || _videoDecoder.isFull) {
 				[_demuxerState wait];
 			}
-			[_demuxerState unlock];
 		}
 		[_threadState lock];
 		[_threadState unlockWithCondition:ThreadIsDone];
@@ -219,9 +225,10 @@
 {
 	switch (state) {
 		case Continue:
-			[_demuxerState lock];
+		{
+			ConditionLock locker(_demuxerState);
 			[_demuxerState signal];
-			[_demuxerState unlock];
+		}
 			break;
 		case StartBuffering:
 			[self.delegate demuxer:self buffering:YES];

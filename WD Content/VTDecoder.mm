@@ -8,6 +8,7 @@
 
 #import "VTDecoder.h"
 #import <VideoToolbox/VideoToolbox.h>
+#include "ConditionLock.h"
 
 #include <queue>
 #include <mutex>
@@ -184,9 +185,20 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
     }
 }
 
+- (void)stop
+{
+	[_decoderCondition lock];
+	self.stopped = YES;
+	[_decoderCondition signal];
+	[_decoderCondition unlock];
+	
+	[super stop];
+}
+
 - (void)close
 {
 	[super close];
+	
     if (_session) {
         VTDecompressionSessionInvalidate(_session);
         CFRelease(_session);
@@ -368,7 +380,7 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 	if (_queue.empty()) {
 		return NULL;
 	} else {
-		[_decoderCondition lock];
+		ConditionLock locker(_decoderCondition);
 		CMSampleBufferRef buffer = _queue.front();
 		CMTime t = CMSampleBufferGetPresentationTimeStamp(buffer);
 		if (t.value == AV_NOPTS_VALUE) {
@@ -384,7 +396,6 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 				[_decoderCondition signal];
 			}
 		}
-		[_decoderCondition unlock];
 		return buffer;
 	}
 }
@@ -392,15 +403,18 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 - (BOOL)threadStep
 {
 	AVPacket packet;
-	if ([self pop:&packet]) {
-		[_decoderCondition lock];
-		while (_queue.size() > 32) {
+	if ([self pop:&packet] && !self.stopped) {
+		ConditionLock locker(_decoderCondition);
+		while (_queue.size() > 32 && !self.stopped) {
 			[_decoderCondition wait];
 		}
-		[self decodePacket:&packet];
-		av_free_packet(&packet);
-		[_decoderCondition unlock];
-		return YES;
+		if (!self.stopped) {
+			[self decodePacket:&packet];
+			av_free_packet(&packet);
+			return YES;
+		} else {
+			return NO;
+		}
 	} else {
 		return NO;
 	}

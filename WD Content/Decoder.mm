@@ -125,6 +125,7 @@ public:
 - (void)stop
 {
 	self.stopped = YES;
+	_inputBuffer.stop();
 	[_threadState lockWhenCondition:ThreadIsDone];
 	[_threadState unlock];
 }

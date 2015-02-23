@@ -7,6 +7,7 @@
 //
 
 #import "AudioStreamer.h"
+#include "ConditionLock.h"
 #include <AudioToolbox/AudioToolbox.h>
 
 #define kNumAQBufs 16
@@ -39,26 +40,17 @@ static BOOL HasError(OSStatus error, NSString *operation)
 	AudioQueueBufferRef audioQueueBuffer[kNumAQBufs];				// audio queue buffers
 	AudioStreamPacketDescription packetDescs[kAQMaxPacketDescs];	// packet descriptions for enqueuing audio
 	
-	NSInteger dataOffset;				// Offset of the first audio packet in the stream
 	AudioStreamBasicDescription asbd;	// description of the audio
-	double sampleRate;					// Sample rate of the file (used to compare with
-										// samples played by the queue for current playback time)
-	double packetDuration;				// sample rate times frames per packet
 	UInt32 packetBufferSize;
-
-	NSCondition *queueBufferReadyCondition;	// a condition varable for handling the inuse flags
-
+	
 	unsigned int fillBufferIndex;		// the index of the audioQueueBuffer that is being filled
 	int bytesFilled;					// how many bytes have been filled
 	int packetsFilled;					// how many packets have been filled
 	bool inuse[kNumAQBufs];				// flags to indicate that a buffer is still in use
-	NSInteger buffersUsed;
-	
-	UInt64 processedPacketsCount;		// number of packets accumulated for bitrate estimation
-	UInt64 processedPacketsSizeTotal;	// byte size of accumulated estimation packets
 }
 
 @property (atomic) BOOL running;
+@property (strong, nonatomic) NSCondition *queueBufferReadyCondition;	// a condition varable for handling the inuse flags
 
 - (BOOL)handlePropertyChangeForFileStream:(AudioFileStreamID)inAudioFileStream
 					 fileStreamPropertyID:(AudioFileStreamPropertyID)inPropertyID
@@ -107,7 +99,7 @@ static void ASAudioQueueOutputCallback(void*				inClientData,
 {
 	self = [super init];
 	if (self) {
-		queueBufferReadyCondition = [[NSCondition alloc] init];
+		_queueBufferReadyCondition = [[NSCondition alloc] init];
 	}
 	return self;
 }
@@ -149,7 +141,17 @@ static void ASAudioQueueOutputCallback(void*				inClientData,
 
 - (void)close
 {
+	if (self.stopped) return;
 	
+	AudioQueueStop(audioQueue, true);
+	for (unsigned int i = 0; i < kNumAQBufs; ++i)
+	{
+		AudioQueueFreeBuffer(audioQueue, audioQueueBuffer[i]);
+	}
+	
+	AudioQueueDispose(audioQueue, true);
+	
+	self.stopped = YES;
 }
 
 - (void)start
@@ -159,17 +161,7 @@ static void ASAudioQueueOutputCallback(void*				inClientData,
 
 - (void)stop
 {
-	if (self.stopped) return;
-	
-	AudioQueueStop(audioQueue, true);
-	for (unsigned int i = 0; i < kNumAQBufs; ++i)
-	{
-		AudioQueueFreeBuffer(audioQueue, audioQueueBuffer[i]);
-	}
-
-	AudioQueueDispose(audioQueue, true);
-	
-	self.stopped = YES;
+	self.running = NO;
 	NSLog(@"Audio stopped");
 }
 
@@ -198,11 +190,7 @@ static void ASAudioQueueOutputCallback(void*				inClientData,
 
 - (BOOL)createQueue
 {
-	sampleRate = asbd.mSampleRate;
-	packetDuration = asbd.mFramesPerPacket / sampleRate;
-	
 	// create the audio queue
-	NSLog(@"Create queue for %@", fourChar2String(asbd.mFormatID));
 	CheckError(AudioQueueNewOutput(&asbd,
 								   ASAudioQueueOutputCallback,
 								   (__bridge void*)self,
@@ -218,22 +206,19 @@ static void ASAudioQueueOutputCallback(void*				inClientData,
 											  kAudioFileStreamProperty_PacketSizeUpperBound,
 											  &sizeOfUInt32,
 											  &packetBufferSize);
-	if (err != noErr || packetBufferSize == 0)
-	{
+	if (err != noErr || packetBufferSize == 0) {
 		err = AudioFileStreamGetProperty(streamID,
 										 kAudioFileStreamProperty_MaximumPacketSize,
 										 &sizeOfUInt32,
 										 &packetBufferSize);
-		if (err != noErr || packetBufferSize == 0)
-		{
+		if (err != noErr || packetBufferSize == 0) {
 			// No packet size available, just use the default
 			packetBufferSize = kAQDefaultBufSize;
 		}
 	}
 	
 	// allocate audio queue buffers
-	for (unsigned int i = 0; i < kNumAQBufs; ++i)
-	{
+	for (unsigned int i = 0; i < kNumAQBufs; ++i) {
 		CheckError(AudioQueueAllocateBuffer(audioQueue,
 											packetBufferSize,
 											&audioQueueBuffer[i]), @"AudioQueueAllocateBuffer");
@@ -268,77 +253,64 @@ static void ASAudioQueueOutputCallback(void*				inClientData,
 					 fileStreamPropertyID:(AudioFileStreamPropertyID)inPropertyID
 								  ioFlags:(UInt32 *)ioFlags
 {
-	@synchronized(self)
+	NSLog(@"Handle Property is %@", fourChar2String(inPropertyID));
+	if (self.stopped) {
+		return NO;
+	}
+	
+	if (inPropertyID == kAudioFileStreamProperty_ReadyToProducePackets)
 	{
-		NSLog(@"Handle Property is %@", fourChar2String(inPropertyID));
-		if (self.stopped) {
-			return NO;
-		}
-		
-		if (inPropertyID == kAudioFileStreamProperty_ReadyToProducePackets)
-		{
-		}
-		else if (inPropertyID == kAudioFileStreamProperty_DataOffset)
-		{
-			SInt64 offset;
-			UInt32 offsetSize = sizeof(offset);
-			CheckError( AudioFileStreamGetProperty(inAudioFileStream,
-												   kAudioFileStreamProperty_DataOffset,
-												   &offsetSize,
-												   &offset), @"AudioFileStreamGetProperty");
-			dataOffset = offset;
-		}
-		else if (inPropertyID == kAudioFileStreamProperty_AudioDataByteCount)
-		{
-		}
-		else if (inPropertyID == kAudioFileStreamProperty_FileFormat) {
-		}
-		else if (inPropertyID == kAudioFileStreamProperty_MagicCookieData) {
-		}
-		else if (inPropertyID == kAudioFileStreamProperty_ChannelLayout) {
-		}
-		else if (inPropertyID == kAudioFileStreamProperty_DataFormat)
-		{
-			if (asbd.mSampleRate == 0) {
-				UInt32 asbdSize = sizeof(asbd);
-				
-				// get the stream format.
-				CheckError(AudioFileStreamGetProperty(inAudioFileStream,
-													  kAudioFileStreamProperty_DataFormat,
-													  &asbdSize,
-													  &asbd), @"AudioFileStreamGetProperty");
-			}
-		}
-		else if (inPropertyID == kAudioFileStreamProperty_FormatList)
-		{
-			Boolean outWriteable;
-			UInt32 formatListSize;
-			CheckError(AudioFileStreamGetPropertyInfo(inAudioFileStream,
-													  kAudioFileStreamProperty_FormatList,
-													  &formatListSize,
-													  &outWriteable), @"AudioFileStreamGetPropertyInfo kAudioFileStreamProperty_FormatList");
+	}
+	else if (inPropertyID == kAudioFileStreamProperty_DataOffset)
+	{
+	}
+	else if (inPropertyID == kAudioFileStreamProperty_AudioDataByteCount)
+	{
+	}
+	else if (inPropertyID == kAudioFileStreamProperty_FileFormat) {
+	}
+	else if (inPropertyID == kAudioFileStreamProperty_MagicCookieData) {
+	}
+	else if (inPropertyID == kAudioFileStreamProperty_ChannelLayout) {
+	}
+	else if (inPropertyID == kAudioFileStreamProperty_DataFormat)
+	{
+		if (asbd.mSampleRate == 0) {
+			UInt32 asbdSize = sizeof(asbd);
 			
-			AudioFormatListItem *formatList = (AudioFormatListItem*)malloc(formatListSize);
+			// get the stream format.
 			CheckError(AudioFileStreamGetProperty(inAudioFileStream,
+												  kAudioFileStreamProperty_DataFormat,
+												  &asbdSize,
+												  &asbd), @"AudioFileStreamGetProperty");
+		}
+	}
+	else if (inPropertyID == kAudioFileStreamProperty_FormatList)
+	{
+		Boolean outWriteable;
+		UInt32 formatListSize;
+		CheckError(AudioFileStreamGetPropertyInfo(inAudioFileStream,
 												  kAudioFileStreamProperty_FormatList,
 												  &formatListSize,
-												  formatList), @"AudioFileStreamGetProperty kAudioFileStreamProperty_FormatList");
-			
-			for (int i = 0; i * sizeof(AudioFormatListItem) < formatListSize; i += sizeof(AudioFormatListItem))
-			{
-				AudioStreamBasicDescription pasbd = formatList[i].mASBD;
-				NSLog(@"AAC format: %@", fourChar2String(pasbd.mFormatID));
-				if (pasbd.mFormatID == kAudioFormatMPEG4AAC_HE ||
-					pasbd.mFormatID == kAudioFormatMPEG4AAC_HE_V2)
-				{
-					asbd = pasbd;
-					break;
-				}
+												  &outWriteable), @"AudioFileStreamGetPropertyInfo kAudioFileStreamProperty_FormatList");
+		
+		AudioFormatListItem *formatList = (AudioFormatListItem*)malloc(formatListSize);
+		CheckError(AudioFileStreamGetProperty(inAudioFileStream,
+											  kAudioFileStreamProperty_FormatList,
+											  &formatListSize,
+											  formatList), @"AudioFileStreamGetProperty kAudioFileStreamProperty_FormatList");
+		
+		for (int i = 0; i * sizeof(AudioFormatListItem) < formatListSize; i += sizeof(AudioFormatListItem)) {
+			AudioStreamBasicDescription pasbd = formatList[i].mASBD;
+			NSLog(@"AAC format: %@", fourChar2String(pasbd.mFormatID));
+			if (pasbd.mFormatID == kAudioFormatMPEG4AAC_HE || pasbd.mFormatID == kAudioFormatMPEG4AAC_HE_V2) {
+				asbd = pasbd;
+				break;
 			}
-			free(formatList);
 		}
-		return YES;
+		free(formatList);
 	}
+	return YES;
 }
 
 - (void)handleAudioPackets:(const void *)inInputData
@@ -346,82 +318,64 @@ static void ASAudioQueueOutputCallback(void*				inClientData,
 			 numberPackets:(UInt32)inNumberPackets
 		packetDescriptions:(AudioStreamPacketDescription *)inPacketDescriptions
 {
-	@synchronized(self)
-	{
-		if (self.stopped) {
-			return;
-		}
-
-		if (!audioQueue) {
-			[self createQueue];
-		}
+	if (self.stopped) {
+		return;
+	}
+	
+	if (!audioQueue) {
+		[self createQueue];
 	}
 
 	// the following code assumes we're streaming VBR data. for CBR data, the second branch is used.
 	if (inPacketDescriptions)
 	{
-		for (int i = 0; i < inNumberPackets; ++i)
-		{
+		for (int i = 0; i < inNumberPackets; ++i) {
 			SInt64 packetOffset = inPacketDescriptions[i].mStartOffset;
 			SInt64 packetSize   = inPacketDescriptions[i].mDataByteSize;
 			size_t bufSpaceRemaining;
 			
-			if (processedPacketsCount < BitRateEstimationMaxPackets) {
-				processedPacketsSizeTotal += packetSize;
-				processedPacketsCount += 1;
+			// If the audio was terminated before this point, then
+			// exit.
+			if (self.stopped) {
+				return;
 			}
 			
-			@synchronized(self)
-			{
-				// If the audio was terminated before this point, then
-				// exit.
-				if (self.stopped) {
-					return;
-				}
-				
-				if (packetSize > packetBufferSize)
-				{
-					NSLog(@"ERROR: AS_AUDIO_BUFFER_TOO_SMALL");
-					return;
-				}
-				
-				bufSpaceRemaining = packetBufferSize - bytesFilled;
+			if (packetSize > packetBufferSize) {
+				NSLog(@"ERROR: AS_AUDIO_BUFFER_TOO_SMALL");
+				return;
 			}
+			
+			bufSpaceRemaining = packetBufferSize - bytesFilled;
 			
 			// if the space remaining in the buffer is not enough for this packet, then enqueue the buffer.
-			if (bufSpaceRemaining < packetSize)
-			{
+			if (bufSpaceRemaining < packetSize) {
 				[self enqueueBuffer];
 			}
 			
-			@synchronized(self)
-			{
-				// If the audio was terminated while waiting for a buffer, then
-				// exit.
-				if (self.stopped) {
-					return;
-				}
-				
-				//
-				// If there was some kind of issue with enqueueBuffer and we didn't
-				// make space for the new audio data then back out
-				//
-				if (bytesFilled + packetSize > packetBufferSize)
-				{
-					return;
-				}
-				
-				// copy data to the audio queue buffer
-				AudioQueueBufferRef fillBuf = audioQueueBuffer[fillBufferIndex];
-				memcpy((char*)fillBuf->mAudioData + bytesFilled, (const char*)inInputData + packetOffset, packetSize);
-				
-				// fill out packet description
-				packetDescs[packetsFilled] = inPacketDescriptions[i];
-				packetDescs[packetsFilled].mStartOffset = bytesFilled;
-				// keep track of bytes filled and packets filled
-				bytesFilled += packetSize;
-				packetsFilled += 1;
+			// If the audio was terminated while waiting for a buffer, then
+			// exit.
+			if (self.stopped) {
+				return;
 			}
+			
+			//
+			// If there was some kind of issue with enqueueBuffer and we didn't
+			// make space for the new audio data then back out
+			//
+			if (bytesFilled + packetSize > packetBufferSize) {
+				return;
+			}
+			
+			// copy data to the audio queue buffer
+			AudioQueueBufferRef fillBuf = audioQueueBuffer[fillBufferIndex];
+			memcpy((char*)fillBuf->mAudioData + bytesFilled, (const char*)inInputData + packetOffset, packetSize);
+			
+			// fill out packet description
+			packetDescs[packetsFilled] = inPacketDescriptions[i];
+			packetDescs[packetsFilled].mStartOffset = bytesFilled;
+			// keep track of bytes filled and packets filled
+			bytesFilled += packetSize;
+			packetsFilled += 1;
 			
 			// if that was the last free packet description, then enqueue the buffer.
 			size_t packetsDescsRemaining = kAQMaxPacketDescs - packetsFilled;
@@ -433,99 +387,89 @@ static void ASAudioQueueOutputCallback(void*				inClientData,
 	else
 	{
 		size_t offset = 0;
-		while (inNumberBytes)
-		{
+		while (inNumberBytes) {
 			// if the space remaining in the buffer is not enough for this packet, then enqueue the buffer.
 			size_t bufSpaceRemaining = kAQDefaultBufSize - bytesFilled;
 			if (bufSpaceRemaining < inNumberBytes) {
 				[self enqueueBuffer];
 			}
 			
-			@synchronized(self)
-			{
-				// If the audio was terminated while waiting for a buffer, then
-				// exit.
-				if (self.stopped) {
-					return;
-				}
-				
-				bufSpaceRemaining = kAQDefaultBufSize - bytesFilled;
-				size_t copySize;
-				if (bufSpaceRemaining < inNumberBytes) {
-					copySize = bufSpaceRemaining;
-				} else {
-					copySize = inNumberBytes;
-				}
-				
-				//
-				// If there was some kind of issue with enqueueBuffer and we didn't
-				// make space for the new audio data then back out
-				//
-				if (bytesFilled > packetBufferSize) {
-					return;
-				}
-				
-				// copy data to the audio queue buffer
-				AudioQueueBufferRef fillBuf = audioQueueBuffer[fillBufferIndex];
-				memcpy((char*)fillBuf->mAudioData + bytesFilled, (const char*)inInputData + offset, copySize);
-				
-				
-				// keep track of bytes filled and packets filled
-				bytesFilled += copySize;
-				packetsFilled = 0;
-				inNumberBytes -= copySize;
-				offset += copySize;
+			// If the audio was terminated while waiting for a buffer, then
+			// exit.
+			if (self.stopped) {
+				return;
 			}
+			
+			bufSpaceRemaining = kAQDefaultBufSize - bytesFilled;
+			size_t copySize;
+			if (bufSpaceRemaining < inNumberBytes) {
+				copySize = bufSpaceRemaining;
+			} else {
+				copySize = inNumberBytes;
+			}
+			
+			//
+			// If there was some kind of issue with enqueueBuffer and we didn't
+			// make space for the new audio data then back out
+			//
+			if (bytesFilled > packetBufferSize) {
+				return;
+			}
+			
+			// copy data to the audio queue buffer
+			AudioQueueBufferRef fillBuf = audioQueueBuffer[fillBufferIndex];
+			memcpy((char*)fillBuf->mAudioData + bytesFilled, (const char*)inInputData + offset, copySize);
+			
+			
+			// keep track of bytes filled and packets filled
+			bytesFilled += copySize;
+			packetsFilled = 0;
+			inNumberBytes -= copySize;
+			offset += copySize;
 		}
 	}
 }
 
 - (BOOL)enqueueBuffer
 {
-	@synchronized(self)
-	{
-		if (self.stopped) {
-			return NO;
-		}
-		
-		inuse[fillBufferIndex] = true;		// set in use flag
-		buffersUsed++;
-		
-		// enqueue buffer
-		AudioQueueBufferRef fillBuf = audioQueueBuffer[fillBufferIndex];
-		fillBuf->mAudioDataByteSize = bytesFilled;
-		
-		if (packetsFilled)
-		{
-			CheckError(AudioQueueEnqueueBuffer(audioQueue,
-											   fillBuf,
-											   packetsFilled,
-											   packetDescs), @"AudioQueueEnqueueBuffer");
-		} else {
-			CheckError(AudioQueueEnqueueBuffer(audioQueue,
-											   fillBuf,
-											   0,
-											   NULL), @"AudioQueueEnqueueBuffer");
-		}
-
-		if (!self.running) {
-			CheckError(AudioQueueStart(audioQueue, NULL), @"AudioQueueStart");
-			self.running = YES;
-		}
-		
-		// go to next buffer
-		if (++fillBufferIndex >= kNumAQBufs) fillBufferIndex = 0;
-		bytesFilled = 0;		// reset bytes filled
-		packetsFilled = 0;		// reset packets filled
+	if (self.stopped) {
+		return NO;
 	}
 	
-	// wait until next buffer is not in use
-	[queueBufferReadyCondition lock];
-	while (inuse[fillBufferIndex])
-	{
-		[queueBufferReadyCondition wait];
+	inuse[fillBufferIndex] = true;		// set in use flag
+	
+	// enqueue buffer
+	AudioQueueBufferRef fillBuf = audioQueueBuffer[fillBufferIndex];
+	fillBuf->mAudioDataByteSize = bytesFilled;
+	
+	if (packetsFilled) {
+		CheckError(AudioQueueEnqueueBuffer(audioQueue,
+										   fillBuf,
+										   packetsFilled,
+										   packetDescs), @"AudioQueueEnqueueBuffer");
+	} else {
+		CheckError(AudioQueueEnqueueBuffer(audioQueue,
+										   fillBuf,
+										   0,
+										   NULL), @"AudioQueueEnqueueBuffer");
 	}
-	[queueBufferReadyCondition unlock];
+	
+	if (!self.running) {
+		CheckError(AudioQueueStart(audioQueue, NULL), @"AudioQueueStart");
+		self.running = YES;
+	}
+	
+	// go to next buffer
+	if (++fillBufferIndex >= kNumAQBufs)
+		fillBufferIndex = 0;
+	bytesFilled = 0;		// reset bytes filled
+	packetsFilled = 0;		// reset packets filled
+	
+	// wait until next buffer is not in use
+	ConditionLock locker(_queueBufferReadyCondition);
+	while (inuse[fillBufferIndex]) {
+		[_queueBufferReadyCondition wait];
+	}
 	return YES;
 }
 
@@ -533,25 +477,20 @@ static void ASAudioQueueOutputCallback(void*				inClientData,
 							  buffer:(AudioQueueBufferRef)inBuffer
 {
 	unsigned int bufIndex = -1;
-	for (unsigned int i = 0; i < kNumAQBufs; ++i)
-	{
-		if (inBuffer == audioQueueBuffer[i])
-		{
+	for (unsigned int i = 0; i < kNumAQBufs; ++i) {
+		if (inBuffer == audioQueueBuffer[i]) {
 			bufIndex = i;
 			break;
 		}
 	}
 	
-	[queueBufferReadyCondition lock];
-	if (bufIndex == -1)
-	{
-		NSLog(@"ERROR: AS_AUDIO_QUEUE_BUFFER_MISMATCH");
+	ConditionLock locker(_queueBufferReadyCondition);
+	if (bufIndex == -1) {
+		NSLog(@"ERROR: AUDIO QUEUE BUFFER MISMATCH");
 	} else {
 		inuse[bufIndex] = false;
-		buffersUsed--;
 	}
-	[queueBufferReadyCondition signal];
-	[queueBufferReadyCondition unlock];
+	[_queueBufferReadyCondition signal];
 }
 
 @end

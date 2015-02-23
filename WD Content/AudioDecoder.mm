@@ -82,7 +82,7 @@ extern "C" {
 - (BOOL)threadStep
 {
 	AVPacket packet;
-	if ([self pop:&packet]) {
+	if ([self pop:&packet] && !self.stopped) {
 		AVFrame* frame = [self decodePacket:&packet];
 		av_free_packet(&packet);
 		if (frame) {

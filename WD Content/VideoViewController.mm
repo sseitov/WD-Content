@@ -211,15 +211,8 @@ enum {
 - (void)stop
 {
 	self.stopped = YES;
-	
-	MBProgressHUD *hud = [[MBProgressHUD alloc] initWithView:self.view];
-	[self.view addSubview:hud];
-	[hud showAnimated:YES whileExecutingBlock:^{
-		[_videoOutput stopRequestingMediaData];
-		[_demuxer close];
-	} completionBlock:^{
-		[hud removeFromSuperview];
-	}];
+	[_videoOutput stopRequestingMediaData];
+	[_demuxer close];
 }
 
 - (IBAction)done:(id)sender
