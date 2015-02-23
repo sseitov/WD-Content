@@ -179,7 +179,7 @@ static void ASAudioQueueOutputCallback(void*				inClientData,
 	av_free_packet(packet);
 }
 
-- (double)getCurrentTime
+- (double)currentTime
 {
 	if (audioQueue == NULL) return 0;
 	

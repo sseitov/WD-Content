@@ -21,7 +21,7 @@ extern "C" {
 - (void)stop;
 
 - (void)push:(AVPacket*)packet;
-- (double)getCurrentTime;
+- (double)currentTime;
 
 @property (atomic) AVCodecContext* context;
 @property (atomic) BOOL stopped;
