@@ -146,7 +146,6 @@
 																message:@"Error connect. Retry?"
 															   delegate:self
 													  cancelButtonTitle:@"No" otherButtonTitles:@"Yes", nil];
-				alert.tag = 2;
 				[alert show];
 			});
 			return;

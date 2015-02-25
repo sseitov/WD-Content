@@ -56,7 +56,6 @@
 		2C719D141A7E46D500CB0B00 /* AudioUnitOutput.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2C719D131A7E46D500CB0B00 /* AudioUnitOutput.mm */; };
 		2C72F5C81A90D001007A35AA /* PixateFreestyle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C72F5C71A90D001007A35AA /* PixateFreestyle.framework */; };
 		2C72F5CA1A90D027007A35AA /* DropboxSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C72F5C91A90D027007A35AA /* DropboxSDK.framework */; };
-		2C7A10A41A9B486500E3900A /* AudioStreamer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2C7A10A31A9B486500E3900A /* AudioStreamer.mm */; };
 		2C7FD8C01A6CF62100718477 /* Demuxer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2C7FD8BF1A6CF62100718477 /* Demuxer.mm */; };
 		2CA1D7191854A78800276C67 /* InfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA1D7181854A78800276C67 /* InfoViewController.m */; };
 		2CA6B9F21A4567B800AFF041 /* AMSlideMenuContentSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA6B9E41A4567B800AFF041 /* AMSlideMenuContentSegue.m */; };
@@ -161,8 +160,6 @@
 		2C719D131A7E46D500CB0B00 /* AudioUnitOutput.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AudioUnitOutput.mm; path = "WD Content/AudioUnitOutput.mm"; sourceTree = "<group>"; };
 		2C72F5C71A90D001007A35AA /* PixateFreestyle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PixateFreestyle.framework; path = ../../../../../Users/sseitov/Documents/SDK/PixateFreestyle/PixateFreestyle.framework; sourceTree = "<group>"; };
 		2C72F5C91A90D027007A35AA /* DropboxSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DropboxSDK.framework; path = "../../../../../Users/sseitov/Documents/SDK/dropbox-ios-sdk-1.3.13/DropboxSDK.framework"; sourceTree = "<group>"; };
-		2C7A10A21A9B486500E3900A /* AudioStreamer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioStreamer.h; path = "WD Content/AudioStreamer.h"; sourceTree = "<group>"; };
-		2C7A10A31A9B486500E3900A /* AudioStreamer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AudioStreamer.mm; path = "WD Content/AudioStreamer.mm"; sourceTree = "<group>"; };
 		2C7A10A51A9BEC9800E3900A /* ConditionLock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ConditionLock.h; sourceTree = "<group>"; };
 		2C7FD8BE1A6CF62100718477 /* Demuxer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Demuxer.h; sourceTree = "<group>"; };
 		2C7FD8BF1A6CF62100718477 /* Demuxer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Demuxer.mm; sourceTree = "<group>"; };
@@ -370,8 +367,6 @@
 			children = (
 				2C719D121A7E46D500CB0B00 /* AudioUnitOutput.h */,
 				2C719D131A7E46D500CB0B00 /* AudioUnitOutput.mm */,
-				2C7A10A21A9B486500E3900A /* AudioStreamer.h */,
-				2C7A10A31A9B486500E3900A /* AudioStreamer.mm */,
 			);
 			name = "Under Construction";
 			sourceTree = "<group>";
@@ -661,7 +656,6 @@
 				2C5875381A6AF1590069F3F1 /* VTDecoder.mm in Sources */,
 				2CA95DC4184B2B4600927138 /* SettingsViewController.m in Sources */,
 				2C125EBA1848C74B00406FC3 /* AppDelegate.m in Sources */,
-				2C7A10A41A9B486500E3900A /* AudioStreamer.mm in Sources */,
 				2C3FDF141A4B7AEC0019ECD3 /* SettingsHeaderView.m in Sources */,
 				2CA1D7191854A78800276C67 /* InfoViewController.m in Sources */,
 				2CA6B9F81A4567B800AFF041 /* UIViewController+AMSlideMenu.m in Sources */,

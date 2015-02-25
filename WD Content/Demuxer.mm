@@ -13,15 +13,10 @@
 #include "ConditionLock.h"
 #include <mutex>
 
-#define TV_STREAM	0
-
 @interface Demuxer () <DecoderDelegate> {
 	
 	dispatch_queue_t	_networkQueue;
 	std::mutex			_audioMutex;
-#if TV_STREAM
-	int64_t	_startPts;
-#endif
 }
 
 @property (strong, nonatomic) VTDecoder *videoDecoder;
@@ -78,14 +73,11 @@
 
 - (BOOL)loadMedia:(NSString*)url audioChannels:(NSMutableArray*)audioChannels
 {
-#if TV_STREAM
-	NSString* sambaURL = @"http://panels.telemarker.cc/stream/ort-tm.ts";
-#else
 	NSString* sambaURL = [self sambaURL:url];
 	if (!sambaURL) {
 		return NO;
 	}
-#endif
+	
 	int err = avformat_open_input(&_mediaContext, [sambaURL UTF8String], NULL, NULL);
 	if ( err != 0) {
 		return NULL;
@@ -158,9 +150,6 @@
 	[_videoDecoder start];
 	
 	_threadState = [[NSConditionLock alloc] initWithCondition:ThreadStillWorking];
-#if TV_STREAM
-	_startPts = -1;
-#endif
 	av_read_play(self.mediaContext);
 	
 	dispatch_async(_networkQueue, ^() {
@@ -175,19 +164,13 @@
 			if (nextPacket.stream_index == self.audioIndex) {
 				[_audioDecoder push:&nextPacket];
 			} else if (nextPacket.stream_index == self.videoIndex) {
-#if TV_STREAM
-				if (_startPts < 0) {
-					_startPts = nextPacket.pts;
-				}
-				nextPacket.pts -= _startPts;
-#endif
 				[_videoDecoder push:&nextPacket];
 			} else {
 				av_free_packet(&nextPacket);
 			}
 			
 			ConditionLock locker(_demuxerState);
-			while (_audioDecoder.isFull || _videoDecoder.isFull) {
+			while (_audioDecoder.isFull && _videoDecoder.isFull) {
 				[_demuxerState wait];
 			}
 		}

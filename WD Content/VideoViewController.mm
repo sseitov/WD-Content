@@ -50,7 +50,8 @@ enum {
     [super viewDidLoad];
 	
 	self.title = [_node.info title] ? _node.info.title : _node.name;
-	
+	self.stopped = YES;
+
 	_videoOutputQueue = dispatch_queue_create("com.vchannel.WD-Content.VideoOutput", DISPATCH_QUEUE_SERIAL);
 	
 	_videoOutput = [[AVSampleBufferDisplayLayer alloc] init];
@@ -210,8 +211,11 @@ enum {
 
 - (void)stop
 {
+	if (self.stopped) return;
+	
 	self.stopped = YES;
 	[_videoOutput stopRequestingMediaData];
+	[_videoOutput flushAndRemoveImage];
 	[_demuxer close];
 }
 
