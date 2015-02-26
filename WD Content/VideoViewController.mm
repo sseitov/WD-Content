@@ -17,10 +17,7 @@ extern "C" {
 
 #define IS_PAD ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
 
-@interface VideoViewController () <DemuxerDelegate> {
-	dispatch_queue_t _videoOutputQueue;
-	dispatch_semaphore_t _videoSemaphore;
-}
+@interface VideoViewController () <DemuxerDelegate>
 
 - (IBAction)chooseAudio:(id)sender;
 - (IBAction)done:(id)sender;
@@ -35,6 +32,11 @@ extern "C" {
 
 @implementation VideoViewController
 
+- (void)dealloc
+{
+	NSLog(@"dealloc");
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -42,12 +44,9 @@ extern "C" {
 	self.title = [_node.info title] ? _node.info.title : _node.name;
 	self.stopped = YES;
 	
-	_videoOutputQueue = dispatch_queue_create("com.vchannel.WD-Content.VideoOutput", DISPATCH_QUEUE_SERIAL);
-	
 	_videoOutput = [[AVSampleBufferDisplayLayer alloc] init];
 	_videoOutput.videoGravity = AVLayerVideoGravityResizeAspect;
 	_videoOutput.backgroundColor = [[UIColor blackColor] CGColor];
-	
 	CMTimebaseRef tmBase = nil;
 	CMTimebaseCreateWithMasterClock(CFAllocatorGetDefault(), CMClockGetHostTimeClock(),&tmBase);
 	_videoOutput.controlTimebase = tmBase;
@@ -142,6 +141,11 @@ extern "C" {
 	[self layoutScreen];
 }
 
+- (void)viewDidDisappear:(BOOL)animated
+{
+	NSLog(@"viewDidDisappear");
+}
+
 - (void) willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
 	[self layoutScreen];
@@ -182,22 +186,17 @@ extern "C" {
 	
 	[self tapOnScreen:nil];
 
-	_videoSemaphore = dispatch_semaphore_create(0);
 	self.stopped = NO;
-	
-	[_videoOutput requestMediaDataWhenReadyOnQueue:_videoOutputQueue usingBlock:^() {
-		if (!self.stopped) {
-			while (!self.stopped && _videoOutput.isReadyForMoreMediaData) {
-				CMSampleBufferRef buffer = [_demuxer takeVideo];
-				if (buffer) {
-					[_videoOutput enqueueSampleBuffer:buffer];
-					CFRelease(buffer);
-				} else {
-					break;
-				}
+	[_videoOutput requestMediaDataWhenReadyOnQueue:dispatch_get_main_queue() usingBlock:^() {
+		while (!self.stopped && _videoOutput.isReadyForMoreMediaData) {
+			CMSampleBufferRef buffer = [_demuxer takeVideo];
+			if (buffer) {
+				[_videoOutput enqueueSampleBuffer:buffer];
+				CFRelease(buffer);
+			} else {
+				break;
 			}
 		}
-		dispatch_semaphore_signal(_videoSemaphore);
 	}];
 }
 
@@ -207,7 +206,6 @@ extern "C" {
 	
 	self.stopped = YES;
 	[_videoOutput stopRequestingMediaData];
-	dispatch_semaphore_wait(_videoSemaphore, DISPATCH_TIME_FOREVER);
 	
 	[_videoOutput flushAndRemoveImage];
 	[_demuxer close];
