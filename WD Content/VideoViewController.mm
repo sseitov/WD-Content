@@ -7,23 +7,15 @@
 //
 
 #import "VideoViewController.h"
-
 #import "Demuxer.h"
 #import "MBProgressHUD.h"
-
 #import <CoreMedia/CoreMedia.h>
 
 extern "C" {
 #	include "libavformat/avformat.h"
 }
-#include <mutex>
 
 #define IS_PAD ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
-
-enum {
-	LayerStillWorking,
-	LayerIsDone
-};
 
 @interface VideoViewController () <DemuxerDelegate> {
 	dispatch_queue_t _videoOutputQueue;
@@ -31,16 +23,13 @@ enum {
 }
 
 - (IBAction)chooseAudio:(id)sender;
+- (IBAction)done:(id)sender;
 
 @property (nonatomic) BOOL barsHidden;
-
 @property (strong, nonatomic) Demuxer* demuxer;
-
 @property (strong, nonatomic) AVSampleBufferDisplayLayer *videoOutput;
 @property (atomic) BOOL stopped;
 @property (strong, nonatomic) NSArray* audioChannels;
-
-- (IBAction)done:(id)sender;
 
 @end
 

@@ -11,6 +11,6 @@
 
 @interface VideoViewController : UIViewController
 
-@property (strong, nonatomic) Node* node;
+@property (assign) Node* node;
 
 @end
