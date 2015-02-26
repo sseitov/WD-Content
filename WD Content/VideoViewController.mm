@@ -27,8 +27,9 @@ enum {
 
 @interface VideoViewController () <DemuxerDelegate> {
 	dispatch_queue_t _videoOutputQueue;
-	std::mutex		_mutex;
+	dispatch_semaphore_t _videoSemaphore;
 }
+
 - (IBAction)chooseAudio:(id)sender;
 
 @property (nonatomic) BOOL barsHidden;
@@ -51,7 +52,7 @@ enum {
 	
 	self.title = [_node.info title] ? _node.info.title : _node.name;
 	self.stopped = YES;
-
+	
 	_videoOutputQueue = dispatch_queue_create("com.vchannel.WD-Content.VideoOutput", DISPATCH_QUEUE_SERIAL);
 	
 	_videoOutput = [[AVSampleBufferDisplayLayer alloc] init];
@@ -192,6 +193,7 @@ enum {
 	
 	[self tapOnScreen:nil];
 
+	_videoSemaphore = dispatch_semaphore_create(0);
 	self.stopped = NO;
 	
 	[_videoOutput requestMediaDataWhenReadyOnQueue:_videoOutputQueue usingBlock:^() {
@@ -206,6 +208,7 @@ enum {
 				}
 			}
 		}
+		dispatch_semaphore_signal(_videoSemaphore);
 	}];
 }
 
@@ -215,6 +218,8 @@ enum {
 	
 	self.stopped = YES;
 	[_videoOutput stopRequestingMediaData];
+	dispatch_semaphore_wait(_videoSemaphore, DISPATCH_TIME_FOREVER);
+	
 	[_videoOutput flushAndRemoveImage];
 	[_demuxer close];
 }
