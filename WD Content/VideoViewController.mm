@@ -32,11 +32,6 @@ extern "C" {
 
 @implementation VideoViewController
 
-- (void)dealloc
-{
-	NSLog(@"dealloc");
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -139,11 +134,6 @@ extern "C" {
 - (void)viewDidAppear:(BOOL)animated
 {
 	[self layoutScreen];
-}
-
-- (void)viewDidDisappear:(BOOL)animated
-{
-	NSLog(@"viewDidDisappear");
 }
 
 - (void) willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration

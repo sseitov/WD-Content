@@ -13,9 +13,7 @@ extern "C" {
 #	include "libavcodec/avcodec.h"
 };
 
-@interface AudioDecoder () {
-	
-}
+@interface AudioDecoder ()
 
 @property (strong, nonatomic) AudioOutput *audioOutput;
 @property (atomic) double previouseTime;
@@ -42,9 +40,11 @@ extern "C" {
 
 - (double)currentTime
 {
-	double t = (self.previouseTime + _audioOutput.getCurrentTime);
-//	NSLog(@"audio time %f", t);
-	return t;
+	if (_audioOutput.started) {
+		return (self.previouseTime + _audioOutput.getCurrentTime);
+	} else {
+		return -1;
+	}
 }
 
 - (BOOL)openWithContext:(AVCodecContext*)codecContext

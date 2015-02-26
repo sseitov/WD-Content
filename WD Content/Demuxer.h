@@ -9,13 +9,6 @@
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
 
-extern "C" {
-#	include "libavcodec/avcodec.h"
-#	include "libavformat/avformat.h"
-#	include "libavformat/avio.h"
-#	include "libavfilter/avfilter.h"
-};
-
 @class Demuxer;
 
 @protocol DemuxerDelegate <NSObject>

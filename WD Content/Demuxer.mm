@@ -13,6 +13,10 @@
 #include "ConditionLock.h"
 #include <mutex>
 
+extern "C" {
+#	include "libavformat/avformat.h"
+};
+
 @interface Demuxer () <DecoderDelegate> {
 	
 	dispatch_queue_t	_networkQueue;
@@ -197,7 +201,7 @@
 
 - (CMSampleBufferRef)takeVideo
 {
-	if (self.buffering) {
+	if (self.buffering || _audioDecoder.currentTime < 0) {
 		return NULL;
 	} else {
 		return [_videoDecoder takeWithTime:_audioDecoder.currentTime];

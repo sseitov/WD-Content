@@ -42,72 +42,6 @@ static NSData* esdsInfo(uint8_t* data, int size)
 	return info;
 }
 
-static CMVideoFormatDescriptionRef CreateFormat(AVCodecContext* context, bool* convert)
-{
-	CMVideoFormatDescriptionRef format = NULL;
-	OSStatus err = noErr;
-	switch (context->codec_id) {
-		case AV_CODEC_ID_MPEG4:
-			NSLog(@"AV_CODEC_ID_MPEG4");
-			if (context->extradata_size) {
-				NSData* info = esdsInfo(context->extradata, context->extradata_size);
-				if (info) {
-					NSDictionary *extradata_info = @{ @"esds" : info};
-					NSDictionary *decoderConfiguration = @{(id)kCMFormatDescriptionExtension_SampleDescriptionExtensionAtoms : extradata_info};
-					err = CMVideoFormatDescriptionCreate(NULL, kCMVideoCodecType_MPEG4Video, context->width, context->height,
-														 (__bridge CFDictionaryRef)decoderConfiguration, &format);
-					if (err == noErr) {
-						return format;
-					}
-				}
-			} else {
-				err = CMVideoFormatDescriptionCreate(NULL, kCMVideoCodecType_MPEG4Video, context->width, context->height, NULL, &format);
-				if (err == noErr) {
-					return format;
-				}
-			}
-			break;
-		case AV_CODEC_ID_MPEG2VIDEO:
-			NSLog(@"AV_CODEC_ID_MPEG2VIDEO");
-			err = CMVideoFormatDescriptionCreate(NULL, kCMVideoCodecType_MPEG2Video, context->width, context->height, NULL, &format);
-			if (err == noErr) {
-				return format;
-			}
-			break;
-		case AV_CODEC_ID_H264:
-		{
-			NSLog(@"AV_CODEC_ID_H264");
-			uint8_t* extradata = NULL;
-			*convert = convertAvcc(context->extradata, context->extradata_size, &extradata);
-			
-			SpsHeader spsHeader = *((SpsHeader*)extradata);
-			uint16_t spsLen = NTOHS(spsHeader.SPS_size);
-			const uint8_t *sps = extradata+sizeof(SpsHeader);
-			
-			PpsHeader ppsHeader = *((PpsHeader*)(extradata + sizeof(SpsHeader)+spsLen));
-			uint16_t ppsLen = NTOHS(ppsHeader.PPS_size);
-			const uint8_t *pps = extradata+sizeof(SpsHeader)+spsLen+sizeof(PpsHeader);
-			
-			const uint8_t* const parameterSetPointers[2] = { sps , pps };
-			const size_t parameterSetSizes[2] = { spsLen, ppsLen };
-			
-			err = CMVideoFormatDescriptionCreateFromH264ParameterSets(kCFAllocatorDefault,
-																	  2,
-																	  parameterSetPointers,
-																	  parameterSetSizes,
-																	  4,
-																	  &format);
-			if (err == noErr) {
-				return format;
-			}
-		}
-			break;
-		default:
-			break;
-	}
-	return NULL;
-}
-
 void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
                                      void *sourceFrameRefCon,
                                      OSStatus status,
@@ -150,11 +84,64 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 
 - (BOOL)openWithContext:(AVCodecContext*)context
 {
+	OSStatus status;
 	convert_byte_stream = false;
-	_videoFormat = CreateFormat(context, &convert_byte_stream);
 	
-	if (!_videoFormat) {
-		return NO;
+	switch (context->codec_id) {
+		case AV_CODEC_ID_MPEG4:
+			NSLog(@"AV_CODEC_ID_MPEG4");
+			if (context->extradata_size) {
+				NSData* info = esdsInfo(context->extradata, context->extradata_size);
+				if (info) {
+					NSDictionary *extradata_info = @{ @"esds" : info};
+					NSDictionary *decoderConfiguration = @{(id)kCMFormatDescriptionExtension_SampleDescriptionExtensionAtoms : extradata_info};
+					status = CMVideoFormatDescriptionCreate(NULL, kCMVideoCodecType_MPEG4Video, context->width, context->height,
+														 (__bridge CFDictionaryRef)decoderConfiguration, &_videoFormat);
+					if (status != noErr) {
+						return NO;
+					}
+				}
+			} else {
+				status = CMVideoFormatDescriptionCreate(NULL, kCMVideoCodecType_MPEG4Video, context->width, context->height, NULL, &_videoFormat);
+				if (status != noErr) {
+					return NO;
+				}
+			}
+			break;
+		case AV_CODEC_ID_MPEG2VIDEO:
+			NSLog(@"AV_CODEC_ID_MPEG2VIDEO NOT SUPPORTED");
+			return NO;
+		case AV_CODEC_ID_H264:
+		{
+			NSLog(@"AV_CODEC_ID_H264");
+			uint8_t* extradata = NULL;
+			convert_byte_stream = convertAvcc(context->extradata, context->extradata_size, &extradata);
+			
+			SpsHeader spsHeader = *((SpsHeader*)extradata);
+			uint16_t spsLen = NTOHS(spsHeader.SPS_size);
+			const uint8_t *sps = extradata+sizeof(SpsHeader);
+			
+			PpsHeader ppsHeader = *((PpsHeader*)(extradata + sizeof(SpsHeader)+spsLen));
+			uint16_t ppsLen = NTOHS(ppsHeader.PPS_size);
+			const uint8_t *pps = extradata+sizeof(SpsHeader)+spsLen+sizeof(PpsHeader);
+			
+			const uint8_t* const parameterSetPointers[2] = { sps , pps };
+			const size_t parameterSetSizes[2] = { spsLen, ppsLen };
+			
+			status = CMVideoFormatDescriptionCreateFromH264ParameterSets(kCFAllocatorDefault,
+																	  2,
+																	  parameterSetPointers,
+																	  parameterSetSizes,
+																	  4,
+																	  &_videoFormat);
+			if (status != noErr) {
+				return NO;
+			}
+		}
+			break;
+		default:
+			NSLog(@"AV_CODEC_ %d NOT SUPPORTED", context->codec_id);
+			return NO;
 	}
 	
 	NSDictionary* destinationPixelBufferAttributes = @{
@@ -168,12 +155,12 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
     outputCallback.decompressionOutputCallback = DeompressionDataCallbackHandler;
     outputCallback.decompressionOutputRefCon = (__bridge void*)self;
 	
-    OSStatus status = VTDecompressionSessionCreate(NULL,
-                                          _videoFormat,
-                                          NULL,
-												   (__bridge CFDictionaryRef)destinationPixelBufferAttributes,
-                                          &outputCallback,
-                                          &_session);
+	status = VTDecompressionSessionCreate(NULL,
+										  _videoFormat,
+										  NULL,
+										  (__bridge CFDictionaryRef)destinationPixelBufferAttributes,
+										  &outputCallback,
+										  &_session);
     if (status == noErr) {
         VTSessionSetProperty(_session, kVTDecompressionPropertyKey_ThreadCount, (__bridge CFTypeRef)[NSNumber numberWithInt:4]);
         VTSessionSetProperty(_session, kVTDecompressionPropertyKey_RealTime, kCFBooleanTrue);
@@ -209,83 +196,7 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
         _videoFormat = NULL;
     }
 }
-/*
-- (void)decodeMpeg2Packet:(AVPacket*)packet timing:(CMSampleTimingInfo)timing
-{
-	int got_frame = 0;
-	static AVFrame frame;
-	avcodec_get_frame_defaults(&frame);
-	int len = avcodec_decode_video2(self.context, &frame, &got_frame, packet);
-	if (len <= 0 || !got_frame) {
-		return;
-	}
-	
-	CVPixelBufferRef imageBuffer = NULL;
-	
-	void *planeBaseAddress[3];
-	size_t planeWidth[3];
-	size_t planeHeight[3];
-	size_t planeBytesPerRow[3];
 
-	planeBaseAddress[0] = frame.data[0];
-	planeWidth[0] = frame.width;
-	planeHeight[0] = frame.height;
-	planeBytesPerRow[0] = frame.linesize[0];
-
-	planeBaseAddress[1] = frame.data[1];
-	planeWidth[1] = frame.width/2;
-	planeHeight[1] = frame.height/2;
-	planeBytesPerRow[1] = frame.linesize[1];
-	
-	planeBaseAddress[2] = frame.data[2];
-	planeWidth[2] = frame.width/2;
-	planeHeight[2] = frame.height/2;
-	planeBytesPerRow[2] = frame.linesize[2];
-	
-	OSStatus err = CVPixelBufferCreateWithPlanarBytes(
-													  NULL,
-													  frame.width,
-													  frame.height,
-													  kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,
-													  NULL,
-													  0,
-													  3,
-													  planeBaseAddress,
-													  planeWidth,
-													  planeHeight,
-													  planeBytesPerRow,
-													  NULL,
-													  NULL,
-													  NULL,
-													  &imageBuffer);
-	if (err != noErr) {
-		NSLog(@"error CVPixelBufferCreateWithPlanarBytes");
-		return;
-	}
-	CMVideoFormatDescriptionRef videoInfo = NULL;
-	err = CMVideoFormatDescriptionCreateForImageBuffer(NULL, imageBuffer, &videoInfo);
-	if (err != noErr) {
-		NSLog(@"error CMVideoFormatDescriptionCreateForImageBuffer");
-		return;
-	}
-
-	CMSampleBufferRef sampleBuffer = NULL;
-	err = CMSampleBufferCreateForImageBuffer(kCFAllocatorDefault,
-												imageBuffer,
-												true,
-												NULL,
-												NULL,
-												videoInfo,
-												&timing,
-												&sampleBuffer);
-	CFRelease(videoInfo);
-	if (err == noErr) {
-		[self put:sampleBuffer];
-	} else {
-		NSLog(@"error CMSampleBufferCreateForImageBuffer");
-	}
-}
-*/
 - (void)decodePacket:(AVPacket*)packet
 {
 	if (!was_pts && packet->pts != AV_NOPTS_VALUE) {
@@ -300,7 +211,6 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 	timingInfo.presentationTimeStamp = CMTimeMake(pts, 1);
 	timingInfo.duration = CMTimeMake(1, 1);
 	timingInfo.decodeTimeStamp = kCMTimeInvalid;
-
 	
 	int demux_size = 0;
 	uint8_t *demux_buff = NULL;
