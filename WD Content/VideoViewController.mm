@@ -42,12 +42,8 @@ extern "C" {
 	_videoOutput = [[AVSampleBufferDisplayLayer alloc] init];
 	_videoOutput.videoGravity = AVLayerVideoGravityResizeAspect;
 	_videoOutput.backgroundColor = [[UIColor blackColor] CGColor];
-	CMTimebaseRef tmBase = nil;
-	CMTimebaseCreateWithMasterClock(CFAllocatorGetDefault(), CMClockGetHostTimeClock(),&tmBase);
-	_videoOutput.controlTimebase = tmBase;
-	CMTimebaseSetTime(_videoOutput.controlTimebase, kCMTimeZero);
-	CMTimebaseSetRate(_videoOutput.controlTimebase, 25.0);
-
+	[self.view.layer addSublayer:_videoOutput];
+	
 	_demuxer = [[Demuxer alloc] init];
 	_demuxer.delegate = self;
 
@@ -91,6 +87,22 @@ extern "C" {
 	[self.view addGestureRecognizer:tap];
 }
 
+- (void)layoutScreen
+{
+	_videoOutput.bounds = self.view.bounds;
+	_videoOutput.position = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds));
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+	[self layoutScreen];
+}
+
+- (void) willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+	[self layoutScreen];
+}
+
 - (void)tapOnScreen:(UITapGestureRecognizer *)tap
 {
 	_barsHidden = !_barsHidden;
@@ -121,24 +133,6 @@ extern "C" {
 										  cancelButtonTitle:@"Ok"
 										  otherButtonTitles:nil];
 	[alert show];
-}
-
-- (void)layoutScreen
-{
-	[_videoOutput removeFromSuperlayer];
-	_videoOutput.bounds = self.view.bounds;
-	_videoOutput.position = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds));
-	[self.view.layer addSublayer:_videoOutput];
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-	[self layoutScreen];
-}
-
-- (void) willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
-{
-	[self layoutScreen];
 }
 
 - (IBAction)chooseAudio:(id)sender
