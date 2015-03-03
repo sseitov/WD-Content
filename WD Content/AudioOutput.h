@@ -12,11 +12,12 @@ struct AVFrame;
 
 @interface AudioOutput : NSObject
 
-@property (readwrite, nonatomic) BOOL started;
+@property (readwrite, atomic) BOOL started;
 
 - (BOOL)startWithFrame:(AVFrame*)frame;
 - (void)enqueueFrame:(AVFrame*)frame;
 - (void)stop;
+- (void)pause:(BOOL)doPause;
 - (double)getCurrentTime;
 
 @end

@@ -111,7 +111,7 @@ static void AudioOutputCallback(void *inClientData,
 
 - (void)stop
 {
-	if (!_started) return;
+	if (!self.started) return;
 	
 	AudioQueueStop(_queue, true);
 	for (int i=0; i<AUDIO_POOL_SIZE; i++) {
@@ -120,14 +120,25 @@ static void AudioOutputCallback(void *inClientData,
 	AudioQueueDispose(_queue, true);
 	delete _ringBuffer;
 	_ringBuffer = 0;
-	
+	_queue = NULL;
 	_started = NO;
 	NSLog(@"Audio stopped");
 }
 
+- (void)pause:(BOOL)doPause
+{
+	if (self.started) {
+		if (doPause) {
+			AudioQueuePause(_queue);
+		} else {
+			AudioQueueStart(_queue, NULL);
+		}
+	}
+}
+
 - (double)getCurrentTime
 {
-	if (_queue == NULL) return 0;
+	if (!self.started) return 0;
 	
 	AudioTimeStamp timeStamp;
 	Boolean discontinuity;

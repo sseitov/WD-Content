@@ -14,6 +14,9 @@ extern "C" {
 };
 
 @interface AudioDecoder ()
+{
+	double packetDuration;	// num samples per packet
+}
 
 @property (strong, nonatomic) AudioOutput *audioOutput;
 @property (atomic) double previouseTime;
@@ -68,13 +71,14 @@ extern "C" {
 - (void)push:(AVPacket*)packet
 {
 	[super push:packet];
-	size_t size = [self size];
-	if (size > 256 && !self.running) {
+	if (self.isFull && !self.running) {
 		[self pause:NO];
+		[_audioOutput pause:NO];
 		[self.delegate decoder:self changeState:StopBuffering];
 	}
-	if (size < 16 && self.running) {
+	if (self.isEmpty && self.running) {
 		[self pause:YES];
+		[_audioOutput pause:YES];
 		[self.delegate decoder:self changeState:StartBuffering];
 	}
 }
@@ -84,9 +88,9 @@ extern "C" {
 	AVPacket packet;
 	if ([self pop:&packet] && !self.stopped) {
 		AVFrame* frame = [self decodePacket:&packet];
-		av_free_packet(&packet);
 		if (frame) {
 			if (!_audioOutput.started) {
+				packetDuration = frame->nb_samples;
 				[_audioOutput startWithFrame:frame];
 			}
 			if (_audioOutput.started) {
@@ -94,6 +98,7 @@ extern "C" {
 			}
 			av_frame_free(&frame);
 		}
+		av_free_packet(&packet);
 		return YES;
 	} else {
 		return NO;
@@ -102,8 +107,9 @@ extern "C" {
 
 - (void)stop
 {
+	double duration = self.size*(packetDuration/self.context->sample_rate);
 	[super stop];
-	self.previouseTime += _audioOutput.getCurrentTime;
+	self.previouseTime += (_audioOutput.getCurrentTime + duration);
 	[_audioOutput stop];
 }
 

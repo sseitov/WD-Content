@@ -24,6 +24,9 @@ enum DecoderState {
 	StopBuffering
 };
 
+#define MAX_BUFFER_SIZE	256
+#define MIN_BUFFER_SIZE	16
+
 @class Decoder;
 
 @protocol DecoderDelegate <NSObject>
@@ -43,9 +46,11 @@ enum DecoderState {
 
 - (void)push:(AVPacket*)packet;
 - (BOOL)pop:(AVPacket*)packet;
-- (BOOL)isFull;
 
 - (size_t)size;
+- (BOOL)isFull;
+- (BOOL)isEmpty;
+
 - (NSString*)name;
 - (BOOL)running;
 - (void)pause:(BOOL)pause;

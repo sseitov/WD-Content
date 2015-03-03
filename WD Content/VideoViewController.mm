@@ -42,6 +42,11 @@ extern "C" {
 	_videoOutput = [[AVSampleBufferDisplayLayer alloc] init];
 	_videoOutput.videoGravity = AVLayerVideoGravityResizeAspect;
 	_videoOutput.backgroundColor = [[UIColor blackColor] CGColor];
+	CMTimebaseRef tmBase = nil;
+	CMTimebaseCreateWithMasterClock(CFAllocatorGetDefault(), CMClockGetHostTimeClock(),&tmBase);
+	_videoOutput.controlTimebase = tmBase;
+	CMTimebaseSetTime(_videoOutput.controlTimebase, kCMTimeZero);
+	CMTimebaseSetRate(_videoOutput.controlTimebase, 40.0);
 	[self.view.layer addSublayer:_videoOutput];
 	
 	_demuxer = [[Demuxer alloc] init];

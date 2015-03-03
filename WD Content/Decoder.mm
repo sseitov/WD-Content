@@ -147,7 +147,12 @@ public:
 
 - (BOOL)isFull
 {
-	return (_inputBuffer.size() > 256);
+	return (_inputBuffer.size() > MAX_BUFFER_SIZE);
+}
+
+- (BOOL)isEmpty
+{
+	return (_inputBuffer.size() < MIN_BUFFER_SIZE);
 }
 
 - (size_t)size
