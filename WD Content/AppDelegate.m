@@ -13,10 +13,7 @@
 #import <AVFoundation/AVFoundation.h>
 
 #include "libavformat/avformat.h"
-
-#define TMDB_API_KEY	@"0aec9897fa96fb8f97e70aeb0da26a7e"
-#define DB_APP_KEY		@"hvab58vh14czlqk"
-#define DB_APP_SECRET	@"mtjlw6gukivz7vb"
+#include "ApiKeys.h"
 
 NSString* const ErrorDBAccountNotification = @"ErrorDBAccountNotification";
 
@@ -39,7 +36,7 @@ NSString* const ErrorDBAccountNotification = @"ErrorDBAccountNotification";
 	avformat_network_init();
 	av_register_all();
 
-	DBSession* session = [[DBSession alloc] initWithAppKey:DB_APP_KEY appSecret:DB_APP_SECRET root:kDBRootAppFolder];
+	DBSession* session = [[DBSession alloc] initWithAppKey:DropBox_APP_KEY appSecret:DropBox_APP_SECRET root:kDBRootAppFolder];
 	session.delegate = self;
 	[DBSession setSharedSession:session];
 
