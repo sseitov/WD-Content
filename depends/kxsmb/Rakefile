@@ -83,8 +83,8 @@ SAMBA_BASE_URL="http://ftp.samba.org/pub/samba/stable/"
 #pathes
 
 XCODE_PATH=%x{ /usr/bin/xcode-select --print-path }.delete("\n")
-SIM_SDK_PATH=XCODE_PATH + "/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator#{SDK_VERSION}.sdk"
-IOS_SDK_PATH=XCODE_PATH + "/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS#{SDK_VERSION}.sdk"
+SIM_SDK_PATH=XCODE_PATH + "/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk"
+IOS_SDK_PATH=XCODE_PATH + "/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk"
 
 #SAMBA_PATH="samba-#{SAMBA_VERSION}/source3"
 SAMBA_FOLDER="samba"
