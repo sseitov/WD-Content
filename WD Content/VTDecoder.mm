@@ -274,7 +274,7 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 		NSLog(@"error VTDecompressionSessionDecodeFrame");
 		CFRelease(sampleBuff);
     } else {
-		VTDecompressionSessionWaitForAsynchronousFrames(_session);
+//		VTDecompressionSessionWaitForAsynchronousFrames(_session); // xomment for ios9
     }
 }
 
