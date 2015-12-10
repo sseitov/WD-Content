@@ -274,7 +274,7 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 		NSLog(@"error VTDecompressionSessionDecodeFrame");
 		CFRelease(sampleBuff);
     } else {
-//		VTDecompressionSessionWaitForAsynchronousFrames(_session); // xomment for ios9
+		VTDecompressionSessionWaitForAsynchronousFrames(_session); // xomment for ios9
     }
 }
 
@@ -286,7 +286,7 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 
 - (CMSampleBufferRef)takeWithTime:(double)time
 {
-	std::unique_lock<std::mutex> lock(_mutex);
+//	std::unique_lock<std::mutex> lock(_mutex);
 	if (_queue.empty()) {
 		return NULL;
 	} else {
@@ -303,8 +303,8 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 				buffer = NULL;
 			} else {
 				_queue.pop();
-				[_decoderCondition signal];
 			}
+			[_decoderCondition signal];
 		}
 		return buffer;
 	}
