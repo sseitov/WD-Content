@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "AFHTTPRequestOperationManager.h"
+#import <AFNetworking/AFHTTPSessionManager.h>
 
 #pragma mark - API URLs
 
@@ -103,11 +103,11 @@ extern NSString * const kMovieDBJobList;
 
 typedef void (^TMDBResponseBlock)(id responseObject, NSError *error);
 
-@interface TMDB : AFHTTPRequestOperationManager
+@interface TMDB : AFHTTPSessionManager
 
 @property (nonatomic, copy) NSString *apiKey;
 
 + (TMDB*)sharedInstance;
-- (AFHTTPRequestOperation *)GET:(NSString *)path parameters:(NSDictionary *)parameters block:(TMDBResponseBlock)block;
+- (void)GET:(NSString *)path parameters:(NSDictionary *)parameters block:(TMDBResponseBlock)block;
 
 @end

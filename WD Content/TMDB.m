@@ -7,6 +7,7 @@
 //
 
 #import "TMDB.h"
+#import <AFNetworking/AFSecurityPolicy.h>
 
 #pragma mark - API URLs
 
@@ -109,33 +110,34 @@ NSString * const kMovieDBJobList = @"job/list";
 	
 	dispatch_once(&pred, ^{
 		sharedInstance = [[self alloc] initWithBaseURL:[NSURL URLWithString:kMovieDBBaseURLSSL]];
+		AFSecurityPolicy* policy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeNone];
+		policy.allowInvalidCertificates = YES;
+		policy.validatesDomainName = NO;
+		sharedInstance.securityPolicy = policy;
 		sharedInstance.requestSerializer = [AFJSONRequestSerializer new];
 	});
 	return sharedInstance;
 }
 
-- (AFHTTPRequestOperation *)GET:(NSString *)path parameters:(NSDictionary *)parameters block:(TMDBResponseBlock)block
+- (void)GET:(NSString *)path parameters:(NSDictionary *)parameters block:(TMDBResponseBlock)block
 {
     NSParameterAssert(self.apiKey);
     NSParameterAssert(block);
 	
-    AFHTTPRequestOperation *requestOperation;
-    NSMutableDictionary *params = parameters ? [parameters mutableCopy] : [NSMutableDictionary new];
-    params[@"api_key"] = self.apiKey;
+	NSMutableDictionary *params = parameters ? [parameters mutableCopy] : [NSMutableDictionary new];
+	params[@"api_key"] = self.apiKey;
 	params[@"language"] = [[NSLocale autoupdatingCurrentLocale] objectForKey: NSLocaleLanguageCode];
-	
-    if ([path rangeOfString:@":id"].location != NSNotFound) {
-        NSParameterAssert(parameters[@"id"]);
-        path = [path stringByReplacingOccurrencesOfString:@":id" withString:parameters[@"id"]];
-    }
-	
-    requestOperation = [self GET:path parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-        block(responseObject, nil);
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        block(nil, error);
-    }];
-	
-    return requestOperation;
+
+	if ([path rangeOfString:@":id"].location != NSNotFound) {
+		NSParameterAssert(parameters[@"id"]);
+		path = [path stringByReplacingOccurrencesOfString:@":id" withString:parameters[@"id"]];
+	}
+
+	[self GET:path parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
+		block(responseObject, nil);
+	} failure:^(NSURLSessionTask *operation, NSError *error) {
+		block(nil, error);
+	}];
 }
 
 @end
