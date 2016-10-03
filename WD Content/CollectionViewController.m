@@ -10,7 +10,7 @@
 #import "Cell.h"
 #import "InfoViewController.h"
 #import "DataModel.h"
-#import "MBProgressHUD.h"
+#import "SVProgressHUD.h"
 #import "SearchInfoTableViewController.h"
 #import "VideoViewController.h"
 
@@ -30,6 +30,7 @@
 
 - (void)awakeFromNib
 {
+	[super awakeFromNib];
 	BOOL isTable = [[NSUserDefaults standardUserDefaults] boolForKey:@"TableMode"];
 	if (isTable) {
 		_viewMode = Table;
@@ -135,13 +136,13 @@
 
 - (void)addNodesForRoot
 {
-    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+	[SVProgressHUD showWithStatus:@"Update..."];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0), ^{
 		NSMutableArray* newItems = [NSMutableArray new];
 		id result = [[DataModel sharedInstance].provider fetchAtPath:_rootNode.path];
 		if ([result isKindOfClass:[NSError class]]) {
 			dispatch_async(dispatch_get_main_queue(), ^{
-				[MBProgressHUD hideHUDForView:self.view animated:YES];
+				[SVProgressHUD dismiss];
 				UIAlertView* alert = [[UIAlertView alloc] initWithTitle:_rootNode.path
 																message:@"Error connect. Retry?"
 															   delegate:self
@@ -173,7 +174,7 @@
 		}
 		_nodes = [[DataModel sharedInstance] nodesByRoot:_rootNode];
 		dispatch_async(dispatch_get_main_queue(), ^{
-			[MBProgressHUD hideHUDForView:self.view animated:YES];
+			[SVProgressHUD dismiss];
 			[_collectionView reloadData];
 			[_tableView reloadData];
 		});

@@ -8,7 +8,7 @@
 
 #import "SettingsViewController.h"
 #import "DataModel.h"
-#import "MBProgressHUD.h"
+#import "SVProgressHUD.h"
 #import "LeftMenuVC.h"
 #import "AppDelegate.h"
 #import "DropboxClient.h"
@@ -105,7 +105,7 @@
 
 - (void)refreshHosts:(void (^)(NSArray*))result
 {
-	[MBProgressHUD showHUDAddedTo:self.view animated:YES];
+	[SVProgressHUD showWithStatus:@"Refresh..."];
 	NSCondition* next = [[NSCondition alloc] init];
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0), ^{
 		[DataModel setAuth:_authContainer];
@@ -128,7 +128,7 @@
 			}
 		}
 		dispatch_async(dispatch_get_main_queue(), ^{
-			[MBProgressHUD hideHUDForView:self.view animated:YES];
+			[SVProgressHUD dismiss];
 			result(errors);
 		});
 
@@ -288,7 +288,7 @@
 
 - (void)sync
 {
-	[MBProgressHUD showHUDAddedTo:self.view animated:YES];
+	[SVProgressHUD showWithStatus:@"Synchronize..."];
 	[self.authDropboxClient sync];
 }
 
@@ -312,7 +312,7 @@
 - (void)handleFinishContentSynchro:(NSNotification*)note
 {
 	NSNumber* result = (NSNumber*)note.object;
-	[MBProgressHUD hideHUDForView:self.view animated:YES];
+	[SVProgressHUD dismiss];
 	if ([result boolValue] == YES) {
 		if (note.userInfo) {	// download from dropbox
 			[[DataModel sharedInstance] updateDB];

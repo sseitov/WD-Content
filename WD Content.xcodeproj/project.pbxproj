@@ -37,14 +37,8 @@
 		2C5875211A6AC3E80069F3F1 /* libavfilter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C5875181A6AC3E80069F3F1 /* libavfilter.a */; };
 		2C5875221A6AC3E80069F3F1 /* libavformat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C5875191A6AC3E80069F3F1 /* libavformat.a */; };
 		2C5875231A6AC3E80069F3F1 /* libavutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C58751A1A6AC3E80069F3F1 /* libavutil.a */; };
-		2C5875241A6AC3E80069F3F1 /* libpostproc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C58751B1A6AC3E80069F3F1 /* libpostproc.a */; };
-		2C5875251A6AC3E80069F3F1 /* libsmbclient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C58751C1A6AC3E80069F3F1 /* libsmbclient.a */; };
 		2C5875261A6AC3E80069F3F1 /* libswresample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C58751D1A6AC3E80069F3F1 /* libswresample.a */; };
 		2C5875271A6AC3E80069F3F1 /* libswscale.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C58751E1A6AC3E80069F3F1 /* libswscale.a */; };
-		2C58752C1A6ACA850069F3F1 /* libtalloc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C5875281A6ACA850069F3F1 /* libtalloc.a */; };
-		2C58752D1A6ACA850069F3F1 /* libtdb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C5875291A6ACA850069F3F1 /* libtdb.a */; };
-		2C58752E1A6ACA850069F3F1 /* libtevent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C58752A1A6ACA850069F3F1 /* libtevent.a */; };
-		2C58752F1A6ACA850069F3F1 /* libwbclient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C58752B1A6ACA850069F3F1 /* libwbclient.a */; };
 		2C5875311A6ADC5A0069F3F1 /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C5875301A6ADC5A0069F3F1 /* VideoToolbox.framework */; };
 		2C5875331A6ADC6D0069F3F1 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C5875321A6ADC6D0069F3F1 /* AVFoundation.framework */; };
 		2C5875381A6AF1590069F3F1 /* VTDecoder.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2C5875371A6AF1590069F3F1 /* VTDecoder.mm */; };
@@ -54,6 +48,13 @@
 		2C605E521A6BC08000736968 /* AudioRingBuffer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2C605E501A6BC08000736968 /* AudioRingBuffer.mm */; };
 		2C605E541A6BC25100736968 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C605E531A6BC25100736968 /* AudioToolbox.framework */; };
 		2C6E746B19C75ECA001D9971 /* SharesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C6E746A19C75ECA001D9971 /* SharesTableViewController.m */; };
+		2C718E7B1DA26EDA0065DE2B /* libfdk-aac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C718E7A1DA26EDA0065DE2B /* libfdk-aac.a */; };
+		2C718E7D1DA26F110065DE2B /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C718E7C1DA26F110065DE2B /* libbz2.tbd */; };
+		2C718E7E1DA27F5A0065DE2B /* libsmbclient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C58751C1A6AC3E80069F3F1 /* libsmbclient.a */; };
+		2C718E7F1DA27F5A0065DE2B /* libtalloc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C5875281A6ACA850069F3F1 /* libtalloc.a */; };
+		2C718E801DA27F5A0065DE2B /* libtdb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C5875291A6ACA850069F3F1 /* libtdb.a */; };
+		2C718E811DA27F5A0065DE2B /* libtevent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C58752A1A6ACA850069F3F1 /* libtevent.a */; };
+		2C718E821DA27F5A0065DE2B /* libwbclient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C58752B1A6ACA850069F3F1 /* libwbclient.a */; };
 		2C7FD8C01A6CF62100718477 /* Demuxer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2C7FD8BF1A6CF62100718477 /* Demuxer.mm */; };
 		2CA1D7191854A78800276C67 /* InfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA1D7181854A78800276C67 /* InfoViewController.m */; };
 		2CA6B9FD1A4567DD00AFF041 /* LeftMenuVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA6B9FA1A4567DD00AFF041 /* LeftMenuVC.m */; };
@@ -67,7 +68,7 @@
 		2CA95DC7184B2CB700927138 /* SettingsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA95DC6184B2CB700927138 /* SettingsCell.m */; };
 		2CAEE6D419C8C7C000B5DDD7 /* Node.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CAEE6D319C8C7C000B5DDD7 /* Node.m */; };
 		2CD030DB1A640ED7003B22CA /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CD030D91A640ED7003B22CA /* LaunchScreen.xib */; };
-		A5EBDC2C942D969D1105C777 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7E23142895AD84013227460 /* libPods.a */; };
+		7CE01A4C96BA0B527F07E260 /* libPods-WD Content.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B971AAFD92993E9AAD64DE52 /* libPods-WD Content.a */; };
 		ED04A5C619D172C00079C787 /* MetaInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = ED04A5C519D172C00079C787 /* MetaInfo.m */; };
 		ED2194A119C9A9690053C8B3 /* TMDB.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2194A019C9A9690053C8B3 /* TMDB.m */; };
 /* End PBXBuildFile section */
@@ -139,6 +140,8 @@
 		2C605E531A6BC25100736968 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		2C6E746919C75ECA001D9971 /* SharesTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SharesTableViewController.h; sourceTree = "<group>"; };
 		2C6E746A19C75ECA001D9971 /* SharesTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SharesTableViewController.m; sourceTree = "<group>"; };
+		2C718E7A1DA26EDA0065DE2B /* libfdk-aac.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libfdk-aac.a"; path = "depends/libs/lib/libfdk-aac.a"; sourceTree = "<group>"; };
+		2C718E7C1DA26F110065DE2B /* libbz2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.tbd; path = usr/lib/libbz2.tbd; sourceTree = SDKROOT; };
 		2C7A10A51A9BEC9800E3900A /* ConditionLock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ConditionLock.h; sourceTree = "<group>"; };
 		2C7FD8BE1A6CF62100718477 /* Demuxer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Demuxer.h; sourceTree = "<group>"; };
 		2C7FD8BF1A6CF62100718477 /* Demuxer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Demuxer.mm; sourceTree = "<group>"; };
@@ -163,6 +166,9 @@
 		2CD030DA1A640ED7003B22CA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = "WD Content/Base.lproj/LaunchScreen.xib"; sourceTree = "<group>"; };
 		A7E23142895AD84013227460 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF537584A11ADE3DD38B432B /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
+		B971AAFD92993E9AAD64DE52 /* libPods-WD Content.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-WD Content.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C3753665493ED3463079EB69 /* Pods-WD Content.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WD Content.release.xcconfig"; path = "Pods/Target Support Files/Pods-WD Content/Pods-WD Content.release.xcconfig"; sourceTree = "<group>"; };
+		C9B7E7858271FF1B02F12028 /* Pods-WD Content.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WD Content.debug.xcconfig"; path = "Pods/Target Support Files/Pods-WD Content/Pods-WD Content.debug.xcconfig"; sourceTree = "<group>"; };
 		ED04A5C419D172C00079C787 /* MetaInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MetaInfo.h; sourceTree = "<group>"; };
 		ED04A5C519D172C00079C787 /* MetaInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MetaInfo.m; sourceTree = "<group>"; };
 		ED21949F19C9A9690053C8B3 /* TMDB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TMDB.h; sourceTree = "<group>"; };
@@ -176,22 +182,23 @@
 			files = (
 				2C0D8F881C19F7CC00D0C35A /* PixateFreestyle.framework in Frameworks */,
 				2C3E5BDF1A4421990046AFC4 /* libc++.dylib in Frameworks */,
+				2C718E7D1DA26F110065DE2B /* libbz2.tbd in Frameworks */,
 				2C1701271849271A00A37516 /* libz.dylib in Frameworks */,
 				2C1701251849270200A37516 /* libiconv.dylib in Frameworks */,
 				2C170123184926EF00A37516 /* libresolv.dylib in Frameworks */,
+				2C718E7E1DA27F5A0065DE2B /* libsmbclient.a in Frameworks */,
+				2C718E7F1DA27F5A0065DE2B /* libtalloc.a in Frameworks */,
+				2C718E801DA27F5A0065DE2B /* libtdb.a in Frameworks */,
+				2C718E811DA27F5A0065DE2B /* libtevent.a in Frameworks */,
+				2C718E821DA27F5A0065DE2B /* libwbclient.a in Frameworks */,
+				2C718E7B1DA26EDA0065DE2B /* libfdk-aac.a in Frameworks */,
 				2C58751F1A6AC3E80069F3F1 /* libavcodec.a in Frameworks */,
 				2C5875201A6AC3E80069F3F1 /* libavdevice.a in Frameworks */,
 				2C5875211A6AC3E80069F3F1 /* libavfilter.a in Frameworks */,
 				2C5875221A6AC3E80069F3F1 /* libavformat.a in Frameworks */,
 				2C5875231A6AC3E80069F3F1 /* libavutil.a in Frameworks */,
-				2C5875241A6AC3E80069F3F1 /* libpostproc.a in Frameworks */,
 				2C5875261A6AC3E80069F3F1 /* libswresample.a in Frameworks */,
 				2C5875271A6AC3E80069F3F1 /* libswscale.a in Frameworks */,
-				2C58752C1A6ACA850069F3F1 /* libtalloc.a in Frameworks */,
-				2C58752D1A6ACA850069F3F1 /* libtdb.a in Frameworks */,
-				2C58752E1A6ACA850069F3F1 /* libtevent.a in Frameworks */,
-				2C58752F1A6ACA850069F3F1 /* libwbclient.a in Frameworks */,
-				2C5875251A6AC3E80069F3F1 /* libsmbclient.a in Frameworks */,
 				2C58753A1A6AF2390069F3F1 /* CoreMedia.framework in Frameworks */,
 				2C5875331A6ADC6D0069F3F1 /* AVFoundation.framework in Frameworks */,
 				2C5875311A6ADC5A0069F3F1 /* VideoToolbox.framework in Frameworks */,
@@ -201,7 +208,7 @@
 				2C125EAC1848C74B00406FC3 /* CoreGraphics.framework in Frameworks */,
 				2C125EAE1848C74B00406FC3 /* UIKit.framework in Frameworks */,
 				2C125EAA1848C74B00406FC3 /* Foundation.framework in Frameworks */,
-				A5EBDC2C942D969D1105C777 /* libPods.a in Frameworks */,
+				7CE01A4C96BA0B527F07E260 /* libPods-WD Content.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -233,6 +240,8 @@
 		2C125EA81848C74B00406FC3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				2C718E7C1DA26F110065DE2B /* libbz2.tbd */,
+				2C718E7A1DA26EDA0065DE2B /* libfdk-aac.a */,
 				2C0D8F871C19F7CC00D0C35A /* PixateFreestyle.framework */,
 				2C3E5BDE1A4421990046AFC4 /* libc++.dylib */,
 				2C1701261849271A00A37516 /* libz.dylib */,
@@ -261,6 +270,7 @@
 				2C125EAB1848C74B00406FC3 /* CoreGraphics.framework */,
 				2C125EAD1848C74B00406FC3 /* UIKit.framework */,
 				A7E23142895AD84013227460 /* libPods.a */,
+				B971AAFD92993E9AAD64DE52 /* libPods-WD Content.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -413,6 +423,8 @@
 			children = (
 				0DB1CB822754AE387880C551 /* Pods.debug.xcconfig */,
 				AF537584A11ADE3DD38B432B /* Pods.release.xcconfig */,
+				C9B7E7858271FF1B02F12028 /* Pods-WD Content.debug.xcconfig */,
+				C3753665493ED3463079EB69 /* Pods-WD Content.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -440,12 +452,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2C125EDB1848C74B00406FC3 /* Build configuration list for PBXNativeTarget "WD Content" */;
 			buildPhases = (
-				491287C2A60593547618C2A4 /* Check Pods Manifest.lock */,
+				491287C2A60593547618C2A4 /* [CP] Check Pods Manifest.lock */,
 				2C125EA21848C74B00406FC3 /* Sources */,
 				2C125EA31848C74B00406FC3 /* Frameworks */,
 				2C125EA41848C74B00406FC3 /* Resources */,
-				4D6DA5E72BBA8449491FE114 /* Copy Pods Resources */,
-				57E30B19E2EEBAB266E3C4FC /* Embed Pods Frameworks */,
+				4D6DA5E72BBA8449491FE114 /* [CP] Copy Pods Resources */,
+				57E30B19E2EEBAB266E3C4FC /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -462,11 +474,12 @@
 		2C125E9E1848C74B00406FC3 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0610;
+				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = "Sergey Seitov";
 				TargetAttributes = {
 					2C125EA51848C74B00406FC3 = {
 						DevelopmentTeam = 7TSVKXZ79P;
+						ProvisioningStyle = Manual;
 					};
 				};
 			};
@@ -507,14 +520,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		491287C2A60593547618C2A4 /* Check Pods Manifest.lock */ = {
+		491287C2A60593547618C2A4 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Check Pods Manifest.lock";
+			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -522,34 +535,34 @@
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
-		4D6DA5E72BBA8449491FE114 /* Copy Pods Resources */ = {
+		4D6DA5E72BBA8449491FE114 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Copy Pods Resources";
+			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-WD Content/Pods-WD Content-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		57E30B19E2EEBAB266E3C4FC /* Embed Pods Frameworks */ = {
+		57E30B19E2EEBAB266E3C4FC /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Embed Pods Frameworks";
+			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-frameworks.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-WD Content/Pods-WD Content-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -633,14 +646,21 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer: Sergey Seitov (RXAUVFWR8G)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Sergey Seitov (RXAUVFWR8G)";
 				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_TEAM = 7TSVKXZ79P;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -655,10 +675,9 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALID_ARCHS = "armv7 armv7s arm64";
+				VALID_ARCHS = "armv7 arm64";
 			};
 			name = Debug;
 		};
@@ -675,14 +694,20 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Sergey Seitov (7TSVKXZ79P)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Sergey Seitov (7TSVKXZ79P)";
 				COPY_PHASE_STRIP = YES;
+				DEVELOPMENT_TEAM = 7TSVKXZ79P;
 				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -690,21 +715,21 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				PROVISIONING_PROFILE = "37c80763-8c9f-440b-a1b1-73e204d2f7fd";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
-				VALID_ARCHS = "armv7 armv7s arm64";
+				VALID_ARCHS = "armv7 arm64";
 			};
 			name = Release;
 		};
 		2C125EDC1848C74B00406FC3 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0DB1CB822754AE387880C551 /* Pods.debug.xcconfig */;
+			baseConfigurationReference = C9B7E7858271FF1B02F12028 /* Pods-WD Content.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Sergey Seitov (RXAUVFWR8G)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Sergey Seitov (RXAUVFWR8G)";
+				DEVELOPMENT_TEAM = 7TSVKXZ79P;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -723,22 +748,27 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					./depends/libs/lib,
+					"$(PROJECT_DIR)/depends/libs/lib",
 				);
 				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.vchannel.wd-content";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "4c45a45d-f6eb-4541-a664-baecb9ca6f1d";
+				PROVISIONING_PROFILE_SPECIFIER = "WD Content Development";
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALID_ARCHS = "armv7 arm64";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
 		};
 		2C125EDD1848C74B00406FC3 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = AF537584A11ADE3DD38B432B /* Pods.release.xcconfig */;
+			baseConfigurationReference = C3753665493ED3463079EB69 /* Pods-WD Content.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Sergey Seitov (7TSVKXZ79P)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Sergey Seitov (7TSVKXZ79P)";
+				DEVELOPMENT_TEAM = 7TSVKXZ79P;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -757,10 +787,14 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					./depends/libs/lib,
+					"$(PROJECT_DIR)/depends/libs/lib",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.vchannel.wd-content";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "37c80763-8c9f-440b-a1b1-73e204d2f7fd";
+				PROVISIONING_PROFILE_SPECIFIER = "WD Content AppStore";
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALID_ARCHS = "armv7 arm64";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

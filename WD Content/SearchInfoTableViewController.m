@@ -8,7 +8,7 @@
 
 #import "SearchInfoTableViewController.h"
 #import "TMDB.h"
-#import "MBProgressHUD.h"
+#import "SVProgressHUD.h"
 #import "InfoViewController.h"
 
 @interface SearchInfoTableViewController () <UISearchBarDelegate>
@@ -175,9 +175,9 @@
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
 	NSDictionary* params = @{@"query": searchBar.text};
-	[MBProgressHUD showHUDAddedTo:self.tableView animated:YES];
+	[SVProgressHUD showWithStatus:@"Search..."];
 	[[TMDB sharedInstance] GET:kMovieDBSearchMovie parameters:params block:^(id responseObject, NSError *error) {
-		[MBProgressHUD hideHUDForView:self.tableView animated:YES];
+		[SVProgressHUD dismiss];
 		if (error) {
 			NSLog(@"ERROR: %@", error);
 		} else {

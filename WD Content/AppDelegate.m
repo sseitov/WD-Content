@@ -11,6 +11,7 @@
 #import <DropboxSDK/DropboxSDK.h>
 #import "DataModel.h"
 #import <AVFoundation/AVFoundation.h>
+#import <SVProgressHUD.h>
 
 #include "libavformat/avformat.h"
 #include "ApiKeys.h"
@@ -46,6 +47,10 @@ NSString* const ErrorDBAccountNotification = @"ErrorDBAccountNotification";
 	} else if ([auth isKindOfClass:[NSDictionary class]]) {
 		[DataModel convertAuth];
 	}
+	
+	[SVProgressHUD setDefaultStyle:SVProgressHUDStyleCustom];
+	[SVProgressHUD setBackgroundColor:[UIColor colorWithRed:62./255.0 green:98.0/255.0 blue:154.0/255.0 alpha:1]];
+	[SVProgressHUD setForegroundColor:[UIColor whiteColor]];
 	
     return YES;
 }

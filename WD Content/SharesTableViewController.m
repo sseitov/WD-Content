@@ -8,7 +8,7 @@
 
 #import "SharesTableViewController.h"
 #import "DataModel.h"
-#import "MBProgressHUD.h"
+#import "SVProgressHUD.h"
 
 @interface SharesTableViewController ()
 
@@ -31,7 +31,7 @@
 	self.navigationItem.leftBarButtonItem.tintColor = [UIColor whiteColor];
 	self.navigationItem.rightBarButtonItem.tintColor = [UIColor whiteColor];
 	
-	[MBProgressHUD showHUDAddedTo:self.tableView animated:YES];
+	[SVProgressHUD showWithStatus:@"Update..."];
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0), ^{
 		NSArray* hosts = [DataModel auth];
@@ -51,7 +51,7 @@
 			}
 		}
 		dispatch_async(dispatch_get_main_queue(), ^{
-			[MBProgressHUD hideHUDForView:self.tableView animated:YES];
+			[SVProgressHUD dismiss];
 			[self.tableView reloadData];
 		});
 	});

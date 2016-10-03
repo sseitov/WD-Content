@@ -98,7 +98,7 @@ extern "C" {
 			}
 			av_frame_free(&frame);
 		}
-		av_free_packet(&packet);
+		av_packet_unref(&packet);
 		return YES;
 	} else {
 		return NO;

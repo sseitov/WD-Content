@@ -312,7 +312,6 @@ static KxSMBProvider *gSmbProvider;
         
         while((dirent = readdirFn(smbContext, smbFile)) != NULL) {
             
-            if (!dirent->name) continue;
             if (!strlen(dirent->name)) continue;
             if (!strcmp(dirent->name, ".") || !strcmp(dirent->name, "..") || !strcmp(dirent->name, "IPC$")) continue;
             

@@ -8,7 +8,7 @@
 
 #import "VideoViewController.h"
 #import "Demuxer.h"
-#import "MBProgressHUD.h"
+#import "SVProgressHUD.h"
 #import <CoreMedia/CoreMedia.h>
 
 extern "C" {
@@ -52,10 +52,10 @@ extern "C" {
 	_demuxer = [[Demuxer alloc] init];
 	_demuxer.delegate = self;
 
-	[MBProgressHUD showHUDAddedTo:self.view animated:YES];
+	[SVProgressHUD showWithStatus:@"Loading"];
 	[_demuxer openWithPath:_node.path completion:^(NSArray* audioChannels) {
 		dispatch_async(dispatch_get_main_queue(), ^() {
-			[MBProgressHUD hideHUDForView:self.view animated:YES];
+			[SVProgressHUD dismiss];
 			if (!audioChannels) {
 				[self errorOpen];
 			} else {
@@ -212,13 +212,9 @@ extern "C" {
 {
 	dispatch_async(dispatch_get_main_queue(), ^() {
 		if (buffering) {
-			MBProgressHUD *hud = [[MBProgressHUD alloc] initWithView:self.view];
-			hud.removeFromSuperViewOnHide = YES;
-			[self.view addSubview:hud];
-			hud.labelText = @"Buffering...";
-			[hud show:YES];
+			[SVProgressHUD showWithStatus:@"Buffering..."];
 		} else {
-			[MBProgressHUD hideHUDForView:self.view animated:YES];
+			[SVProgressHUD dismiss];
 		}
 	});
 }

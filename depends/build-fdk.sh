@@ -9,11 +9,11 @@ cd ..
 
 CONFIGURE_FLAGS="--enable-static --with-pic=yes --disable-shared"
 
-ARCHS="armv7 armv7s arm64 i386 x86_64"
+ARCHS="armv7 arm64" # armv7s i386 x86_64"
 
 # directories
 SOURCE="fdk-aac"
-FAT="fdk-aac/fdk-aac-ios"
+FAT="libs" #"fdk-aac/fdk-aac-ios"
 
 SCRATCH="fdk-aac/scratch"
 # must be an absolute path
@@ -109,7 +109,7 @@ then
 		cd $CWD
 		lipo -create `find $THIN -name $LIB` -output $FAT/lib/$LIB
 	done
-
+echo "copy result"
 	cd $CWD
 	cp -rf $THIN/$1/include $FAT
 fi

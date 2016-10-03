@@ -170,7 +170,7 @@ extern "C" {
 			} else if (nextPacket.stream_index == self.videoIndex) {
 				[_videoDecoder push:&nextPacket];
 			} else {
-				av_free_packet(&nextPacket);
+				av_packet_unref(&nextPacket);
 			}
 			
 			ConditionLock locker(_demuxerState);

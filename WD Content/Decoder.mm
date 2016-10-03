@@ -68,7 +68,7 @@ public:
 		std::unique_lock<std::mutex> lock(_mutex);
 		while (!_queue.empty()) {
 			AVPacket packet = _queue.front();
-			av_free_packet(&packet);
+			av_packet_unref(&packet);
 			_queue.pop();
 		}
 	}

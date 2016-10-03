@@ -320,7 +320,7 @@ void DeompressionDataCallbackHandler(void *decompressionOutputRefCon,
 		}
 		if (!self.stopped) {
 			[self decodePacket:&packet];
-			av_free_packet(&packet);
+			av_packet_unref(&packet);
 			return YES;
 		} else {
 			return NO;

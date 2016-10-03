@@ -17,6 +17,7 @@ DerivedData
 *.hmap
 *.ipa
 *.xcuserstate
+*.xcworkspace
 .DS_Store
 
 # CocoaPods
@@ -25,4 +26,14 @@ DerivedData
 # you should judge for yourself, the pros and cons are mentioned at:
 # http://guides.cocoapods.org/using/using-cocoapods.html#should-i-ignore-the-pods-directory-in-source-control
 #
-# Pods/
+Pods/
+Podfile.lock
+depends/fdk-aac
+depends/ffmpeg-3.0.2
+depends/libs
+depends/scratch
+depends/thin
+depends/samba
+depends/tmp
+depends/kxsmb/samba
+depends/kxsmb/tmp

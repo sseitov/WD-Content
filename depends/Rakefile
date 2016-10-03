@@ -316,5 +316,5 @@ task :retrieve_samba do
 
 end
 
-task :build_all => [:retrieve_samba, :build_smb_armv7, :build_smb_armv7s, :build_smb_arm64, :build_smb_i386, :build_smb_x86_64] 
+task :build_all => [:retrieve_samba, :build_smb_armv7, :build_smb_arm64] #, :build_smb_armv7s, :build_smb_i386, :build_smb_x86_64] 
 task :default => [:build_all]
