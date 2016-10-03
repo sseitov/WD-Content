@@ -15,5 +15,6 @@
 @property (strong, nonatomic) IBOutlet UITableView *host;
 
 @property (weak, nonatomic, setter=setAuthorization:) NSMutableDictionary *authorization;
+@property (weak, nonatomic) UIViewController *controller;
 
 @end

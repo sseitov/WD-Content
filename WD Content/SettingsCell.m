@@ -7,6 +7,7 @@
 //
 
 #import "SettingsCell.h"
+#import "CustomAlert.h"
 
 @interface SettingsCell ()
 
@@ -71,58 +72,74 @@
 	return cell;
 }
 
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-	if (buttonIndex) {
-		UITextField *value = [alertView textFieldAtIndex:0];
-		if ([alertView.title isEqual:@"Workgroup"]) {
-			[_authorization setObject:value.text forKey:@"workgroup"];
-		} else if ([alertView.title isEqual:@"User name"]) {
-			[_authorization setObject:value.text forKey:@"user"];
-		} else if ([alertView.title isEqual:@"Password"]) {
-			[_authorization setObject:value.text forKey:@"password"];
-		}
-		[_host reloadData];
-	}
-}
-
-- (void)willPresentAlertView:(UIAlertView *)alertView
-{
-	UITextField *addr = [alertView textFieldAtIndex:0];
-	if ([alertView.title isEqual:@"Workgroup"]) {
-		addr.text = [_authorization objectForKey:@"workgroup"];
-		addr.placeholder = @"workgroup";
-	} else if ([alertView.title isEqual:@"User name"]) {
-		addr.text = [_authorization objectForKey:@"user"];
-		addr.placeholder = @"user name";
-	} else if ([alertView.title isEqual:@"Password"]) {
-		addr.text = [_authorization objectForKey:@"password"];
-		addr.placeholder = @"empty for guest";
-	}
-}
-
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
 	if (_authorization == nil) {
 		return;
 	}
-	NSString *title;
+
+	UIAlertController *alert;
 	switch (indexPath.row) {
 		case 0:
-			title = @"Workgroup";
+			alert = [CustomAlert alertControllerWithTitle:@"Workgroup" message:nil preferredStyle:UIAlertControllerStyleAlert];
 			break;
 		case 1:
-			title = @"User name";
+			alert = [CustomAlert alertControllerWithTitle:@"User name" message:nil preferredStyle:UIAlertControllerStyleAlert];
 			break;
 		case 2:
-			title = @"Password";
+			alert = [CustomAlert alertControllerWithTitle:@"Password" message:nil preferredStyle:UIAlertControllerStyleAlert];
 			break;
 		default:
 			return;
 	}
-	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title message:@"" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Set", nil];
-	alert.alertViewStyle = UIAlertViewStylePlainTextInput;
-	[alert show];
+	__block UITextField *cellTextField;
+	UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleDestructive
+														 handler:^(UIAlertAction * action) {}];
+	UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"Set" style:UIAlertActionStyleDefault
+														  handler:^(UIAlertAction * action) {
+															  switch (indexPath.row) {
+																  case 0:
+																	  [_authorization setObject:cellTextField.text forKey:@"workgroup"];
+																	  [self.host reloadData];
+																	  break;
+																  case 1:
+																	  [_authorization setObject:cellTextField.text forKey:@"user"];
+																	  [self.host reloadData];
+																	  break;
+																  case 2:
+																	  [_authorization setObject:cellTextField.text forKey:@"password"];
+																	  [self.host reloadData];
+																	  break;
+																  default:
+																	  break;
+															  }
+														  }];
+	[alert addAction:cancelAction];
+	[alert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+		switch (indexPath.row) {
+			case 0:
+				textField.placeholder = @"workgroup";
+				textField.text = [_authorization objectForKey:@"workgroup"];
+				break;
+			case 1:
+				textField.placeholder = @"User name";
+				textField.text = [_authorization objectForKey:@"user"];
+				break;
+			case 2:
+				textField.placeholder = @"empty for guest";
+				textField.text = [_authorization objectForKey:@"password"];
+				break;
+			default:
+				break;
+		}
+		textField.textAlignment = NSTextAlignmentCenter;
+		textField.borderStyle = UITextBorderStyleRoundedRect;
+		cellTextField = textField;
+	}];
+	[alert addAction:defaultAction];
+	[self.controller presentViewController:alert animated:YES completion:^{
+		cellTextField.frame = CGRectMake(-100, 3, 220, 32);
+	}];
 }
 
 @end

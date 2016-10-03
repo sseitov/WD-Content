@@ -13,6 +13,7 @@
 #import "AppDelegate.h"
 #import "DropboxClient.h"
 #import "SettingsHeaderView.h"
+#import "CustomAlert.h"
 
 #define WAIT(a) [a lock]; [a wait]; [a unlock]
 #define SIGNAL(a) [a lock]; [a signal]; [a unlock]
@@ -222,7 +223,8 @@
 	
 	if (indexPath.row < _authContainer.count && _authContainer.count > 0) {
 		SettingsCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
-		cell.authorization = [_authContainer objectAtIndex:indexPath.section];
+		cell.authorization = [_authContainer objectAtIndex:indexPath.row];
+		cell.controller = self;
 		[cell.host reloadData];
 		[cell setEditing:self.editing animated:NO];
 		return cell;
@@ -244,17 +246,6 @@
 	}
 }
 
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-	if (buttonIndex) {
-		UITextField *addr = [alertView textFieldAtIndex:0];
-		
-		NSMutableDictionary *auth = [NSMutableDictionary dictionaryWithObjectsAndKeys:addr.text, @"host", @"WORKGROUP", @"workgroup", @"guest", @"user", @"", @"password", nil];
-		[_authContainer addObject:auth];
-		[self.tableView reloadData];
-	}
-}
-
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
@@ -266,14 +257,32 @@
 		[tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationTop];
         [tableView endUpdates];
     } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Enter WD device IP address" message:@"xxx.xxx.xxx.xxx" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Add", nil];
-		alert.tag = 1;
-		alert.alertViewStyle = UIAlertViewStylePlainTextInput;
-		[alert show];
+		__block UITextField *hostTextField;
+		UIAlertController *alert = [CustomAlert alertControllerWithTitle:@"Enter WD device IP address" message:nil preferredStyle:UIAlertControllerStyleAlert];
+		UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleDestructive
+															 handler:^(UIAlertAction * action) {}];
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"Add" style:UIAlertActionStyleDefault
+															  handler:^(UIAlertAction * action) {
+																  NSMutableDictionary *auth = [NSMutableDictionary dictionaryWithObjectsAndKeys:hostTextField.text, @"host", @"WORKGROUP", @"workgroup", @"guest", @"user", @"", @"password", nil];
+																  [_authContainer addObject:auth];
+																  [self.tableView reloadData];
+															  }];
+		[alert addAction:cancelAction];
+		[alert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+			textField.placeholder = @"xxx.xxx.xxx.xxx";
+			textField.textAlignment = NSTextAlignmentCenter;
+			textField.borderStyle = UITextBorderStyleRoundedRect;
+			textField.superview.subviews[0].backgroundColor = [UIColor yellowColor];
+			hostTextField = textField;
+		}];
+		[alert addAction:defaultAction];
+		[self presentViewController:alert animated:YES completion:^{
+			hostTextField.frame = CGRectMake(-100, 3, 220, 32);
+		}];
     }
 }
 
-#pragma mark - SyncDelegate 
+#pragma mark - SyncDelegate
 
 - (void)didEnableSync:(BOOL)enable
 {

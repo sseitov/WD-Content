@@ -163,11 +163,12 @@ collection-view .icon {
  * --------------------------------
  */
 /* Text fields */
+
 .text-field:normal {
   color: #b0b1b4;
   -ios-border-style: none;
   background-color: linear-gradient(rgba(255, 255, 255, 0) 98%, #53555a 99%);
-  /* Note: to achieve a bottom border, which is not currently supported */
+  // Note: to achieve a bottom border, which is not currently supported
   font-family: "Avenir";
   font-size: 14pt;
   padding: 2pt 5pt; }
@@ -236,7 +237,7 @@ collection-view .icon {
 /*
  * Icons
  * --------------------------------
- */
+ 
 pixate-config {
   image-count: 400; }
 
@@ -245,8 +246,6 @@ pixate-config {
   background-size: 25 25; }
 
 .icon:not(tab-bar-item) {
-  /* background-color should also be set to optimize performance for tables and collections */
-  /* (we don't set background-color on tab-bar-items, since they get flattened) */
   background-color: transparent; }
 
 .icon-adjust {
@@ -1355,7 +1354,7 @@ pixate-config {
 
 .icon-youtube {
   background-image: url(icon-youtube.svg); }
-
+*/
 /*
  * Tables
  * --------------------------------

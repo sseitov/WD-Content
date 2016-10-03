@@ -61,6 +61,7 @@
 		2CA6B9FE1A4567DD00AFF041 /* MainVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA6B9FC1A4567DD00AFF041 /* MainVC.m */; };
 		2CA6BA011A4569B900AFF041 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2CA6BA031A4569B900AFF041 /* Main.storyboard */; };
 		2CA6BA0E1A45BF9700AFF041 /* default.css in Resources */ = {isa = PBXBuildFile; fileRef = 2CA6BA0D1A45BF9700AFF041 /* default.css */; };
+		2CA885BE1DA2B6F3007F0AF4 /* CustomAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA885BD1DA2B6F3007F0AF4 /* CustomAlert.m */; };
 		2CA88715187EA87F0074B73E /* ContentModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2CA88713187EA87F0074B73E /* ContentModel.xcdatamodeld */; };
 		2CA8871C187EA9AA0074B73E /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CA8871B187EA9AA0074B73E /* CoreData.framework */; };
 		2CA8871F187EAEDE0074B73E /* DataModel.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2CA8871E187EAEDE0074B73E /* DataModel.mm */; };
@@ -153,6 +154,8 @@
 		2CA6B9FC1A4567DD00AFF041 /* MainVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MainVC.m; path = "WD Content/MainVC.m"; sourceTree = "<group>"; };
 		2CA6BA021A4569B900AFF041 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		2CA6BA0D1A45BF9700AFF041 /* default.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = default.css; sourceTree = "<group>"; };
+		2CA885BC1DA2B6F3007F0AF4 /* CustomAlert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomAlert.h; sourceTree = "<group>"; };
+		2CA885BD1DA2B6F3007F0AF4 /* CustomAlert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomAlert.m; sourceTree = "<group>"; };
 		2CA88714187EA87F0074B73E /* ContentModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ContentModel.xcdatamodel; sourceTree = "<group>"; };
 		2CA8871B187EA9AA0074B73E /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		2CA8871D187EAEDE0074B73E /* DataModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataModel.h; sourceTree = "<group>"; };
@@ -382,6 +385,8 @@
 			children = (
 				2CA95DC2184B2B4600927138 /* SettingsViewController.h */,
 				2CA95DC3184B2B4600927138 /* SettingsViewController.m */,
+				2CA885BC1DA2B6F3007F0AF4 /* CustomAlert.h */,
+				2CA885BD1DA2B6F3007F0AF4 /* CustomAlert.m */,
 				2C3FDF121A4B7AEC0019ECD3 /* SettingsHeaderView.h */,
 				2C3FDF131A4B7AEC0019ECD3 /* SettingsHeaderView.m */,
 				2CA95DC5184B2CB700927138 /* SettingsCell.h */,
@@ -591,6 +596,7 @@
 				2CAEE6D419C8C7C000B5DDD7 /* Node.m in Sources */,
 				2C5875381A6AF1590069F3F1 /* VTDecoder.mm in Sources */,
 				2CA95DC4184B2B4600927138 /* SettingsViewController.m in Sources */,
+				2CA885BE1DA2B6F3007F0AF4 /* CustomAlert.m in Sources */,
 				2C125EBA1848C74B00406FC3 /* AppDelegate.m in Sources */,
 				2C3FDF141A4B7AEC0019ECD3 /* SettingsHeaderView.m in Sources */,
 				2CA1D7191854A78800276C67 /* InfoViewController.m in Sources */,

@@ -83,7 +83,7 @@ extern "C" {
 	}
 	
 	int err = avformat_open_input(&_mediaContext, [sambaURL UTF8String], NULL, NULL);
-	if ( err != 0) {
+	if ( err < 0) {
 		return NULL;
 	}
 	

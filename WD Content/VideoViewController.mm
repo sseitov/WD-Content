@@ -203,6 +203,7 @@ extern "C" {
 - (IBAction)done:(id)sender
 {
 	[self stop];
+	[SVProgressHUD dismiss];
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 

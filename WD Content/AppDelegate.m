@@ -13,7 +13,8 @@
 #import <AVFoundation/AVFoundation.h>
 #import <SVProgressHUD.h>
 
-#include "libavformat/avformat.h"
+#include <libavcodec/avcodec.h>
+#include <libavformat/avformat.h>
 #include "ApiKeys.h"
 
 NSString* const ErrorDBAccountNotification = @"ErrorDBAccountNotification";
@@ -34,9 +35,11 @@ NSString* const ErrorDBAccountNotification = @"ErrorDBAccountNotification";
 //	[[AVAudioSession sharedInstance] setPreferredIOBufferDuration:0.018 error:nil];
 	[[AVAudioSession sharedInstance] setActive:YES error:nil];
 	
-	avformat_network_init();
 	av_register_all();
-
+	avcodec_register_all();
+	int ret = avformat_network_init();
+	NSLog(@"avformat_network_init = %d", ret);
+	
 	DBSession* session = [[DBSession alloc] initWithAppKey:DropBox_APP_KEY appSecret:DropBox_APP_SECRET root:kDBRootAppFolder];
 	session.delegate = self;
 	[DBSession setSharedSession:session];
