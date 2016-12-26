@@ -28,6 +28,9 @@ DerivedData
 #
 Pods/
 Podfile.lock
+
+ApiKeys.h
+
 depends/fdk-aac
 depends/ffmpeg-3.0.2
 depends/libs
