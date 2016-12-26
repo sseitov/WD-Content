@@ -11,7 +11,6 @@
 		2C08E4601A9719A300EAE058 /* VideoUtility.c in Sources */ = {isa = PBXBuildFile; fileRef = 2C08E45E1A9719A300EAE058 /* VideoUtility.c */; };
 		2C0AB2B71A4AF06C0007D700 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C0AB2B61A4AF06C0007D700 /* Security.framework */; };
 		2C0AB2BA1A4B37F60007D700 /* DropboxClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0AB2B91A4B37F60007D700 /* DropboxClient.m */; };
-		2C0D8F881C19F7CC00D0C35A /* PixateFreestyle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C0D8F871C19F7CC00D0C35A /* PixateFreestyle.framework */; };
 		2C0D90D71A96271400E13BC9 /* logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C0D90D61A96271400E13BC9 /* logo.png */; };
 		2C125EAA1848C74B00406FC3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C125EA91848C74B00406FC3 /* Foundation.framework */; };
 		2C125EAC1848C74B00406FC3 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C125EAB1848C74B00406FC3 /* CoreGraphics.framework */; };
@@ -30,6 +29,7 @@
 		2C378CEB19EA802D00C69ADA /* list.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C378CE819EA802D00C69ADA /* list.png */; };
 		2C3E5BDF1A4421990046AFC4 /* libc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C3E5BDE1A4421990046AFC4 /* libc++.dylib */; };
 		2C3FDF141A4B7AEC0019ECD3 /* SettingsHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C3FDF131A4B7AEC0019ECD3 /* SettingsHeaderView.m */; };
+		2C410BC31E10FC3400133C3E /* UIViewController+UIViewControllerExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C410BC21E10FC3400133C3E /* UIViewController+UIViewControllerExtensions.m */; };
 		2C4D610A1A98C4E900E0A365 /* Decoder.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2C4D61091A98C4E900E0A365 /* Decoder.mm */; };
 		2C5875031A6AC25D0069F3F1 /* VideoViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2C5875011A6AC25D0069F3F1 /* VideoViewController.mm */; };
 		2C58751F1A6AC3E80069F3F1 /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C5875161A6AC3E80069F3F1 /* libavcodec.a */; };
@@ -60,8 +60,6 @@
 		2CA6B9FD1A4567DD00AFF041 /* LeftMenuVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA6B9FA1A4567DD00AFF041 /* LeftMenuVC.m */; };
 		2CA6B9FE1A4567DD00AFF041 /* MainVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA6B9FC1A4567DD00AFF041 /* MainVC.m */; };
 		2CA6BA011A4569B900AFF041 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2CA6BA031A4569B900AFF041 /* Main.storyboard */; };
-		2CA6BA0E1A45BF9700AFF041 /* default.css in Resources */ = {isa = PBXBuildFile; fileRef = 2CA6BA0D1A45BF9700AFF041 /* default.css */; };
-		2CA885BE1DA2B6F3007F0AF4 /* CustomAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA885BD1DA2B6F3007F0AF4 /* CustomAlert.m */; };
 		2CA88715187EA87F0074B73E /* ContentModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2CA88713187EA87F0074B73E /* ContentModel.xcdatamodeld */; };
 		2CA8871C187EA9AA0074B73E /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CA8871B187EA9AA0074B73E /* CoreData.framework */; };
 		2CA8871F187EAEDE0074B73E /* DataModel.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2CA8871E187EAEDE0074B73E /* DataModel.mm */; };
@@ -83,7 +81,6 @@
 		2C0AB2B61A4AF06C0007D700 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		2C0AB2B81A4B37F60007D700 /* DropboxClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DropboxClient.h; sourceTree = "<group>"; };
 		2C0AB2B91A4B37F60007D700 /* DropboxClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DropboxClient.m; sourceTree = "<group>"; };
-		2C0D8F871C19F7CC00D0C35A /* PixateFreestyle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = PixateFreestyle.framework; sourceTree = "<group>"; };
 		2C0D90D61A96271400E13BC9 /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo.png; sourceTree = "<group>"; };
 		2C125EA61848C74B00406FC3 /* WD Content.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "WD Content.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C125EA91848C74B00406FC3 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -110,6 +107,8 @@
 		2C3E5BDE1A4421990046AFC4 /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "usr/lib/libc++.dylib"; sourceTree = SDKROOT; };
 		2C3FDF121A4B7AEC0019ECD3 /* SettingsHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsHeaderView.h; sourceTree = "<group>"; };
 		2C3FDF131A4B7AEC0019ECD3 /* SettingsHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsHeaderView.m; sourceTree = "<group>"; };
+		2C410BC11E10FC3400133C3E /* UIViewController+UIViewControllerExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+UIViewControllerExtensions.h"; sourceTree = "<group>"; };
+		2C410BC21E10FC3400133C3E /* UIViewController+UIViewControllerExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+UIViewControllerExtensions.m"; sourceTree = "<group>"; };
 		2C4D61081A98C4E900E0A365 /* Decoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Decoder.h; sourceTree = "<group>"; };
 		2C4D61091A98C4E900E0A365 /* Decoder.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Decoder.mm; sourceTree = "<group>"; };
 		2C5875001A6AC25D0069F3F1 /* VideoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoViewController.h; sourceTree = "<group>"; };
@@ -153,9 +152,6 @@
 		2CA6B9FB1A4567DD00AFF041 /* MainVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MainVC.h; path = "WD Content/MainVC.h"; sourceTree = "<group>"; };
 		2CA6B9FC1A4567DD00AFF041 /* MainVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MainVC.m; path = "WD Content/MainVC.m"; sourceTree = "<group>"; };
 		2CA6BA021A4569B900AFF041 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		2CA6BA0D1A45BF9700AFF041 /* default.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = default.css; sourceTree = "<group>"; };
-		2CA885BC1DA2B6F3007F0AF4 /* CustomAlert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomAlert.h; sourceTree = "<group>"; };
-		2CA885BD1DA2B6F3007F0AF4 /* CustomAlert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomAlert.m; sourceTree = "<group>"; };
 		2CA88714187EA87F0074B73E /* ContentModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ContentModel.xcdatamodel; sourceTree = "<group>"; };
 		2CA8871B187EA9AA0074B73E /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		2CA8871D187EAEDE0074B73E /* DataModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataModel.h; sourceTree = "<group>"; };
@@ -183,7 +179,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2C0D8F881C19F7CC00D0C35A /* PixateFreestyle.framework in Frameworks */,
 				2C3E5BDF1A4421990046AFC4 /* libc++.dylib in Frameworks */,
 				2C718E7D1DA26F110065DE2B /* libbz2.tbd in Frameworks */,
 				2C1701271849271A00A37516 /* libz.dylib in Frameworks */,
@@ -222,8 +217,6 @@
 			isa = PBXGroup;
 			children = (
 				2C125EAF1848C74B00406FC3 /* WD Content */,
-				2C1701101849251D00A37516 /* Resources */,
-				2C125EB01848C74B00406FC3 /* Supporting Files */,
 				2C125EA81848C74B00406FC3 /* Frameworks */,
 				2C125EA71848C74B00406FC3 /* Products */,
 				C1C90F3D3D43FF082F1C88E0 /* Pods */,
@@ -245,7 +238,6 @@
 			children = (
 				2C718E7C1DA26F110065DE2B /* libbz2.tbd */,
 				2C718E7A1DA26EDA0065DE2B /* libfdk-aac.a */,
-				2C0D8F871C19F7CC00D0C35A /* PixateFreestyle.framework */,
 				2C3E5BDE1A4421990046AFC4 /* libc++.dylib */,
 				2C1701261849271A00A37516 /* libz.dylib */,
 				2C1701241849270200A37516 /* libiconv.dylib */,
@@ -281,6 +273,7 @@
 		2C125EAF1848C74B00406FC3 /* WD Content */ = {
 			isa = PBXGroup;
 			children = (
+				2C410BC41E10FC4300133C3E /* Extensions */,
 				2CA88716187EA88C0074B73E /* Storage */,
 				2CA88710187EA7CB0074B73E /* Network */,
 				2C5874FD1A6AC2470069F3F1 /* Movie Player */,
@@ -289,6 +282,8 @@
 				2C7D1B201ADB1A0D00DEB4E0 /* SlideMenu */,
 				2C125EB91848C74B00406FC3 /* AppDelegate.m */,
 				2C125EB81848C74B00406FC3 /* AppDelegate.h */,
+				2C1701101849251D00A37516 /* Resources */,
+				2C125EB01848C74B00406FC3 /* Supporting Files */,
 			);
 			path = "WD Content";
 			sourceTree = "<group>";
@@ -302,19 +297,27 @@
 				2C125EB71848C74B00406FC3 /* WD Content-Prefix.pch */,
 			);
 			name = "Supporting Files";
-			path = "WD Content";
 			sourceTree = "<group>";
 		};
 		2C1701101849251D00A37516 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
 				2CDF099719C58AD000A1B3B9 /* Images */,
-				2CA6BA0D1A45BF9700AFF041 /* default.css */,
 				2CD030D91A640ED7003B22CA /* LaunchScreen.xib */,
 				2CA6BA031A4569B900AFF041 /* Main.storyboard */,
 				2C125EC41848C74B00406FC3 /* Images.xcassets */,
 			);
 			name = Resources;
+			path = ..;
+			sourceTree = "<group>";
+		};
+		2C410BC41E10FC4300133C3E /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				2C410BC11E10FC3400133C3E /* UIViewController+UIViewControllerExtensions.h */,
+				2C410BC21E10FC3400133C3E /* UIViewController+UIViewControllerExtensions.m */,
+			);
+			name = Extensions;
 			sourceTree = "<group>";
 		};
 		2C4D610C1A99307C00E0A365 /* Audio */ = {
@@ -385,8 +388,6 @@
 			children = (
 				2CA95DC2184B2B4600927138 /* SettingsViewController.h */,
 				2CA95DC3184B2B4600927138 /* SettingsViewController.m */,
-				2CA885BC1DA2B6F3007F0AF4 /* CustomAlert.h */,
-				2CA885BD1DA2B6F3007F0AF4 /* CustomAlert.m */,
 				2C3FDF121A4B7AEC0019ECD3 /* SettingsHeaderView.h */,
 				2C3FDF131A4B7AEC0019ECD3 /* SettingsHeaderView.m */,
 				2CA95DC5184B2CB700927138 /* SettingsCell.h */,
@@ -479,6 +480,7 @@
 		2C125E9E1848C74B00406FC3 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 0820;
 				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = "Sergey Seitov";
 				TargetAttributes = {
@@ -518,7 +520,6 @@
 				2C0D90D71A96271400E13BC9 /* logo.png in Resources */,
 				2C125EB41848C74B00406FC3 /* InfoPlist.strings in Resources */,
 				2C378CEB19EA802D00C69ADA /* list.png in Resources */,
-				2CA6BA0E1A45BF9700AFF041 /* default.css in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -537,7 +538,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		4D6DA5E72BBA8449491FE114 /* [CP] Copy Pods Resources */ = {
@@ -589,6 +590,7 @@
 				2C0AB2BA1A4B37F60007D700 /* DropboxClient.m in Sources */,
 				2C7FD8C01A6CF62100718477 /* Demuxer.mm in Sources */,
 				2CA6B9FD1A4567DD00AFF041 /* LeftMenuVC.m in Sources */,
+				2C410BC31E10FC3400133C3E /* UIViewController+UIViewControllerExtensions.m in Sources */,
 				2C170113184925F800A37516 /* KxSMBProvider.m in Sources */,
 				2CA88715187EA87F0074B73E /* ContentModel.xcdatamodeld in Sources */,
 				2C17010B1848F68200A37516 /* Cell.m in Sources */,
@@ -596,7 +598,6 @@
 				2CAEE6D419C8C7C000B5DDD7 /* Node.m in Sources */,
 				2C5875381A6AF1590069F3F1 /* VTDecoder.mm in Sources */,
 				2CA95DC4184B2B4600927138 /* SettingsViewController.m in Sources */,
-				2CA885BE1DA2B6F3007F0AF4 /* CustomAlert.m in Sources */,
 				2C125EBA1848C74B00406FC3 /* AppDelegate.m in Sources */,
 				2C3FDF141A4B7AEC0019ECD3 /* SettingsHeaderView.m in Sources */,
 				2CA1D7191854A78800276C67 /* InfoViewController.m in Sources */,

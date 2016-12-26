@@ -51,9 +51,14 @@ NSString* const ErrorDBAccountNotification = @"ErrorDBAccountNotification";
 		[DataModel convertAuth];
 	}
 	
+	[UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
+	
 	[SVProgressHUD setDefaultStyle:SVProgressHUDStyleCustom];
-	[SVProgressHUD setBackgroundColor:[UIColor colorWithRed:62./255.0 green:98.0/255.0 blue:154.0/255.0 alpha:1]];
+	[SVProgressHUD setBackgroundColor:[UIColor colorWithRed:0 green:113.0/255.0 blue:165.0/255.0 alpha:1]];
 	[SVProgressHUD setForegroundColor:[UIColor whiteColor]];
+	
+	UIFont* font =  [UIFont fontWithName:@"HelveticaNeue-CondensedBold" size:17];
+	[[UIBarButtonItem appearance] setTitleTextAttributes:@{NSFontAttributeName:font} forState:UIControlStateNormal];
 	
     return YES;
 }

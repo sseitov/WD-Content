@@ -13,7 +13,6 @@
 #import "AppDelegate.h"
 #import "DropboxClient.h"
 #import "SettingsHeaderView.h"
-#import "CustomAlert.h"
 
 #define WAIT(a) [a lock]; [a wait]; [a unlock]
 #define SIGNAL(a) [a lock]; [a signal]; [a unlock]
@@ -51,9 +50,12 @@
 	return _contentDropboxClient;
 }
 
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+	
+	[self setTitle:@"WD Devices"];
 	
 	NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 	[nc addObserver:self selector:@selector(handleFinishAuthSynchro:) name:FinishAuthSynchroNotification object:nil];
@@ -79,6 +81,7 @@
 		[self setEditing:NO animated:YES];
 		[self.navigationItem setRightBarButtonItem:[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose target:self action:@selector(edit)] animated:YES];
 	}
+	self.navigationItem.rightBarButtonItem.tintColor = [UIColor whiteColor];
 	[self.tableView reloadData];
 }
 
@@ -100,6 +103,7 @@
 - (void)edit
 {
 	[self.navigationItem setRightBarButtonItem:[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done)] animated:YES];
+	self.navigationItem.rightBarButtonItem.tintColor = [UIColor whiteColor];
 	[self setEditing:YES animated:YES];
 	[self.tableView reloadData];
 }
@@ -154,6 +158,7 @@
 
 		if (_authContainer.count > 0) {
 			[self.navigationItem setRightBarButtonItem:[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose target:self action:@selector(edit)] animated:YES];
+			self.navigationItem.rightBarButtonItem.tintColor = [UIColor whiteColor];
 			[self setEditing:NO animated:YES];
 		} else if (errors.count == 0) {
 			UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Error"
@@ -249,16 +254,17 @@
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
+        [tableView beginUpdates];
 		NSDictionary* host = [_authContainer objectAtIndex:indexPath.row];
 		[DataModel removeHost:host];
 		[[NSNotificationCenter defaultCenter] postNotificationName:UpdateMenuNotification object:self];
 		[_authContainer removeObjectAtIndex:indexPath.section];
-        [tableView beginUpdates];
 		[tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationTop];
+		[[NSUserDefaults standardUserDefaults] setInteger:0 forKey:@"initialIndex"];
         [tableView endUpdates];
     } else if (editingStyle == UITableViewCellEditingStyleInsert) {
 		__block UITextField *hostTextField;
-		UIAlertController *alert = [CustomAlert alertControllerWithTitle:@"Enter WD device IP address" message:nil preferredStyle:UIAlertControllerStyleAlert];
+		UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:@"Enter WD device IP address" preferredStyle:UIAlertControllerStyleAlert];
 		UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleDestructive
 															 handler:^(UIAlertAction * action) {}];
 		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"Add" style:UIAlertActionStyleDefault
@@ -271,14 +277,10 @@
 		[alert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
 			textField.placeholder = @"xxx.xxx.xxx.xxx";
 			textField.textAlignment = NSTextAlignmentCenter;
-			textField.borderStyle = UITextBorderStyleRoundedRect;
-			textField.superview.subviews[0].backgroundColor = [UIColor yellowColor];
 			hostTextField = textField;
 		}];
 		[alert addAction:defaultAction];
-		[self presentViewController:alert animated:YES completion:^{
-			hostTextField.frame = CGRectMake(-100, 3, 220, 32);
-		}];
+		[self presentViewController:alert animated:YES completion:nil];
     }
 }
 

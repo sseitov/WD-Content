@@ -39,6 +39,18 @@
 	}
 }
 
+- (void)setupBackButton {
+	UIBarButtonItem *back = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"backButton"]
+															 style:UIBarButtonItemStylePlain
+															target:self action:@selector(goBack)];
+	back.tintColor = [UIColor whiteColor];
+	self.navigationItem.leftBarButtonItem = back;
+}
+
+- (void)goBack {
+	[self.navigationController popViewControllerAnimated:YES];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -49,6 +61,7 @@
 	_nodes = [[DataModel sharedInstance] nodesByRoot:_rootNode];
 
 	UIBarButtonItem* refresh = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(addNodesForRoot)];
+	refresh.tintColor = [UIColor whiteColor];
 	
 	UIButton *btn = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 24, 24)];
 	if (_viewMode == Collection) {
@@ -65,6 +78,9 @@
 	
 	[self.navigationItem setRightBarButtonItems:items];
 	self.title = _rootNode.name;
+	if (_rootNode.parent != NULL) {
+		[self setupBackButton];
+	}
 }
 
 - (void)switchMode:(UIButton*)sender
@@ -228,8 +244,8 @@
 		[self.navigationController pushViewController:next animated:YES];
 	}
 	else {
-		UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"What do you want?"
-																				 message:@""
+		UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil
+																				 message:nil
 																		  preferredStyle:UIAlertControllerStyleActionSheet];
 
 		UIAlertAction *action = nil;

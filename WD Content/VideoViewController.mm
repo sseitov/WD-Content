@@ -61,8 +61,8 @@ extern "C" {
 			} else {
 				if (audioChannels.count > 1) {
 					_audioChannels = audioChannels;
-					UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Choose audio channel"
-																							 message:@""
+					UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil
+																							 message:@"Choose audio channel"
 																					  preferredStyle:UIAlertControllerStyleActionSheet];
 					for (NSDictionary *channel in _audioChannels) {
 						UIAlertAction *action = [UIAlertAction actionWithTitle:[channel objectForKey:@"codec"]
@@ -79,7 +79,11 @@ extern "C" {
 						UIPopoverController *popover = [[UIPopoverController alloc] initWithContentViewController:alertController];
 						[popover presentPopoverFromBarButtonItem:self.navigationItem.rightBarButtonItem permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
 					} else {
-						[self presentViewController:alertController animated:YES completion:nil];
+						[self presentViewController:alertController animated:YES completion:^{
+							UIFont* font =  [UIFont fontWithName:@"HelveticaNeue-CondensedBold" size:17];
+							[self.navigationItem.leftBarButtonItem setTitleTextAttributes:@{NSFontAttributeName:font} forState:UIControlStateNormal];
+							[self.navigationItem.rightBarButtonItem setTitleTextAttributes:@{NSFontAttributeName:font} forState:UIControlStateNormal];
+						}];
 					}
 				} else {
 					[self.navigationItem setRightBarButtonItem:nil animated:YES];
@@ -142,8 +146,8 @@ extern "C" {
 
 - (IBAction)chooseAudio:(id)sender
 {
-	UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Choose audio channel"
-																			 message:@""
+	UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil
+																			 message:@"Choose audio channel"
 																	  preferredStyle:UIAlertControllerStyleActionSheet];
 	for (NSDictionary *channel in _audioChannels) {
 		UIAlertAction *action = [UIAlertAction actionWithTitle:[channel objectForKey:@"codec"]
@@ -168,13 +172,17 @@ extern "C" {
 
 - (void)play:(int)audioChannel
 {
+	UIFont* font =  [UIFont fontWithName:@"HelveticaNeue-CondensedBold" size:17];
+	[self.navigationItem.leftBarButtonItem setTitleTextAttributes:@{NSFontAttributeName:font} forState:UIControlStateNormal];
+	[self.navigationItem.rightBarButtonItem setTitleTextAttributes:@{NSFontAttributeName:font} forState:UIControlStateNormal];
+	
 	if (![_demuxer play:audioChannel]) {
 		[self errorOpen];
 		return;
 	}
 	
 	[self tapOnScreen:nil];
-
+	
 	self.stopped = NO;
 	[_videoOutput requestMediaDataWhenReadyOnQueue:dispatch_get_main_queue() usingBlock:^() {
 		while (!self.stopped && _videoOutput.isReadyForMoreMediaData) {

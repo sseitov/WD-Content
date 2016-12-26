@@ -7,7 +7,6 @@
 //
 
 #import "SettingsCell.h"
-#import "CustomAlert.h"
 
 @interface SettingsCell ()
 
@@ -64,7 +63,8 @@
 			break;
 		case 2:
 			cell.textLabel.text = @"Password";
-			cell.detailTextLabel.text = [_authorization valueForKey:@"password"];
+			cell.detailTextLabel.text = [@"" stringByPaddingToLength:((NSString*)[_authorization valueForKey:@"password"]).length
+														  withString:@"*" startingAtIndex:0];
 			break;
 		default:
 			break;
@@ -81,13 +81,13 @@
 	UIAlertController *alert;
 	switch (indexPath.row) {
 		case 0:
-			alert = [CustomAlert alertControllerWithTitle:@"Workgroup" message:nil preferredStyle:UIAlertControllerStyleAlert];
+			alert = [UIAlertController alertControllerWithTitle:nil message:@"Workgroup" preferredStyle:UIAlertControllerStyleAlert];
 			break;
 		case 1:
-			alert = [CustomAlert alertControllerWithTitle:@"User name" message:nil preferredStyle:UIAlertControllerStyleAlert];
+			alert = [UIAlertController alertControllerWithTitle:nil message:@"User name" preferredStyle:UIAlertControllerStyleAlert];
 			break;
 		case 2:
-			alert = [CustomAlert alertControllerWithTitle:@"Password" message:nil preferredStyle:UIAlertControllerStyleAlert];
+			alert = [UIAlertController alertControllerWithTitle:nil message:@"Password" preferredStyle:UIAlertControllerStyleAlert];
 			break;
 		default:
 			return;
@@ -127,19 +127,17 @@
 				break;
 			case 2:
 				textField.placeholder = @"empty for guest";
+				textField.secureTextEntry = YES;
 				textField.text = [_authorization objectForKey:@"password"];
 				break;
 			default:
 				break;
 		}
 		textField.textAlignment = NSTextAlignmentCenter;
-		textField.borderStyle = UITextBorderStyleRoundedRect;
 		cellTextField = textField;
 	}];
 	[alert addAction:defaultAction];
-	[self.controller presentViewController:alert animated:YES completion:^{
-		cellTextField.frame = CGRectMake(-100, 3, 220, 32);
-	}];
+	[self.controller presentViewController:alert animated:YES completion:nil];
 }
 
 @end

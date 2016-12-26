@@ -66,6 +66,19 @@ NSString* const UpdateInfoNotification = @"UpdateInfoNotification";
 	}
 	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(apply)];
 	self.navigationItem.rightBarButtonItem.tintColor = [UIColor whiteColor];
+	[self setupBackButton];
+}
+
+- (void)setupBackButton {
+	UIBarButtonItem *back = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"backButton"]
+															 style:UIBarButtonItemStylePlain
+															target:self action:@selector(goBack)];
+	back.tintColor = [UIColor whiteColor];
+	self.navigationItem.leftBarButtonItem = back;
+}
+
+- (void)goBack {
+	[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)viewDidLoad
