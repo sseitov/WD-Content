@@ -205,6 +205,12 @@
 			[list addObject:item];
 		}
 	} else {
+		NSLog(@"%@", item.path.lastPathComponent);
+		if ([item.path.lastPathComponent containsString:@"System Volume Information"] ||
+			[item.path.lastPathComponent containsString:@"$RECYCLE"] ||
+			[item.path.lastPathComponent containsString:@"HFS+ Private Data"]) {
+			return;
+		}
 		NSRange r = [item.path.lastPathComponent rangeOfString:@"."];
 		if (r.location == NSNotFound || r.location > 0) {
 			[list addObject:item];
