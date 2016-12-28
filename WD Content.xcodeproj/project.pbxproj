@@ -66,6 +66,7 @@
 		2CA95DC4184B2B4600927138 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA95DC3184B2B4600927138 /* SettingsViewController.m */; };
 		2CA95DC7184B2CB700927138 /* SettingsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA95DC6184B2CB700927138 /* SettingsCell.m */; };
 		2CAEE6D419C8C7C000B5DDD7 /* Node.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CAEE6D319C8C7C000B5DDD7 /* Node.m */; };
+		2CB99EC51E13AAE600ABC91F /* DropboxSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CB99EC41E13AAE600ABC91F /* DropboxSDK.framework */; };
 		2CD030DB1A640ED7003B22CA /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CD030D91A640ED7003B22CA /* LaunchScreen.xib */; };
 		7CE01A4C96BA0B527F07E260 /* libPods-WD Content.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B971AAFD92993E9AAD64DE52 /* libPods-WD Content.a */; };
 		ED04A5C619D172C00079C787 /* MetaInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = ED04A5C519D172C00079C787 /* MetaInfo.m */; };
@@ -162,6 +163,7 @@
 		2CA95DC6184B2CB700927138 /* SettingsCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsCell.m; sourceTree = "<group>"; };
 		2CAEE6D219C8C7C000B5DDD7 /* Node.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Node.h; sourceTree = "<group>"; };
 		2CAEE6D319C8C7C000B5DDD7 /* Node.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Node.m; sourceTree = "<group>"; };
+		2CB99EC41E13AAE600ABC91F /* DropboxSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = DropboxSDK.framework; sourceTree = "<group>"; };
 		2CD030DA1A640ED7003B22CA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = "WD Content/Base.lproj/LaunchScreen.xib"; sourceTree = "<group>"; };
 		A7E23142895AD84013227460 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF537584A11ADE3DD38B432B /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
@@ -179,6 +181,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2CB99EC51E13AAE600ABC91F /* DropboxSDK.framework in Frameworks */,
 				2C3E5BDF1A4421990046AFC4 /* libc++.dylib in Frameworks */,
 				2C718E7D1DA26F110065DE2B /* libbz2.tbd in Frameworks */,
 				2C1701271849271A00A37516 /* libz.dylib in Frameworks */,
@@ -236,6 +239,7 @@
 		2C125EA81848C74B00406FC3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				2CB99EC41E13AAE600ABC91F /* DropboxSDK.framework */,
 				2C718E7C1DA26F110065DE2B /* libbz2.tbd */,
 				2C718E7A1DA26EDA0065DE2B /* libfdk-aac.a */,
 				2C3E5BDE1A4421990046AFC4 /* libc++.dylib */,
@@ -737,7 +741,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer: Sergey Seitov (RXAUVFWR8G)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Sergey Seitov (RXAUVFWR8G)";
 				DEVELOPMENT_TEAM = 7TSVKXZ79P;
-				ENABLE_BITCODE = NO;
+				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -776,7 +780,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Sergey Seitov (7TSVKXZ79P)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Sergey Seitov (7TSVKXZ79P)";
 				DEVELOPMENT_TEAM = 7TSVKXZ79P;
-				ENABLE_BITCODE = NO;
+				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",

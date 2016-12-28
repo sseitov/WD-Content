@@ -65,6 +65,7 @@ then
 		    PLATFORM="iPhoneOS"
 		    if [ $ARCH = arm64 ]
 		    then
+		    	CFLAGS="$CFLAGS -fembed-bitcode"
 		        #CFLAGS="$CFLAGS -D__arm__ -D__ARM_ARCH_7EM__" # hack!
 		        HOST="--host=aarch64-apple-darwin"
                     else
@@ -74,7 +75,7 @@ then
 		fi
 
 		XCRUN_SDK=`echo $PLATFORM | tr '[:upper:]' '[:lower:]'`
-		CC="xcrun -sdk $XCRUN_SDK clang -Wno-error=unused-command-line-argument-hard-error-in-future"
+		CC="xcrun -sdk $XCRUN_SDK clang -Wno-error=unused-command-line-argument"
 		AS="$CWD/$SOURCE/extras/gas-preprocessor.pl $CC"
 		CXXFLAGS="$CFLAGS"
 		LDFLAGS="$CFLAGS"

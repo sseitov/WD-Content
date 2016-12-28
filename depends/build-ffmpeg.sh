@@ -6,7 +6,8 @@ echo "Pulling ..."
 
 CONFIGURE_FLAGS="--enable-cross-compile --enable-pthreads --disable-ffserver --disable-ffmpeg \
 		 --disable-ffprobe --disable-encoders --enable-neon --enable-swscale --enable-avfilter \
-		 --disable-zlib --disable-bzlib --disable-debug --enable-gpl --enable-optimizations --enable-pic"
+		 --disable-zlib --disable-bzlib --disable-debug --enable-gpl --enable-optimizations --enable-pic \
+		 --extra-cflags=-fembed-bitcode --extra-cxxflags=-fembed-bitcode"
 
 LIBS="libavcodec libavformat libavutil libswscale libavdevice libavfilter \
       libpostproc libswresample"
@@ -25,6 +26,8 @@ THIN=`pwd`/"thin"
 
 COMPILE="y"
 LIPO="y"
+
+DEPLOYMENT_TARGET="8.1"
 
 if [ "$*" ]
 then
@@ -79,30 +82,18 @@ then
 		mkdir -p "$SCRATCH/$ARCH"
 		cd "$SCRATCH/$ARCH"
 
+		CFLAGS="-arch $ARCH"
 		if [ "$ARCH" = "i386" -o "$ARCH" = "x86_64" ]
 		then
 		    PLATFORM="iPhoneSimulator"
-		    CPU=
-		    if [ "$ARCH" = "x86_64" ]
-		    then
-		    	SIMULATOR="-mios-simulator-version-min=7.0"
-		    else
-		    	SIMULATOR="-mios-simulator-version-min=5.0"
-		    fi
+		    CFLAGS="$CFLAGS -mios-simulator-version-min=$DEPLOYMENT_TARGET"
 		else
 		    PLATFORM="iPhoneOS"
-		    if [ $ARCH = "armv7s" ]
-		    then
-		    	CPU="--cpu=swift"
-		    else
-		    	CPU=
-		    fi
-		    SIMULATOR=
+		    CFLAGS="$CFLAGS -mios-version-min=$DEPLOYMENT_TARGET"
 		fi
 
 		XCRUN_SDK=`echo $PLATFORM | tr '[:upper:]' '[:lower:]'`
 		CC="xcrun -sdk $XCRUN_SDK clang"
-		CFLAGS="-arch $ARCH $SIMULATOR"
 		CXXFLAGS="$CFLAGS"
 		LDFLAGS="$CFLAGS"
 
