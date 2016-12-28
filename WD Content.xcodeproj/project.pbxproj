@@ -25,6 +25,11 @@
 		2C170123184926EF00A37516 /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C170122184926EF00A37516 /* libresolv.dylib */; };
 		2C1701251849270200A37516 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C1701241849270200A37516 /* libiconv.dylib */; };
 		2C1701271849271A00A37516 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C1701261849271A00A37516 /* libz.dylib */; };
+		2C1EBC6B1E13E63600E7617F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C1EBC6A1E13E63600E7617F /* main.m */; };
+		2C1EBC6E1E13E63600E7617F /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C1EBC6D1E13E63600E7617F /* AppDelegate.m */; };
+		2C1EBC741E13E63600E7617F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2C1EBC721E13E63600E7617F /* Main.storyboard */; };
+		2C1EBC761E13E63600E7617F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2C1EBC751E13E63600E7617F /* Assets.xcassets */; };
+		2C1EBC7F1E13F7A300E7617F /* DevicesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C1EBC7E1E13F7A300E7617F /* DevicesController.m */; };
 		2C378CEA19EA802D00C69ADA /* collection.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C378CE719EA802D00C69ADA /* collection.png */; };
 		2C378CEB19EA802D00C69ADA /* list.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C378CE819EA802D00C69ADA /* list.png */; };
 		2C3E5BDF1A4421990046AFC4 /* libc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C3E5BDE1A4421990046AFC4 /* libc++.dylib */; };
@@ -103,6 +108,15 @@
 		2C170122184926EF00A37516 /* libresolv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.dylib; path = usr/lib/libresolv.dylib; sourceTree = SDKROOT; };
 		2C1701241849270200A37516 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
 		2C1701261849271A00A37516 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		2C1EBC671E13E63600E7617F /* WD Content TV.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "WD Content TV.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2C1EBC6A1E13E63600E7617F /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		2C1EBC6C1E13E63600E7617F /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		2C1EBC6D1E13E63600E7617F /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		2C1EBC731E13E63600E7617F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		2C1EBC751E13E63600E7617F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		2C1EBC771E13E63600E7617F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2C1EBC7D1E13F7A300E7617F /* DevicesController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DevicesController.h; sourceTree = "<group>"; };
+		2C1EBC7E1E13F7A300E7617F /* DevicesController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DevicesController.m; sourceTree = "<group>"; };
 		2C378CE719EA802D00C69ADA /* collection.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = collection.png; sourceTree = "<group>"; };
 		2C378CE819EA802D00C69ADA /* list.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = list.png; sourceTree = "<group>"; };
 		2C3E5BDE1A4421990046AFC4 /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "usr/lib/libc++.dylib"; sourceTree = SDKROOT; };
@@ -213,6 +227,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		2C1EBC641E13E63600E7617F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -220,6 +241,7 @@
 			isa = PBXGroup;
 			children = (
 				2C125EAF1848C74B00406FC3 /* WD Content */,
+				2C1EBC681E13E63600E7617F /* WD Content TV */,
 				2C125EA81848C74B00406FC3 /* Frameworks */,
 				2C125EA71848C74B00406FC3 /* Products */,
 				C1C90F3D3D43FF082F1C88E0 /* Pods */,
@@ -232,6 +254,7 @@
 			isa = PBXGroup;
 			children = (
 				2C125EA61848C74B00406FC3 /* WD Content.app */,
+				2C1EBC671E13E63600E7617F /* WD Content TV.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -313,6 +336,37 @@
 			);
 			name = Resources;
 			path = ..;
+			sourceTree = "<group>";
+		};
+		2C1EBC681E13E63600E7617F /* WD Content TV */ = {
+			isa = PBXGroup;
+			children = (
+				2C1EBC7D1E13F7A300E7617F /* DevicesController.h */,
+				2C1EBC7E1E13F7A300E7617F /* DevicesController.m */,
+				2C1EBC6C1E13E63600E7617F /* AppDelegate.h */,
+				2C1EBC6D1E13E63600E7617F /* AppDelegate.m */,
+				2C1EBC7C1E13F6EB00E7617F /* Resources */,
+				2C1EBC691E13E63600E7617F /* Supporting Files */,
+			);
+			path = "WD Content TV";
+			sourceTree = "<group>";
+		};
+		2C1EBC691E13E63600E7617F /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				2C1EBC771E13E63600E7617F /* Info.plist */,
+				2C1EBC6A1E13E63600E7617F /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		2C1EBC7C1E13F6EB00E7617F /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				2C1EBC721E13E63600E7617F /* Main.storyboard */,
+				2C1EBC751E13E63600E7617F /* Assets.xcassets */,
+			);
+			name = Resources;
 			sourceTree = "<group>";
 		};
 		2C410BC41E10FC4300133C3E /* Extensions */ = {
@@ -478,6 +532,23 @@
 			productReference = 2C125EA61848C74B00406FC3 /* WD Content.app */;
 			productType = "com.apple.product-type.application";
 		};
+		2C1EBC661E13E63600E7617F /* WD Content TV */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2C1EBC7A1E13E63600E7617F /* Build configuration list for PBXNativeTarget "WD Content TV" */;
+			buildPhases = (
+				2C1EBC631E13E63600E7617F /* Sources */,
+				2C1EBC641E13E63600E7617F /* Frameworks */,
+				2C1EBC651E13E63600E7617F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "WD Content TV";
+			productName = "WD Content TV";
+			productReference = 2C1EBC671E13E63600E7617F /* WD Content TV.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -489,6 +560,11 @@
 				ORGANIZATIONNAME = "Sergey Seitov";
 				TargetAttributes = {
 					2C125EA51848C74B00406FC3 = {
+						DevelopmentTeam = 7TSVKXZ79P;
+						ProvisioningStyle = Manual;
+					};
+					2C1EBC661E13E63600E7617F = {
+						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = 7TSVKXZ79P;
 						ProvisioningStyle = Manual;
 					};
@@ -508,6 +584,7 @@
 			projectRoot = "";
 			targets = (
 				2C125EA51848C74B00406FC3 /* WD Content */,
+				2C1EBC661E13E63600E7617F /* WD Content TV */,
 			);
 		};
 /* End PBXProject section */
@@ -524,6 +601,15 @@
 				2C0D90D71A96271400E13BC9 /* logo.png in Resources */,
 				2C125EB41848C74B00406FC3 /* InfoPlist.strings in Resources */,
 				2C378CEB19EA802D00C69ADA /* list.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2C1EBC651E13E63600E7617F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2C1EBC761E13E63600E7617F /* Assets.xcassets in Resources */,
+				2C1EBC741E13E63600E7617F /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -613,6 +699,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		2C1EBC631E13E63600E7617F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2C1EBC6E1E13E63600E7617F /* AppDelegate.m in Sources */,
+				2C1EBC7F1E13F7A300E7617F /* DevicesController.m in Sources */,
+				2C1EBC6B1E13E63600E7617F /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
@@ -622,6 +718,14 @@
 				2C125EB31848C74B00406FC3 /* en */,
 			);
 			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		2C1EBC721E13E63600E7617F /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				2C1EBC731E13E63600E7617F /* Base */,
+			);
+			name = Main.storyboard;
 			sourceTree = "<group>";
 		};
 		2CA6BA031A4569B900AFF041 /* Main.storyboard */ = {
@@ -810,6 +914,59 @@
 			};
 			name = Release;
 		};
+		2C1EBC781E13E63600E7617F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 7TSVKXZ79P;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+					"TV=1",
+				);
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				INFOPLIST_FILE = "WD Content TV/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.vchannel.WD-Content-TV";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "e260b7d3-27db-41b3-aff9-3239ff1ad691";
+				PROVISIONING_PROFILE_SPECIFIER = "WD Content TV Development";
+				SDKROOT = appletvos;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 10.1;
+			};
+			name = Debug;
+		};
+		2C1EBC791E13E63600E7617F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 7TSVKXZ79P;
+				GCC_PREPROCESSOR_DEFINITIONS = "TV=1";
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				INFOPLIST_FILE = "WD Content TV/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.vchannel.WD-Content-TV";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "030972ca-9563-4b8a-bdf4-820c27fcdccd";
+				PROVISIONING_PROFILE_SPECIFIER = "WD Content TV AppStore";
+				SDKROOT = appletvos;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 10.1;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -830,6 +987,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		2C1EBC7A1E13E63600E7617F /* Build configuration list for PBXNativeTarget "WD Content TV" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2C1EBC781E13E63600E7617F /* Debug */,
+				2C1EBC791E13E63600E7617F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 
