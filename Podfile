@@ -3,3 +3,8 @@ target "WD Content" do
     pod 'AFNetworking'
     pod 'AMSlideMenu'
 end
+
+target "WD Content TV" do
+    use_frameworks!
+    pod 'AFNetworking'
+end

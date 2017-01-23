@@ -25,11 +25,6 @@
 		2C170123184926EF00A37516 /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C170122184926EF00A37516 /* libresolv.dylib */; };
 		2C1701251849270200A37516 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C1701241849270200A37516 /* libiconv.dylib */; };
 		2C1701271849271A00A37516 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C1701261849271A00A37516 /* libz.dylib */; };
-		2C1EBC6B1E13E63600E7617F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C1EBC6A1E13E63600E7617F /* main.m */; };
-		2C1EBC6E1E13E63600E7617F /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C1EBC6D1E13E63600E7617F /* AppDelegate.m */; };
-		2C1EBC741E13E63600E7617F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2C1EBC721E13E63600E7617F /* Main.storyboard */; };
-		2C1EBC761E13E63600E7617F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2C1EBC751E13E63600E7617F /* Assets.xcassets */; };
-		2C1EBC7F1E13F7A300E7617F /* DevicesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C1EBC7E1E13F7A300E7617F /* DevicesController.m */; };
 		2C378CEA19EA802D00C69ADA /* collection.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C378CE719EA802D00C69ADA /* collection.png */; };
 		2C378CEB19EA802D00C69ADA /* list.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C378CE819EA802D00C69ADA /* list.png */; };
 		2C3E5BDF1A4421990046AFC4 /* libc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C3E5BDE1A4421990046AFC4 /* libc++.dylib */; };
@@ -52,6 +47,18 @@
 		2C605E511A6BC08000736968 /* AudioOutput.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2C605E4E1A6BC08000736968 /* AudioOutput.mm */; };
 		2C605E521A6BC08000736968 /* AudioRingBuffer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2C605E501A6BC08000736968 /* AudioRingBuffer.mm */; };
 		2C605E541A6BC25100736968 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C605E531A6BC25100736968 /* AudioToolbox.framework */; };
+		2C67D69A1E14EF2600F95DB5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C67D6991E14EF2600F95DB5 /* AppDelegate.swift */; };
+		2C67D69F1E14EF2600F95DB5 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2C67D69D1E14EF2600F95DB5 /* Main.storyboard */; };
+		2C67D6A11E14EF2600F95DB5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2C67D6A01E14EF2600F95DB5 /* Assets.xcassets */; };
+		2C67D6A71E14EFEB00F95DB5 /* SharesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C67D6A61E14EFEB00F95DB5 /* SharesController.swift */; };
+		2C67D6A91E14F02200F95DB5 /* AddShareController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C67D6A81E14F02200F95DB5 /* AddShareController.swift */; };
+		2C67D6AF1E14F79C00F95DB5 /* DataModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C67D6AE1E14F79C00F95DB5 /* DataModel.m */; };
+		2C67D6B01E14FC8700F95DB5 /* ContentModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2CA88713187EA87F0074B73E /* ContentModel.xcdatamodeld */; };
+		2C67D6B11E14FC8D00F95DB5 /* DataModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C67D6AE1E14F79C00F95DB5 /* DataModel.m */; };
+		2C67D6B21E14FC9100F95DB5 /* Node.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CAEE6D319C8C7C000B5DDD7 /* Node.m */; };
+		2C67D6B31E14FC9500F95DB5 /* MetaInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = ED04A5C519D172C00079C787 /* MetaInfo.m */; };
+		2C67D6B51E1510A700F95DB5 /* ShareCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C67D6B41E1510A700F95DB5 /* ShareCell.swift */; };
+		2C67D6DF1E156D0D00F95DB5 /* DeviceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C67D6DE1E156D0D00F95DB5 /* DeviceController.swift */; };
 		2C6E746B19C75ECA001D9971 /* SharesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C6E746A19C75ECA001D9971 /* SharesTableViewController.m */; };
 		2C718E7B1DA26EDA0065DE2B /* libfdk-aac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C718E7A1DA26EDA0065DE2B /* libfdk-aac.a */; };
 		2C718E7D1DA26F110065DE2B /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C718E7C1DA26F110065DE2B /* libbz2.tbd */; };
@@ -67,19 +74,18 @@
 		2CA6BA011A4569B900AFF041 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2CA6BA031A4569B900AFF041 /* Main.storyboard */; };
 		2CA88715187EA87F0074B73E /* ContentModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2CA88713187EA87F0074B73E /* ContentModel.xcdatamodeld */; };
 		2CA8871C187EA9AA0074B73E /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CA8871B187EA9AA0074B73E /* CoreData.framework */; };
-		2CA8871F187EAEDE0074B73E /* DataModel.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2CA8871E187EAEDE0074B73E /* DataModel.mm */; };
 		2CA95DC4184B2B4600927138 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA95DC3184B2B4600927138 /* SettingsViewController.m */; };
 		2CA95DC7184B2CB700927138 /* SettingsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA95DC6184B2CB700927138 /* SettingsCell.m */; };
 		2CAEE6D419C8C7C000B5DDD7 /* Node.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CAEE6D319C8C7C000B5DDD7 /* Node.m */; };
 		2CB99EC51E13AAE600ABC91F /* DropboxSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CB99EC41E13AAE600ABC91F /* DropboxSDK.framework */; };
 		2CD030DB1A640ED7003B22CA /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CD030D91A640ED7003B22CA /* LaunchScreen.xib */; };
 		7CE01A4C96BA0B527F07E260 /* libPods-WD Content.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B971AAFD92993E9AAD64DE52 /* libPods-WD Content.a */; };
+		B87F8F14074B677212DE561F /* Pods_WD_Content_TV.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B10B73FB61156A435782913 /* Pods_WD_Content_TV.framework */; };
 		ED04A5C619D172C00079C787 /* MetaInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = ED04A5C519D172C00079C787 /* MetaInfo.m */; };
 		ED2194A119C9A9690053C8B3 /* TMDB.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2194A019C9A9690053C8B3 /* TMDB.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0DB1CB822754AE387880C551 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		2C0644EF19CD9867002F5F49 /* SearchInfoTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SearchInfoTableViewController.h; path = "WD Content/SearchInfoTableViewController.h"; sourceTree = "<group>"; };
 		2C0644F019CD9867002F5F49 /* SearchInfoTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SearchInfoTableViewController.m; path = "WD Content/SearchInfoTableViewController.m"; sourceTree = "<group>"; };
 		2C08E45E1A9719A300EAE058 /* VideoUtility.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = VideoUtility.c; sourceTree = "<group>"; };
@@ -108,15 +114,6 @@
 		2C170122184926EF00A37516 /* libresolv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.dylib; path = usr/lib/libresolv.dylib; sourceTree = SDKROOT; };
 		2C1701241849270200A37516 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
 		2C1701261849271A00A37516 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
-		2C1EBC671E13E63600E7617F /* WD Content TV.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "WD Content TV.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		2C1EBC6A1E13E63600E7617F /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		2C1EBC6C1E13E63600E7617F /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
-		2C1EBC6D1E13E63600E7617F /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		2C1EBC731E13E63600E7617F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		2C1EBC751E13E63600E7617F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		2C1EBC771E13E63600E7617F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		2C1EBC7D1E13F7A300E7617F /* DevicesController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DevicesController.h; sourceTree = "<group>"; };
-		2C1EBC7E1E13F7A300E7617F /* DevicesController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DevicesController.m; sourceTree = "<group>"; };
 		2C378CE719EA802D00C69ADA /* collection.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = collection.png; sourceTree = "<group>"; };
 		2C378CE819EA802D00C69ADA /* list.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = list.png; sourceTree = "<group>"; };
 		2C3E5BDE1A4421990046AFC4 /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "usr/lib/libc++.dylib"; sourceTree = SDKROOT; };
@@ -153,6 +150,17 @@
 		2C605E4F1A6BC08000736968 /* AudioRingBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioRingBuffer.h; sourceTree = "<group>"; };
 		2C605E501A6BC08000736968 /* AudioRingBuffer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AudioRingBuffer.mm; sourceTree = "<group>"; };
 		2C605E531A6BC25100736968 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		2C67D6971E14EF2600F95DB5 /* WD Content TV.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "WD Content TV.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2C67D6991E14EF2600F95DB5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		2C67D69E1E14EF2600F95DB5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		2C67D6A01E14EF2600F95DB5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		2C67D6A21E14EF2600F95DB5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2C67D6A61E14EFEB00F95DB5 /* SharesController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharesController.swift; sourceTree = "<group>"; };
+		2C67D6A81E14F02200F95DB5 /* AddShareController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddShareController.swift; sourceTree = "<group>"; };
+		2C67D6AA1E14F09F00F95DB5 /* WD Content TV-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "WD Content TV-Bridging-Header.h"; sourceTree = "<group>"; };
+		2C67D6AE1E14F79C00F95DB5 /* DataModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataModel.m; sourceTree = "<group>"; };
+		2C67D6B41E1510A700F95DB5 /* ShareCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShareCell.swift; sourceTree = "<group>"; };
+		2C67D6DE1E156D0D00F95DB5 /* DeviceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceController.swift; sourceTree = "<group>"; };
 		2C6E746919C75ECA001D9971 /* SharesTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SharesTableViewController.h; sourceTree = "<group>"; };
 		2C6E746A19C75ECA001D9971 /* SharesTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SharesTableViewController.m; sourceTree = "<group>"; };
 		2C718E7A1DA26EDA0065DE2B /* libfdk-aac.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libfdk-aac.a"; path = "depends/libs/lib/libfdk-aac.a"; sourceTree = "<group>"; };
@@ -170,7 +178,6 @@
 		2CA88714187EA87F0074B73E /* ContentModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ContentModel.xcdatamodel; sourceTree = "<group>"; };
 		2CA8871B187EA9AA0074B73E /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		2CA8871D187EAEDE0074B73E /* DataModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataModel.h; sourceTree = "<group>"; };
-		2CA8871E187EAEDE0074B73E /* DataModel.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DataModel.mm; sourceTree = "<group>"; };
 		2CA95DC2184B2B4600927138 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
 		2CA95DC3184B2B4600927138 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
 		2CA95DC5184B2CB700927138 /* SettingsCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsCell.h; sourceTree = "<group>"; };
@@ -179,11 +186,13 @@
 		2CAEE6D319C8C7C000B5DDD7 /* Node.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Node.m; sourceTree = "<group>"; };
 		2CB99EC41E13AAE600ABC91F /* DropboxSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = DropboxSDK.framework; sourceTree = "<group>"; };
 		2CD030DA1A640ED7003B22CA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = "WD Content/Base.lproj/LaunchScreen.xib"; sourceTree = "<group>"; };
+		354F1E5CED09E416873765C8 /* Pods-WD Content TV.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WD Content TV.debug.xcconfig"; path = "Pods/Target Support Files/Pods-WD Content TV/Pods-WD Content TV.debug.xcconfig"; sourceTree = "<group>"; };
+		8B10B73FB61156A435782913 /* Pods_WD_Content_TV.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_WD_Content_TV.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A7E23142895AD84013227460 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		AF537584A11ADE3DD38B432B /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		B971AAFD92993E9AAD64DE52 /* libPods-WD Content.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-WD Content.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3753665493ED3463079EB69 /* Pods-WD Content.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WD Content.release.xcconfig"; path = "Pods/Target Support Files/Pods-WD Content/Pods-WD Content.release.xcconfig"; sourceTree = "<group>"; };
 		C9B7E7858271FF1B02F12028 /* Pods-WD Content.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WD Content.debug.xcconfig"; path = "Pods/Target Support Files/Pods-WD Content/Pods-WD Content.debug.xcconfig"; sourceTree = "<group>"; };
+		E788C3F2F608DC3E5F096E79 /* Pods-WD Content TV.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WD Content TV.release.xcconfig"; path = "Pods/Target Support Files/Pods-WD Content TV/Pods-WD Content TV.release.xcconfig"; sourceTree = "<group>"; };
 		ED04A5C419D172C00079C787 /* MetaInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MetaInfo.h; sourceTree = "<group>"; };
 		ED04A5C519D172C00079C787 /* MetaInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MetaInfo.m; sourceTree = "<group>"; };
 		ED21949F19C9A9690053C8B3 /* TMDB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TMDB.h; sourceTree = "<group>"; };
@@ -227,10 +236,11 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		2C1EBC641E13E63600E7617F /* Frameworks */ = {
+		2C67D6941E14EF2600F95DB5 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B87F8F14074B677212DE561F /* Pods_WD_Content_TV.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -241,7 +251,7 @@
 			isa = PBXGroup;
 			children = (
 				2C125EAF1848C74B00406FC3 /* WD Content */,
-				2C1EBC681E13E63600E7617F /* WD Content TV */,
+				2C67D6981E14EF2600F95DB5 /* WD Content TV */,
 				2C125EA81848C74B00406FC3 /* Frameworks */,
 				2C125EA71848C74B00406FC3 /* Products */,
 				C1C90F3D3D43FF082F1C88E0 /* Pods */,
@@ -254,7 +264,7 @@
 			isa = PBXGroup;
 			children = (
 				2C125EA61848C74B00406FC3 /* WD Content.app */,
-				2C1EBC671E13E63600E7617F /* WD Content TV.app */,
+				2C67D6971E14EF2600F95DB5 /* WD Content TV.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -293,6 +303,7 @@
 				2C125EAD1848C74B00406FC3 /* UIKit.framework */,
 				A7E23142895AD84013227460 /* libPods.a */,
 				B971AAFD92993E9AAD64DE52 /* libPods-WD Content.a */,
+				8B10B73FB61156A435782913 /* Pods_WD_Content_TV.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -336,37 +347,6 @@
 			);
 			name = Resources;
 			path = ..;
-			sourceTree = "<group>";
-		};
-		2C1EBC681E13E63600E7617F /* WD Content TV */ = {
-			isa = PBXGroup;
-			children = (
-				2C1EBC7D1E13F7A300E7617F /* DevicesController.h */,
-				2C1EBC7E1E13F7A300E7617F /* DevicesController.m */,
-				2C1EBC6C1E13E63600E7617F /* AppDelegate.h */,
-				2C1EBC6D1E13E63600E7617F /* AppDelegate.m */,
-				2C1EBC7C1E13F6EB00E7617F /* Resources */,
-				2C1EBC691E13E63600E7617F /* Supporting Files */,
-			);
-			path = "WD Content TV";
-			sourceTree = "<group>";
-		};
-		2C1EBC691E13E63600E7617F /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				2C1EBC771E13E63600E7617F /* Info.plist */,
-				2C1EBC6A1E13E63600E7617F /* main.m */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		2C1EBC7C1E13F6EB00E7617F /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				2C1EBC721E13E63600E7617F /* Main.storyboard */,
-				2C1EBC751E13E63600E7617F /* Assets.xcassets */,
-			);
-			name = Resources;
 			sourceTree = "<group>";
 		};
 		2C410BC41E10FC4300133C3E /* Extensions */ = {
@@ -418,6 +398,22 @@
 			name = "Movie Player";
 			sourceTree = "<group>";
 		};
+		2C67D6981E14EF2600F95DB5 /* WD Content TV */ = {
+			isa = PBXGroup;
+			children = (
+				2C67D6AA1E14F09F00F95DB5 /* WD Content TV-Bridging-Header.h */,
+				2C67D6991E14EF2600F95DB5 /* AppDelegate.swift */,
+				2C67D6A61E14EFEB00F95DB5 /* SharesController.swift */,
+				2C67D6B41E1510A700F95DB5 /* ShareCell.swift */,
+				2C67D6A81E14F02200F95DB5 /* AddShareController.swift */,
+				2C67D6DE1E156D0D00F95DB5 /* DeviceController.swift */,
+				2C67D69D1E14EF2600F95DB5 /* Main.storyboard */,
+				2C67D6A01E14EF2600F95DB5 /* Assets.xcassets */,
+				2C67D6A21E14EF2600F95DB5 /* Info.plist */,
+			);
+			path = "WD Content TV";
+			sourceTree = "<group>";
+		};
 		2C7D1B201ADB1A0D00DEB4E0 /* SlideMenu */ = {
 			isa = PBXGroup;
 			children = (
@@ -464,7 +460,7 @@
 				2CAEE6D219C8C7C000B5DDD7 /* Node.h */,
 				2CAEE6D319C8C7C000B5DDD7 /* Node.m */,
 				2CA8871D187EAEDE0074B73E /* DataModel.h */,
-				2CA8871E187EAEDE0074B73E /* DataModel.mm */,
+				2C67D6AE1E14F79C00F95DB5 /* DataModel.m */,
 				2CA88713187EA87F0074B73E /* ContentModel.xcdatamodeld */,
 				2C0AB2B81A4B37F60007D700 /* DropboxClient.h */,
 				2C0AB2B91A4B37F60007D700 /* DropboxClient.m */,
@@ -485,10 +481,10 @@
 		C1C90F3D3D43FF082F1C88E0 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				0DB1CB822754AE387880C551 /* Pods.debug.xcconfig */,
-				AF537584A11ADE3DD38B432B /* Pods.release.xcconfig */,
 				C9B7E7858271FF1B02F12028 /* Pods-WD Content.debug.xcconfig */,
 				C3753665493ED3463079EB69 /* Pods-WD Content.release.xcconfig */,
+				354F1E5CED09E416873765C8 /* Pods-WD Content TV.debug.xcconfig */,
+				E788C3F2F608DC3E5F096E79 /* Pods-WD Content TV.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -532,13 +528,16 @@
 			productReference = 2C125EA61848C74B00406FC3 /* WD Content.app */;
 			productType = "com.apple.product-type.application";
 		};
-		2C1EBC661E13E63600E7617F /* WD Content TV */ = {
+		2C67D6961E14EF2600F95DB5 /* WD Content TV */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2C1EBC7A1E13E63600E7617F /* Build configuration list for PBXNativeTarget "WD Content TV" */;
+			buildConfigurationList = 2C67D6A31E14EF2600F95DB5 /* Build configuration list for PBXNativeTarget "WD Content TV" */;
 			buildPhases = (
-				2C1EBC631E13E63600E7617F /* Sources */,
-				2C1EBC641E13E63600E7617F /* Frameworks */,
-				2C1EBC651E13E63600E7617F /* Resources */,
+				91512D51B5AB7E18B8E5B7E1 /* [CP] Check Pods Manifest.lock */,
+				2C67D6931E14EF2600F95DB5 /* Sources */,
+				2C67D6941E14EF2600F95DB5 /* Frameworks */,
+				2C67D6951E14EF2600F95DB5 /* Resources */,
+				8A4E4C45F191F8A4AF240E81 /* [CP] Embed Pods Frameworks */,
+				636FD4C17432E70BBEBB0557 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -546,7 +545,7 @@
 			);
 			name = "WD Content TV";
 			productName = "WD Content TV";
-			productReference = 2C1EBC671E13E63600E7617F /* WD Content TV.app */;
+			productReference = 2C67D6971E14EF2600F95DB5 /* WD Content TV.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -563,9 +562,10 @@
 						DevelopmentTeam = 7TSVKXZ79P;
 						ProvisioningStyle = Manual;
 					};
-					2C1EBC661E13E63600E7617F = {
+					2C67D6961E14EF2600F95DB5 = {
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = 7TSVKXZ79P;
+						LastSwiftMigration = 0820;
 						ProvisioningStyle = Manual;
 					};
 				};
@@ -584,7 +584,7 @@
 			projectRoot = "";
 			targets = (
 				2C125EA51848C74B00406FC3 /* WD Content */,
-				2C1EBC661E13E63600E7617F /* WD Content TV */,
+				2C67D6961E14EF2600F95DB5 /* WD Content TV */,
 			);
 		};
 /* End PBXProject section */
@@ -604,12 +604,12 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		2C1EBC651E13E63600E7617F /* Resources */ = {
+		2C67D6951E14EF2600F95DB5 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2C1EBC761E13E63600E7617F /* Assets.xcassets in Resources */,
-				2C1EBC741E13E63600E7617F /* Main.storyboard in Resources */,
+				2C67D6A11E14EF2600F95DB5 /* Assets.xcassets in Resources */,
+				2C67D69F1E14EF2600F95DB5 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -661,6 +661,51 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-WD Content/Pods-WD Content-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		636FD4C17432E70BBEBB0557 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-WD Content TV/Pods-WD Content TV-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		8A4E4C45F191F8A4AF240E81 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-WD Content TV/Pods-WD Content TV-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		91512D51B5AB7E18B8E5B7E1 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -684,7 +729,6 @@
 				2C170113184925F800A37516 /* KxSMBProvider.m in Sources */,
 				2CA88715187EA87F0074B73E /* ContentModel.xcdatamodeld in Sources */,
 				2C17010B1848F68200A37516 /* Cell.m in Sources */,
-				2CA8871F187EAEDE0074B73E /* DataModel.mm in Sources */,
 				2CAEE6D419C8C7C000B5DDD7 /* Node.m in Sources */,
 				2C5875381A6AF1590069F3F1 /* VTDecoder.mm in Sources */,
 				2CA95DC4184B2B4600927138 /* SettingsViewController.m in Sources */,
@@ -692,6 +736,7 @@
 				2C3FDF141A4B7AEC0019ECD3 /* SettingsHeaderView.m in Sources */,
 				2CA1D7191854A78800276C67 /* InfoViewController.m in Sources */,
 				2C125EB61848C74B00406FC3 /* main.m in Sources */,
+				2C67D6AF1E14F79C00F95DB5 /* DataModel.m in Sources */,
 				2C58753D1A6AF7DC0069F3F1 /* AudioDecoder.mm in Sources */,
 				2C605E511A6BC08000736968 /* AudioOutput.mm in Sources */,
 				2C0644F119CD9867002F5F49 /* SearchInfoTableViewController.m in Sources */,
@@ -699,13 +744,19 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		2C1EBC631E13E63600E7617F /* Sources */ = {
+		2C67D6931E14EF2600F95DB5 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2C1EBC6E1E13E63600E7617F /* AppDelegate.m in Sources */,
-				2C1EBC7F1E13F7A300E7617F /* DevicesController.m in Sources */,
-				2C1EBC6B1E13E63600E7617F /* main.m in Sources */,
+				2C67D69A1E14EF2600F95DB5 /* AppDelegate.swift in Sources */,
+				2C67D6B11E14FC8D00F95DB5 /* DataModel.m in Sources */,
+				2C67D6B01E14FC8700F95DB5 /* ContentModel.xcdatamodeld in Sources */,
+				2C67D6A71E14EFEB00F95DB5 /* SharesController.swift in Sources */,
+				2C67D6A91E14F02200F95DB5 /* AddShareController.swift in Sources */,
+				2C67D6B51E1510A700F95DB5 /* ShareCell.swift in Sources */,
+				2C67D6DF1E156D0D00F95DB5 /* DeviceController.swift in Sources */,
+				2C67D6B31E14FC9500F95DB5 /* MetaInfo.m in Sources */,
+				2C67D6B21E14FC9100F95DB5 /* Node.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -720,10 +771,10 @@
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
-		2C1EBC721E13E63600E7617F /* Main.storyboard */ = {
+		2C67D69D1E14EF2600F95DB5 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				2C1EBC731E13E63600E7617F /* Base */,
+				2C67D69E1E14EF2600F95DB5 /* Base */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -914,17 +965,18 @@
 			};
 			name = Release;
 		};
-		2C1EBC781E13E63600E7617F /* Debug */ = {
+		2C67D6A41E14EF2600F95DB5 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 354F1E5CED09E416873765C8 /* Pods-WD Content TV.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 7TSVKXZ79P;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
 					"$(inherited)",
 					"TV=1",
 				);
@@ -937,22 +989,31 @@
 				PROVISIONING_PROFILE = "e260b7d3-27db-41b3-aff9-3239ff1ad691";
 				PROVISIONING_PROFILE_SPECIFIER = "WD Content TV Development";
 				SDKROOT = appletvos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OBJC_BRIDGING_HEADER = "WD Content TV/WD Content TV-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 10.1;
 			};
 			name = Debug;
 		};
-		2C1EBC791E13E63600E7617F /* Release */ = {
+		2C67D6A51E14EF2600F95DB5 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E788C3F2F608DC3E5F096E79 /* Pods-WD Content TV.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 7TSVKXZ79P;
-				GCC_PREPROCESSOR_DEFINITIONS = "TV=1";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"TV=1",
+					"$(inherited)",
+				);
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = "WD Content TV/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -962,6 +1023,9 @@
 				PROVISIONING_PROFILE = "030972ca-9563-4b8a-bdf4-820c27fcdccd";
 				PROVISIONING_PROFILE_SPECIFIER = "WD Content TV AppStore";
 				SDKROOT = appletvos;
+				SWIFT_OBJC_BRIDGING_HEADER = "WD Content TV/WD Content TV-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 10.1;
 			};
@@ -988,13 +1052,14 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		2C1EBC7A1E13E63600E7617F /* Build configuration list for PBXNativeTarget "WD Content TV" */ = {
+		2C67D6A31E14EF2600F95DB5 /* Build configuration list for PBXNativeTarget "WD Content TV" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				2C1EBC781E13E63600E7617F /* Debug */,
-				2C1EBC791E13E63600E7617F /* Release */,
+				2C67D6A41E14EF2600F95DB5 /* Debug */,
+				2C67D6A51E14EF2600F95DB5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 

@@ -8,16 +8,25 @@
 
 #import "DataModel.h"
 #import "Node.h"
-#include <mutex>
+#import <UIKit/UIKit.h>
 
 NSString* const DataModelDidChangeNotification = @"DataModelDidChangeNotification";
 
-@interface DataModel () <KxSMBProviderDelegate> {
+#ifdef TV
+@interface DataModel () {
 	
-	std::mutex _mutex;
+	NSCondition* _mutex;
 }
 
 @end
+#else
+@interface DataModel () <KxSMBProviderDelegate> {
+	
+	NSCondition* _mutex;
+}
+
+@end
+#endif
 
 @implementation DataModel
 
@@ -42,8 +51,11 @@ NSString * const kDataManagerAuthName = @"Auth.plist";
 {
 	self = [super init];
 	if (self) {
+		_mutex = [[NSCondition alloc] init];
+#ifndef TV
 		_provider = [KxSMBProvider sharedSmbProvider];
 		_provider.delegate = self;
+#endif
 	}
 	return self;
 }
@@ -77,8 +89,8 @@ NSString * const kDataManagerAuthName = @"Auth.plist";
 	// Define the Core Data version migration options
 	NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
 							 @{@"journal_mode":@"DELETE"}, NSSQLitePragmasOption,
-//							 [NSNumber numberWithBool:YES], NSMigratePersistentStoresAutomaticallyOption,
-//							 [NSNumber numberWithBool:YES], NSInferMappingModelAutomaticallyOption,
+							 [NSNumber numberWithBool:YES], NSMigratePersistentStoresAutomaticallyOption,
+							 [NSNumber numberWithBool:YES], NSInferMappingModelAutomaticallyOption,
 							 nil];
 	
 	// Attempt to load the persistent store
@@ -117,7 +129,11 @@ NSString * const kDataManagerAuthName = @"Auth.plist";
 		return _mainObjectContext;
 	}
 	
+#ifdef TV
+	_mainObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+#else
 	_mainObjectContext = [[NSManagedObjectContext alloc] init];
+#endif
 	[_mainObjectContext setPersistentStoreCoordinator:self.persistentStoreCoordinator];
 	
 	return _mainObjectContext;
@@ -125,20 +141,23 @@ NSString * const kDataManagerAuthName = @"Auth.plist";
 
 - (BOOL)save
 {
-	std::unique_lock<std::mutex> lock(_mutex);
+	[_mutex lock];
 	
 	if (![self.mainObjectContext hasChanges]) {
 		NSLog(@"data not changed");
+		[_mutex unlock];
 		return YES;
 	}
 	
 	NSError *error = nil;
 	if (![self.mainObjectContext save:&error]) {
 		NSLog(@"Error while saving: %@\n%@", [error localizedDescription], [error userInfo]);
+		[_mutex unlock];
 		return NO;
 	} else {
 		[_mainObjectContext processPendingChanges];
 		[DataModel setLastModified:[NSDate date]];
+		[_mutex unlock];
 		return YES;
 	}
 }
@@ -152,7 +171,11 @@ NSString * const kDataManagerAuthName = @"Auth.plist";
 
 - (NSManagedObjectContext*)managedObjectContext
 {
+#ifdef TV
+	NSManagedObjectContext *ctx = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+#else
 	NSManagedObjectContext *ctx = [[NSManagedObjectContext alloc] init];
+#endif
 	[ctx setPersistentStoreCoordinator:self.persistentStoreCoordinator];
 	
 	return ctx;
@@ -221,6 +244,9 @@ NSString * const kDataManagerAuthName = @"Auth.plist";
 
 #pragma mark - update methods
 
+#ifdef TV
+
+#else
 - (Node*)newNodeForItem:(KxSMBItem*)item withParent:(Node*)parent
 {
 	Node *node = [self nodeByPath:item.path];
@@ -252,6 +278,7 @@ NSString * const kDataManagerAuthName = @"Auth.plist";
 	}
  	return node;
 }
+#endif
 
 - (void)deleteNode:(Node*)node
 {
@@ -311,7 +338,11 @@ NSString * const kDataManagerAuthName = @"Auth.plist";
 		return SharedDocumentsPath;
 	
 	// Compose a path to the <Library>/Database directory
+#ifdef TV
+	NSString *libraryPath = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+#else
 	NSString *libraryPath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+#endif
 	SharedDocumentsPath = [libraryPath stringByAppendingPathComponent:@"ContentModel"];
 	
 	// Ensure the database directory exists
@@ -459,6 +490,7 @@ NSString * const kDataManagerAuthName = @"Auth.plist";
 
 #pragma mark - KxSmbProvider delegate
 
+#ifndef TV
 - (KxSMBAuth *)smbAuthForServer:(NSString*)server withShare:(NSString*)share
 {
 	NSArray *auth = [DataModel auth];
@@ -471,5 +503,6 @@ NSString * const kDataManagerAuthName = @"Auth.plist";
 	}
 	return nil;
 }
+#endif
 
 @end

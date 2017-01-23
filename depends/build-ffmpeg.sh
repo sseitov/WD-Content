@@ -27,7 +27,7 @@ THIN=`pwd`/"thin"
 COMPILE="y"
 LIPO="y"
 
-DEPLOYMENT_TARGET="8.1"
+DEPLOYMENT_TARGET="10.2"
 
 if [ "$*" ]
 then

@@ -72,8 +72,8 @@ end
 
 # versions
 
-SDK_VERSION='8.1'
-IOS_MIN_VERSION='6.0'
+SDK_VERSION='10.2'
+IOS_MIN_VERSION='10.2'
 SAMBA_VERSION='4.0.21'
 
 # samba source
