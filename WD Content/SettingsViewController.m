@@ -178,6 +178,7 @@
 			[DataModel setLastAuthModified:meta.lastModifiedDate];
 		}
 		[self.tableView reloadData];
+		[self.contentDropboxClient sync];
 	}
 	[self.contentDropboxClient sync];
 }
@@ -205,12 +206,36 @@
 
 #pragma mark - navigation
 
+- (IBAction)browse:(UIBarButtonItem*)sender {
+	UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:@"Add Device" preferredStyle:UIAlertControllerStyleActionSheet];
+	[alert addAction:[UIAlertAction actionWithTitle:@"Browse local" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+		[self performSegueWithIdentifier:@"browse" sender:nil];
+	}]];
+	[alert addAction:[UIAlertAction actionWithTitle:@"Add manually" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+		[self performSegueWithIdentifier:@"add" sender:nil];
+	}]];
+	[alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleDestructive handler:nil]];
+	if (IS_PAD) {
+		[alert setModalPresentationStyle:UIModalPresentationPopover];
+		UIPopoverPresentationController* popover = alert.popoverPresentationController;
+		popover.barButtonItem = sender;
+		[self presentViewController:alert animated:YES completion:nil];
+	} else {
+		[self presentViewController:alert animated:YES completion:nil];
+	}
+}
+
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
 	if ([segue.identifier isEqual:@"browse"]) {
 		UINavigationController * nav = segue.destinationViewController;
 		HostBrowserController * controller = (HostBrowserController*)nav.topViewController;
 		controller.delegate = self;
+	} else 	if ([segue.identifier isEqual:@"add"]) {
+		UINavigationController * nav = segue.destinationViewController;
+		AddHostController * controller = (AddHostController*)nav.topViewController;
+		controller.delegate = self;
 	}
+
 }
 
 - (void)addHost:(NSString *)path content:(NSArray<NSString *> *)content user:(NSString *)user password:(NSString *)password {

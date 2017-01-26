@@ -453,7 +453,21 @@ NSString * const kDataManagerAuthName = @"Auth.plist";
 	[DataModel setAuth:allHosts];
 }
 
++ (BOOL)hasHost:(NSDictionary*)host {
+	NSArray* allHosts = [NSMutableArray arrayWithArray:[DataModel auth]];
+	for (NSInteger index=0; index<allHosts.count; index++) {
+		NSDictionary* h = [allHosts objectAtIndex:index];
+		if ([[h objectForKey:@"host"] isEqual:[host objectForKey:@"host"]]) {
+			return YES;
+		}
+	}
+	return NO;
+}
+
 + (void)addHost:(NSMutableDictionary*)host {
+	if ([DataModel hasHost:host]) {
+		return;
+	}
 	NSMutableArray* allHosts = [NSMutableArray arrayWithArray:[DataModel auth]];
 	[allHosts addObject:host];
 	[DataModel setAuth:allHosts];

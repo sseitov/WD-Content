@@ -67,32 +67,6 @@ class HostBrowserController: UITableViewController {
 		dismiss(animated: true, completion: nil)
     }
 	
-    @IBAction func addManual(_ sender: Any) {
-		let alert = UIAlertController(title: nil, message: "Enter WD device IP address", preferredStyle: .alert)
-		var cellTextField:UITextField?
-		
-		alert.addTextField(configurationHandler: { textField in
-			textField.placeholder = "xxx.xxx.xxx.xxx"
-			textField.textAlignment = .center
-			textField.keyboardType = .numbersAndPunctuation
-			cellTextField = textField
-		})
-		
-		alert.addAction(UIAlertAction(title: "Cancel", style: .destructive, handler: nil))
-		
-		alert.addAction(UIAlertAction(title: "Add", style: .default, handler: { action in
-			if cellTextField!.text != nil && !cellTextField!.text!.isEmpty {
-				self.tableView.beginUpdates()
-				let newElement = IndexPath(row: self.hosts.count, section: 0)
-				self.hosts.append("smb://\(cellTextField!.text!)")
-				self.tableView.insertRows(at: [newElement], with: .bottom)
-				self.tableView.endUpdates()
-			}
-		}))
-		
-		present(alert, animated: true, completion: nil)
-    }
-	
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {

@@ -12,6 +12,7 @@
 #import "DataModel.h"
 #import <AVFoundation/AVFoundation.h>
 #import <SVProgressHUD.h>
+#import <IQKeyboardManager.h>
 
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
@@ -60,6 +61,8 @@ NSString* const ErrorDBAccountNotification = @"ErrorDBAccountNotification";
 	[SVProgressHUD setBackgroundColor:[UIColor colorWithRed:0 green:113.0/255.0 blue:165.0/255.0 alpha:1]];
 	[SVProgressHUD setForegroundColor:[UIColor whiteColor]];
 	[SVProgressHUD setFont:font];
+	
+	[[IQKeyboardManager sharedManager] setEnableAutoToolbar:NO];
 	
     return YES;
 }
