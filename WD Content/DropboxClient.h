@@ -24,5 +24,6 @@ extern NSString* const FinishContentSynchroNotification;
 - (void)sync;
 
 @property (weak, nonatomic) UIView* actionView;
+@property (weak, nonatomic) UIBarButtonItem* actionButton;
 
 @end

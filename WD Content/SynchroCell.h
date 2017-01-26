@@ -1,9 +1,9 @@
 //
-//  SettingsHeaderView.h
+//  SynchroCell.h
 //  WD Content
 //
-//  Created by Sergey Seitov on 25.12.14.
-//  Copyright (c) 2014 Sergey Seitov. All rights reserved.
+//  Created by Сергей Сейтов on 23.01.17.
+//  Copyright © 2017 Sergey Seitov. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -11,11 +11,11 @@
 @protocol SyncDelegate <NSObject>
 
 - (void)didEnableSync:(BOOL)enable;
-- (void)sync;
+- (void)sync:(UIBarButtonItem*)sender;
 
 @end
 
-@interface SettingsHeaderView : UIView
+@interface SynchroCell : UITableViewCell
 
 @property (weak, nonatomic) id<SyncDelegate> delegate;
 

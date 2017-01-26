@@ -60,7 +60,8 @@ extern NSString * const DataModelDidChangeNotification;
 + (void)setAuth:(NSArray*)authArray;
 + (void)removeHost:(NSDictionary*)host;
 + (void)setHost:(NSMutableDictionary*)host;
-+ (NSDictionary*)authForHost:(NSString*)server;
++ (void)addHost:(NSMutableDictionary*)host;
++ (NSMutableDictionary*)authForHost:(NSString*)server;
 
 + (NSIndexPath*)lastIndex;
 + (void)setLastIndex:(NSIndexPath*)index;

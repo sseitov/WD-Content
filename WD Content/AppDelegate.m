@@ -53,12 +53,13 @@ NSString* const ErrorDBAccountNotification = @"ErrorDBAccountNotification";
 	
 	[UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
 	
+	UIFont* font =  [UIFont fontWithName:@"HelveticaNeue-CondensedBold" size:17];
+	[[UIBarButtonItem appearance] setTitleTextAttributes:@{NSFontAttributeName:font} forState:UIControlStateNormal];
+	
 	[SVProgressHUD setDefaultStyle:SVProgressHUDStyleCustom];
 	[SVProgressHUD setBackgroundColor:[UIColor colorWithRed:0 green:113.0/255.0 blue:165.0/255.0 alpha:1]];
 	[SVProgressHUD setForegroundColor:[UIColor whiteColor]];
-	
-	UIFont* font =  [UIFont fontWithName:@"HelveticaNeue-CondensedBold" size:17];
-	[[UIBarButtonItem appearance] setTitleTextAttributes:@{NSFontAttributeName:font} forState:UIControlStateNormal];
+	[SVProgressHUD setFont:font];
 	
     return YES;
 }

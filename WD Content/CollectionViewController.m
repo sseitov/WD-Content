@@ -13,8 +13,7 @@
 #import "SVProgressHUD.h"
 #import "SearchInfoTableViewController.h"
 #import "VideoViewController.h"
-
-#define IS_PAD ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
+#import "UIViewController+UIViewControllerExtensions.h"
 
 @interface CollectionViewController ()
 

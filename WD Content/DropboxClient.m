@@ -8,6 +8,7 @@
 
 #import "DropboxClient.h"
 #import "DataModel.h"
+#import "UIViewController+UIViewControllerExtensions.h"
 
 NSString* const FinishAuthSynchroNotification = @"FinishAuthSynchroNotification";
 NSString* const FinishContentSynchroNotification = @"FinishContentSynchroNotification";
@@ -98,7 +99,11 @@ NSString* const FinishContentSynchroNotification = @"FinishContentSynchroNotific
 		}
 		[actions addButtonWithTitle:@"Cancel"];
 		actions.destructiveButtonIndex = 0;
-		[actions showInView:self.actionView];
+		if (IS_PAD) {
+			[actions showFromBarButtonItem:self.actionButton animated:YES];
+		} else {
+			[actions showInView:self.actionView];
+		}
 	} else {
 		[[NSNotificationCenter defaultCenter] postNotificationName:_notification object:[NSNumber numberWithBool:NO]];
 	}

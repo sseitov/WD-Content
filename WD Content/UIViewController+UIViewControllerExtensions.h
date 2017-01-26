@@ -8,8 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
+#define IS_PAD ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
+
 @interface UIViewController (UIViewControllerExtensions)
 
-//- (void)setupTitle:(NSString*)text color:(UIColor*)color;
+- (void)setTitle:(NSString*)text;
+- (void)errorMessage:(NSString*)message;
 
 @end

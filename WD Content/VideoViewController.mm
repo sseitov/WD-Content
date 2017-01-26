@@ -10,12 +10,11 @@
 #import "Demuxer.h"
 #import "SVProgressHUD.h"
 #import <CoreMedia/CoreMedia.h>
+#import "UIViewController+UIViewControllerExtensions.h"
 
 extern "C" {
 #	include "libavformat/avformat.h"
 }
-
-#define IS_PAD ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
 
 @interface VideoViewController () <DemuxerDelegate>
 

@@ -407,7 +407,6 @@ NSString * const kDataManagerAuthName = @"Auth.plist";
 	for (NSString *h in oldAuth.allKeys) {
 		NSMutableDictionary *host = [NSMutableDictionary dictionaryWithDictionary:[oldAuth objectForKey:h]];
 		[host setObject:h forKey:@"host"];
-		[host setObject:[NSNumber numberWithBool:YES] forKey:@"validated"];
 		[newAuth addObject:host];
 	}
 	[DataModel setAuth:newAuth];
@@ -447,11 +446,16 @@ NSString * const kDataManagerAuthName = @"Auth.plist";
 	for (NSInteger index=0; index<allHosts.count; index++) {
 		NSDictionary* h = [allHosts objectAtIndex:index];
 		if ([[h objectForKey:@"host"] isEqual:[host objectForKey:@"host"]]) {
-			[host setObject:[NSNumber numberWithBool:YES] forKey:@"validated"];
 			[allHosts replaceObjectAtIndex:index withObject:host];
 			break;
 		}
 	}
+	[DataModel setAuth:allHosts];
+}
+
++ (void)addHost:(NSMutableDictionary*)host {
+	NSMutableArray* allHosts = [NSMutableArray arrayWithArray:[DataModel auth]];
+	[allHosts addObject:host];
 	[DataModel setAuth:allHosts];
 }
 
@@ -477,12 +481,12 @@ NSString * const kDataManagerAuthName = @"Auth.plist";
 	}
 }
 
-+ (NSDictionary*)authForHost:(NSString*)server
++ (NSMutableDictionary*)authForHost:(NSString*)server
 {
 	NSArray *auth = [DataModel auth];
 	for (NSDictionary *host in auth) {
 		if ([[host objectForKey:@"host"] isEqual:server]) {
-			return host;
+			return [NSMutableDictionary dictionaryWithDictionary:host];
 		}
 	}
 	return nil;
@@ -491,8 +495,11 @@ NSString * const kDataManagerAuthName = @"Auth.plist";
 #pragma mark - KxSmbProvider delegate
 
 #ifndef TV
-- (KxSMBAuth *)smbAuthForServer:(NSString*)server withShare:(NSString*)share
-{
+- (nullable KxSMBAuth *) smbRequestAuthServer:(nonnull NSString *)server
+										share:(nonnull NSString *)share
+									workgroup:(nonnull NSString *)workgroup
+									 username:(nonnull NSString *)username {
+	
 	NSArray *auth = [DataModel auth];
 	for (NSDictionary *host in auth) {
 		if ([[host objectForKey:@"host"] isEqual:server]) {
@@ -503,6 +510,7 @@ NSString * const kDataManagerAuthName = @"Auth.plist";
 	}
 	return nil;
 }
+
 #endif
 
 @end

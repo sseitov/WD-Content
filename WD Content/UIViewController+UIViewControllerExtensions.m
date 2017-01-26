@@ -22,4 +22,10 @@
 	self.navigationItem.titleView = label;
 }
 
+- (void)errorMessage:(NSString*)message {
+	UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Error" message:message preferredStyle:UIAlertControllerStyleAlert];
+	[alert addAction:[UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleDestructive handler:nil]];
+	[self presentViewController:alert animated:true completion:nil];
+}
+
 @end

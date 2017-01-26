@@ -33,9 +33,7 @@
 
 #import <Foundation/Foundation.h>
 
-#define SAMBA_DEBUG_LEVEL 2
-
-extern NSString * const KxSMBErrorDomain;
+extern NSString * const _Nonnull KxSMBErrorDomain;
 
 typedef enum {
     
@@ -43,7 +41,7 @@ typedef enum {
     KxSMBErrorInvalidArg,
     KxSMBErrorInvalidProtocol,
     KxSMBErrorOutOfMemory,
-    KxSMBErrorPermissionDenied,    
+    KxSMBErrorAccessDenied,
     KxSMBErrorInvalidPath,
     KxSMBErrorPathIsNotDir,
     KxSMBErrorPathIsDir,
@@ -52,6 +50,8 @@ typedef enum {
     KxSMBErrorItemAlreadyExists,
     KxSMBErrorDirNotEmpty,
     KxSMBErrorFileIO,
+    KxSMBErrorConnRefused,
+    KxSMBErrorOpNotPermited,
 
 } KxSMBError;
 
@@ -71,121 +71,280 @@ typedef enum {
 } KxSMBItemType;
 
 @class KxSMBItem;
+@class KxSMBAuth;
 
-typedef void (^KxSMBBlock)(id result);
-typedef void (^KxSMBBlockProgress)(KxSMBItem *item, long transferred);
+typedef void (^KxSMBBlock)(id _Nullable result);
+typedef void (^KxSMBBlockProgress)(KxSMBItem * _Nonnull item, long transferred, BOOL * _Nonnull stop);
 
 @interface KxSMBItemStat : NSObject
-@property(readonly, nonatomic, strong) NSDate *lastModified;
-@property(readonly, nonatomic, strong) NSDate *lastAccess;
-@property(readonly, nonatomic) long size;
-@property(readonly, nonatomic) long mode;
+@property(readonly, nonatomic, strong, nonnull) NSDate *lastModified;
+@property(readonly, nonatomic, strong, nonnull) NSDate *lastAccess;
+@property(readonly, nonatomic, strong, nonnull) NSDate *creationTime;
+@property(readonly, nonatomic) SInt64 size;
+@property(readonly, nonatomic) UInt16 mode;
 @end
 
 @interface KxSMBItem : NSObject
 @property(readonly, nonatomic) KxSMBItemType type;
-@property(readonly, nonatomic, strong) NSString *path;
-@property(readonly, nonatomic, strong) KxSMBItemStat *stat;
+@property(readonly, nonatomic, strong, nonnull) NSString *path;
+@property(readonly, nonatomic, strong, nonnull) KxSMBItemStat *stat;
+@property(readonly, nonatomic, strong, nullable) KxSMBAuth *auth;
 @end
 
 @class KxSMBItemFile;
 
 @interface KxSMBItemTree : KxSMBItem
-- (void) fetchItems: (KxSMBBlock) block;
-- (id) fetchItems;
-- (void) createFileWithName:(NSString *) name overwrite:(BOOL)overwrite block: (KxSMBBlock) block;
-- (id) createFileWithName:(NSString *) name overwrite:(BOOL)overwrite;
-- (void) removeWithName: (NSString *) name block: (KxSMBBlock) block;
-- (id) removeWithName: (NSString *) name;
+
+- (void) fetchItems:(nullable KxSMBBlock)block;
+
+- (nullable id) fetchItems;
+
+- (void) createFileWithName:(nonnull NSString *)name
+                  overwrite:(BOOL)overwrite
+                      block:(nonnull KxSMBBlock)block;
+
+- (nullable id) createFileWithName:(nonnull NSString *)name
+                         overwrite:(BOOL)overwrite;
+
+- (void) removeWithName:(nonnull NSString *)name
+                  block:(nonnull KxSMBBlock)block;
+
+- (nullable id) removeWithName:(nonnull NSString *)name;
+
 @end
 
 @interface KxSMBItemFile : KxSMBItem
 
 - (void) close;
 
-- (void)readDataOfLength:(NSUInteger)length block:(KxSMBBlock) block;
-- (id)readDataOfLength:(NSUInteger)length;
+- (void)readDataOfLength:(NSUInteger)length
+                   block:(nonnull KxSMBBlock)block;
 
-- (void)readDataToEndOfFile:(KxSMBBlock) block;
-- (id)readDataToEndOfFile;
+- (nullable id)readDataOfLength:(NSUInteger)length;
 
-- (void)seekToFileOffset:(off_t)offset whence:(NSInteger)whence block:(KxSMBBlock) block;
-- (id)seekToFileOffset:(off_t)offset whence:(NSInteger)whence;
+- (void)readDataToEndOfFile:(nonnull KxSMBBlock)block;
 
-- (void)writeData:(NSData *)data block:(KxSMBBlock) block;
-- (id)writeData:(NSData *)data;
+- (nullable id)readDataToEndOfFile;
+
+- (void)seekToFileOffset:(off_t)offset
+                  whence:(NSInteger)whence
+                   block:(nonnull KxSMBBlock)block;
+
+- (nullable id)seekToFileOffset:(off_t)offset
+                         whence:(NSInteger)whence;
+
+- (void)writeData:(nonnull NSData *)data
+            block:(nonnull KxSMBBlock)block;
+
+- (nullable id)writeData:(nonnull NSData *)data;
 
 @end
 
 @interface KxSMBAuth : NSObject
-@property (readwrite, nonatomic, strong) NSString *workgroup;
-@property (readwrite, nonatomic, strong) NSString *username;
-@property (readwrite, nonatomic, strong) NSString *password;
+@property (readwrite, nonatomic, strong, nullable) NSString *workgroup;
+@property (readwrite, nonatomic, strong, nullable) NSString *username;
+@property (readwrite, nonatomic, strong, nullable) NSString *password;
 
-+ (id) smbAuthWorkgroup: (NSString *)workgroup
-               username: (NSString *)username
-               password: (NSString *)password;
++ (nullable instancetype) smbAuthWorkgroup:(nullable NSString *)workgroup
+                                  username:(nullable NSString *)username
+                                  password:(nullable NSString *)password;
+
 @end
 
 @protocol KxSMBProviderDelegate <NSObject>
-- (KxSMBAuth *) smbAuthForServer: (NSString *) server
-                       withShare: (NSString *) share;
+
+- (nullable KxSMBAuth *) smbRequestAuthServer:(nonnull NSString *)server
+                                        share:(nonnull NSString *)share
+                                    workgroup:(nonnull NSString *)workgroup
+                                     username:(nonnull NSString *)username;
+@end
+
+// smbc_share_mode
+typedef NS_ENUM(NSUInteger, KxSMBConfigShareMode) {
+    
+    KxSMBConfigShareModeDenyDOS     = 0,
+    KxSMBConfigShareModeDenyAll     = 1,
+    KxSMBConfigShareModeDenyWrite   = 2,
+    KxSMBConfigShareModeDenyRead    = 3,
+    KxSMBConfigShareModeDenyNone    = 4,
+    KxSMBConfigShareModeDenyFCB     = 7,
+};
+
+// smbc_smb_encrypt_level
+typedef NS_ENUM(NSUInteger, KxSMBConfigEncryptLevel) {
+    
+    KxSMBConfigEncryptLevelNone      = 0,
+    KxSMBConfigEncryptLevelRequest   = 1,
+    KxSMBConfigEncryptLevelRequire   = 2,
+};
+
+@interface KxSMBConfig : NSObject
+@property (readwrite, nonatomic) NSUInteger timeout;
+@property (readwrite, nonatomic) NSUInteger debugLevel;
+@property (readwrite, nonatomic) BOOL debugToStderr;
+@property (readwrite, nonatomic) BOOL fullTimeNames;
+@property (readwrite, nonatomic) KxSMBConfigShareMode shareMode;
+@property (readwrite, nonatomic) KxSMBConfigEncryptLevel encryptionLevel;
+@property (readwrite, nonatomic) BOOL caseSensitive;
+@property (readwrite, nonatomic) NSUInteger browseMaxLmbCount;
+@property (readwrite, nonatomic) BOOL urlEncodeReaddirEntries;
+@property (readwrite, nonatomic) BOOL oneSharePerServer;
+@property (readwrite, nonatomic) BOOL useKerberos;
+@property (readwrite, nonatomic) BOOL fallbackAfterKerberos;
+@property (readwrite, nonatomic) BOOL noAutoAnonymousLogin;
+@property (readwrite, nonatomic) BOOL useCCache;
+@property (readwrite, nonatomic) BOOL useNTHash;
+@property (readwrite, nonatomic, strong, nullable) NSString *netbiosName;
+@property (readwrite, nonatomic, strong, nullable) NSString *workgroup;
+@property (readwrite, nonatomic, strong, nullable) NSString *username;
 @end
 
 @interface KxSMBProvider : NSObject
 
 @property (readwrite, nonatomic, weak) id<KxSMBProviderDelegate> delegate;
+@property (readwrite, nonatomic, strong, nonnull) KxSMBConfig *config;
+@property (readwrite, nonatomic, strong, nullable) dispatch_queue_t completionQueue;
 
-+ (id) sharedSmbProvider;
++ (nullable instancetype) sharedSmbProvider;
 
-- (void) fetchAtPath: (NSString *) path block: (KxSMBBlock) block;
-- (id) fetchAtPath: (NSString *) path;
+- (void) fetchAtPath:(nonnull NSString *)path
+                auth:(nullable KxSMBAuth *)auth
+               block:(nonnull KxSMBBlock)block;
 
-- (void) createFileAtPath:(NSString *) path overwrite:(BOOL)overwrite block: (KxSMBBlock) block;
-- (id) createFileAtPath:(NSString *) path overwrite:(BOOL)overwrite;
+- (void) fetchAtPath:(nonnull NSString *)path
+           expandDir:(BOOL)expandDir
+                auth:(nullable KxSMBAuth *)auth
+               block:(nonnull KxSMBBlock)block;
 
-- (void) createFolderAtPath:(NSString *) path block: (KxSMBBlock) block;
-- (id) createFolderAtPath:(NSString *) path;
+- (nullable id) fetchAtPath:(nonnull NSString *)path
+                       auth:(nullable KxSMBAuth *)auth;
 
-- (void) removeAtPath: (NSString *) path block: (KxSMBBlock) block;
-- (id) removeAtPath: (NSString *) path;
+- (nullable id) fetchAtPath:(nonnull NSString *)path
+                  expandDir:(BOOL)expandDir
+                       auth:(nullable KxSMBAuth *)auth;
 
-- (void) copySMBPath:(NSString *)smbPath
-           localPath:(NSString *)localPath
+- (void) createFileAtPath:(nonnull NSString *)path
+                overwrite:(BOOL)overwrite
+                     auth:(nullable KxSMBAuth *)auth
+                    block:(nonnull KxSMBBlock)block;
+
+- (nullable id) createFileAtPath:(nonnull NSString *)path
+                       overwrite:(BOOL)overwrite
+                            auth:(nullable KxSMBAuth *)auth;
+
+- (void) createFolderAtPath:(nonnull NSString *)path
+                       auth:(nullable KxSMBAuth *)auth
+                      block:(nonnull KxSMBBlock)block;
+
+- (nullable id) createFolderAtPath:(nonnull NSString *)path
+                              auth:(nullable KxSMBAuth *)auth;
+
+- (void) removeAtPath:(nonnull NSString *)path
+                 auth:(nullable KxSMBAuth *)auth
+                block:(nonnull KxSMBBlock)block;
+
+- (nullable id) removeAtPath:(nonnull NSString *)path
+                        auth:(nullable KxSMBAuth *)auth;
+
+- (void) copySMBPath:(nonnull NSString *)smbPath
+           localPath:(nonnull NSString *)localPath
            overwrite:(BOOL)overwrite
-               block:(KxSMBBlock)block;
+                auth:(nullable KxSMBAuth *)auth
+               block:(nonnull KxSMBBlock)block;
 
-- (void) copyLocalPath:(NSString *)localPath
-               smbPath:(NSString *)smbPath
+- (void) copyLocalPath:(nonnull NSString *)localPath
+               smbPath:(nonnull NSString *)smbPath
              overwrite:(BOOL)overwrite
-                 block:(KxSMBBlock)block;
+                  auth:(nullable KxSMBAuth *)auth
+                 block:(nonnull KxSMBBlock)block;
 
-- (void) copySMBPath:(NSString *)smbPath
-           localPath:(NSString *)localPath
+- (void) copySMBPath:(nonnull NSString *)smbPath
+           localPath:(nonnull NSString *)localPath
            overwrite:(BOOL)overwrite
-            progress:(KxSMBBlockProgress)progress
-               block:(KxSMBBlock)block;
+                auth:(nullable KxSMBAuth *)auth
+            progress:(nullable KxSMBBlockProgress)progress
+               block:(nonnull KxSMBBlock)block;
 
-- (void) copyLocalPath:(NSString *)localPath
-               smbPath:(NSString *)smbPath
+- (void) copyLocalPath:(nonnull NSString *)localPath
+               smbPath:(nonnull NSString *)smbPath
              overwrite:(BOOL)overwrite
-              progress:(KxSMBBlockProgress)progress
-                 block:(KxSMBBlock)block;
+                  auth:(nullable KxSMBAuth *)auth
+              progress:(nullable KxSMBBlockProgress)progress
+                 block:(nonnull KxSMBBlock)block;
 
-- (void) removeFolderAtPath:(NSString *) path
-                      block:(KxSMBBlock)block;
+- (void) copyFromPath:(nonnull NSString *)oldPath
+               toPath:(nonnull NSString *)newPath
+            overwrite:(BOOL)overwrite
+                 auth:(nullable KxSMBAuth *)auth
+             progress:(nullable KxSMBBlockProgress)progress
+                block:(nonnull KxSMBBlock)block;
 
-- (void) renameAtPath:(NSString *)oldPath
-              newPath:(NSString *)newPath
-                block:(KxSMBBlock)block;
+- (void) removeFolderAtPath:(nonnull NSString *)path
+                       auth:(nullable KxSMBAuth *)auth
+                      block:(nonnull KxSMBBlock)block;
 
-// sets smb timeout if value > 0 and returns the current timeout
-+ (NSUInteger) smbTimeout:(NSUInteger)value;
+- (void) renameAtPath:(nonnull NSString *)oldPath
+              newPath:(nonnull NSString *)newPath
+                 auth:(nullable KxSMBAuth *)auth
+                block:(nonnull KxSMBBlock)block;
+
+// without auth (compatible)
+
+- (void) fetchAtPath:(nonnull NSString *)path
+               block:(nullable KxSMBBlock)block;
+
+- (nullable id) fetchAtPath:(nonnull NSString *)path;
+
+- (void) createFileAtPath:(nonnull NSString *)path
+                overwrite:(BOOL)overwrite
+                    block:(nonnull KxSMBBlock)block;
+
+- (nullable id) createFileAtPath:(nonnull NSString *)path
+                       overwrite:(BOOL)overwrite;
+
+- (void) createFolderAtPath:(nonnull NSString *)path
+                      block:(nonnull KxSMBBlock)block;
+
+- (nullable id) createFolderAtPath:(nonnull NSString *)path;
+
+- (void) removeAtPath:(nonnull NSString *)path
+                block:(nonnull KxSMBBlock)block;
+
+- (nullable id) removeAtPath:(nonnull NSString *)path;
+
+- (void) copySMBPath:(nonnull NSString *)smbPath
+           localPath:(nonnull NSString *)localPath
+           overwrite:(BOOL)overwrite
+               block:(nonnull KxSMBBlock)block;
+
+- (void) copyLocalPath:(nonnull NSString *)localPath
+               smbPath:(nonnull NSString *)smbPath
+             overwrite:(BOOL)overwrite
+                 block:(nonnull KxSMBBlock)block;
+
+- (void) copySMBPath:(nonnull NSString *)smbPath
+           localPath:(nonnull NSString *)localPath
+           overwrite:(BOOL)overwrite
+            progress:(nullable KxSMBBlockProgress)progress
+               block:(nonnull KxSMBBlock)block;
+
+- (void) copyLocalPath:(nonnull NSString *)localPath
+               smbPath:(nonnull NSString *)smbPath
+             overwrite:(BOOL)overwrite
+              progress:(nullable KxSMBBlockProgress)progress
+                 block:(nonnull KxSMBBlock)block;
+
+- (void) removeFolderAtPath:(nonnull NSString *)path
+                      block:(nonnull KxSMBBlock)block;
+
+- (void) renameAtPath:(nonnull NSString *)oldPath
+              newPath:(nonnull NSString *)newPath
+                block:(nonnull KxSMBBlock)block;
 
 @end
 
 @interface NSString (KxSMB)
 
-- (NSString *) stringByAppendingSMBPathComponent: (NSString *) aString;
+- (nonnull NSString *) stringByAppendingSMBPathComponent:(nonnull NSString *)aString;
 
 @end

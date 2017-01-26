@@ -7,10 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "SettingsCell.h"
 
 @interface SettingsViewController : UITableViewController
-
-extern NSString* const UpdateDBNotification;
 
 @end
