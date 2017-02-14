@@ -10,12 +10,11 @@ import UIKit
 
 class SharesController: UICollectionViewController {
 
-	var rootNodes:[Node] = []
+	var rootNodes:[SMBFile] = []
 	
     override func viewDidLoad() {
         super.viewDidLoad()
 		self.title = "Folders"
-		rootNodes = DataModel.sharedInstance().nodes(byRoot: nil) as! [Node]
     }
 
 	override func viewDidAppear(_ animated: Bool) {

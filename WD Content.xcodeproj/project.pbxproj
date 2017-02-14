@@ -51,10 +51,6 @@
 		2C67D6A71E14EFEB00F95DB5 /* SharesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C67D6A61E14EFEB00F95DB5 /* SharesController.swift */; };
 		2C67D6A91E14F02200F95DB5 /* AddShareController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C67D6A81E14F02200F95DB5 /* AddShareController.swift */; };
 		2C67D6AF1E14F79C00F95DB5 /* DataModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C67D6AE1E14F79C00F95DB5 /* DataModel.m */; };
-		2C67D6B01E14FC8700F95DB5 /* ContentModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2CA88713187EA87F0074B73E /* ContentModel.xcdatamodeld */; };
-		2C67D6B11E14FC8D00F95DB5 /* DataModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C67D6AE1E14F79C00F95DB5 /* DataModel.m */; };
-		2C67D6B21E14FC9100F95DB5 /* Node.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CAEE6D319C8C7C000B5DDD7 /* Node.m */; };
-		2C67D6B31E14FC9500F95DB5 /* MetaInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = ED04A5C519D172C00079C787 /* MetaInfo.m */; };
 		2C67D6B51E1510A700F95DB5 /* ShareCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C67D6B41E1510A700F95DB5 /* ShareCell.swift */; };
 		2C67D6DF1E156D0D00F95DB5 /* DeviceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C67D6DE1E156D0D00F95DB5 /* DeviceController.swift */; };
 		2C6E746B19C75ECA001D9971 /* SharesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C6E746A19C75ECA001D9971 /* SharesTableViewController.m */; };
@@ -806,17 +802,13 @@
 			files = (
 				2C67D69A1E14EF2600F95DB5 /* AppDelegate.swift in Sources */,
 				2CD266E41E53012C00535F80 /* TOSMBConstants.m in Sources */,
-				2C67D6B11E14FC8D00F95DB5 /* DataModel.m in Sources */,
 				2CD266E21E53012C00535F80 /* TONetBIOSNameService.m in Sources */,
-				2C67D6B01E14FC8700F95DB5 /* ContentModel.xcdatamodeld in Sources */,
 				2C67D6A71E14EFEB00F95DB5 /* SharesController.swift in Sources */,
 				2CD266E01E53012C00535F80 /* SMBConnection.m in Sources */,
 				2C67D6A91E14F02200F95DB5 /* AddShareController.swift in Sources */,
 				2C67D6B51E1510A700F95DB5 /* ShareCell.swift in Sources */,
 				2C67D6DF1E156D0D00F95DB5 /* DeviceController.swift in Sources */,
 				2CD266E31E53012C00535F80 /* TONetBIOSNameServiceEntry.m in Sources */,
-				2C67D6B31E14FC9500F95DB5 /* MetaInfo.m in Sources */,
-				2C67D6B21E14FC9100F95DB5 /* Node.m in Sources */,
 				2CD266E11E53012C00535F80 /* SMBFile.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
