@@ -10,10 +10,19 @@
 
 @class SMBFile;
 
+@protocol SMBConnectionDelegate <NSObject>
+
+- (void)requestAuth:(void (^)(NSString *user, NSString* password))auth;
+
+@end
+
 @interface SMBConnection : NSObject
 
-- (bool)connectTo:(NSString*)share port:(int)port user:(NSString*)user password:(NSString*)password;
+@property (weak, nonatomic) id<SMBConnectionDelegate> delegate;
+
+- (bool)connectTo:(NSString*)share port:(int)port;
 - (void)disconnect;
+- (bool)isConnected;
 - (NSArray *)folderContentsAt:(NSString *)path;
 
 @end

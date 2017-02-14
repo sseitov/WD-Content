@@ -10,18 +10,26 @@ import UIKit
 
 class SharesController: UICollectionViewController {
 
-	var rootNodes:[SMBFile] = []
+	var rootNodes:[Node] = []
 	
     override func viewDidLoad() {
         super.viewDidLoad()
-		self.title = "Folders"
-    }
-
-	override func viewDidAppear(_ animated: Bool) {
-		super.viewDidAppear(animated)
+		self.title = "My Shares"
+		NotificationCenter.default.addObserver(self,
+		                                       selector: #selector(self.refresh(_:)),
+		                                       name: refreshNotification,
+		                                       object: nil)
+		rootNodes = Model.shared.nodes(byRoot: nil)
 		if rootNodes.count == 0 {
 			performSegue(withIdentifier: "addShare", sender: nil)
+		} else {
+			collectionView?.reloadData()
 		}
+    }
+
+	func refresh(_ notify:Notification) {
+		rootNodes = Model.shared.nodes(byRoot: nil)
+		collectionView?.reloadData()
 	}
 	
     // MARK: - Navigation
@@ -51,8 +59,9 @@ class SharesController: UICollectionViewController {
 			cell.imageView.image = UIImage(named: "addShare")
 			cell.textView.text = ""
 		} else {
+			let node = rootNodes[indexPath.row-1]
 			cell.imageView.image = UIImage(named: "sharedFolder")
-			cell.textView.text = "Share"
+			cell.textView.text = node.name
 		}
         return cell
     }

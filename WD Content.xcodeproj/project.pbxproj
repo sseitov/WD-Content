@@ -21,6 +21,11 @@
 		2C125EBA1848C74B00406FC3 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C125EB91848C74B00406FC3 /* AppDelegate.m */; };
 		2C125EC31848C74B00406FC3 /* CollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C125EC21848C74B00406FC3 /* CollectionViewController.m */; };
 		2C125EC51848C74B00406FC3 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2C125EC41848C74B00406FC3 /* Images.xcassets */; };
+		2C1294B11E5399B900DBFE23 /* UIViewControllerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1294B01E5399B900DBFE23 /* UIViewControllerExtensions.swift */; };
+		2C1294B41E53A2F800DBFE23 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1294B31E53A2F800DBFE23 /* Model.swift */; };
+		2C1294DE1E53AB1D00DBFE23 /* WDContentTV.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2C1294DC1E53AB1D00DBFE23 /* WDContentTV.xcdatamodeld */; };
+		2C1294E11E53AB9300DBFE23 /* Node+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1294DF1E53AB9300DBFE23 /* Node+CoreDataClass.swift */; };
+		2C1294E21E53AB9300DBFE23 /* Node+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1294E01E53AB9300DBFE23 /* Node+CoreDataProperties.swift */; };
 		2C17010B1848F68200A37516 /* Cell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C17010A1848F68200A37516 /* Cell.m */; };
 		2C170113184925F800A37516 /* KxSMBProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C170112184925F800A37516 /* KxSMBProvider.m */; };
 		2C248CDF1E3635460018F179 /* HostBrowserController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C248CDE1E3635460018F179 /* HostBrowserController.swift */; };
@@ -113,6 +118,11 @@
 		2C125EC11848C74B00406FC3 /* CollectionViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CollectionViewController.h; path = "WD Content/CollectionViewController.h"; sourceTree = "<group>"; };
 		2C125EC21848C74B00406FC3 /* CollectionViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = CollectionViewController.m; path = "WD Content/CollectionViewController.m"; sourceTree = "<group>"; };
 		2C125EC41848C74B00406FC3 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = "WD Content/Images.xcassets"; sourceTree = "<group>"; };
+		2C1294B01E5399B900DBFE23 /* UIViewControllerExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewControllerExtensions.swift; sourceTree = "<group>"; };
+		2C1294B31E53A2F800DBFE23 /* Model.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Model.swift; path = Model/Model.swift; sourceTree = "<group>"; };
+		2C1294DD1E53AB1D00DBFE23 /* WDContentTV.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = WDContentTV.xcdatamodel; sourceTree = "<group>"; };
+		2C1294DF1E53AB9300DBFE23 /* Node+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Node+CoreDataClass.swift"; path = "Model/Node+CoreDataClass.swift"; sourceTree = "<group>"; };
+		2C1294E01E53AB9300DBFE23 /* Node+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Node+CoreDataProperties.swift"; path = "Model/Node+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		2C1701091848F68200A37516 /* Cell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Cell.h; path = "WD Content/Cell.h"; sourceTree = "<group>"; };
 		2C17010A1848F68200A37516 /* Cell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Cell.m; path = "WD Content/Cell.m"; sourceTree = "<group>"; };
 		2C170111184925F800A37516 /* KxSMBProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KxSMBProvider.h; sourceTree = "<group>"; };
@@ -362,6 +372,27 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		2C1294AD1E5398FF00DBFE23 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				2C67D69D1E14EF2600F95DB5 /* Main.storyboard */,
+				2C67D6A01E14EF2600F95DB5 /* Assets.xcassets */,
+				2C67D6A21E14EF2600F95DB5 /* Info.plist */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		2C1294B21E53A1F400DBFE23 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				2C1294DC1E53AB1D00DBFE23 /* WDContentTV.xcdatamodeld */,
+				2C1294DF1E53AB9300DBFE23 /* Node+CoreDataClass.swift */,
+				2C1294E01E53AB9300DBFE23 /* Node+CoreDataProperties.swift */,
+				2C1294B31E53A2F800DBFE23 /* Model.swift */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
 		2C1701101849251D00A37516 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -430,15 +461,15 @@
 			isa = PBXGroup;
 			children = (
 				2C67D6AA1E14F09F00F95DB5 /* WD Content TV-Bridging-Header.h */,
+				2C1294B21E53A1F400DBFE23 /* Model */,
 				2CD266D41E53011900535F80 /* Samba */,
 				2C67D6991E14EF2600F95DB5 /* AppDelegate.swift */,
 				2C67D6A61E14EFEB00F95DB5 /* SharesController.swift */,
 				2C67D6B41E1510A700F95DB5 /* ShareCell.swift */,
 				2C67D6A81E14F02200F95DB5 /* AddShareController.swift */,
 				2C67D6DE1E156D0D00F95DB5 /* DeviceController.swift */,
-				2C67D69D1E14EF2600F95DB5 /* Main.storyboard */,
-				2C67D6A01E14EF2600F95DB5 /* Assets.xcassets */,
-				2C67D6A21E14EF2600F95DB5 /* Info.plist */,
+				2C1294B01E5399B900DBFE23 /* UIViewControllerExtensions.swift */,
+				2C1294AD1E5398FF00DBFE23 /* Resources */,
 			);
 			path = "WD Content TV";
 			sourceTree = "<group>";
@@ -602,7 +633,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0820;
-				LastUpgradeCheck = 0800;
+				LastUpgradeCheck = 0820;
 				ORGANIZATIONNAME = "Sergey Seitov";
 				TargetAttributes = {
 					2C125EA51848C74B00406FC3 = {
@@ -801,9 +832,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				2C67D69A1E14EF2600F95DB5 /* AppDelegate.swift in Sources */,
+				2C1294B11E5399B900DBFE23 /* UIViewControllerExtensions.swift in Sources */,
 				2CD266E41E53012C00535F80 /* TOSMBConstants.m in Sources */,
+				2C1294E11E53AB9300DBFE23 /* Node+CoreDataClass.swift in Sources */,
+				2C1294B41E53A2F800DBFE23 /* Model.swift in Sources */,
+				2C1294DE1E53AB1D00DBFE23 /* WDContentTV.xcdatamodeld in Sources */,
 				2CD266E21E53012C00535F80 /* TONetBIOSNameService.m in Sources */,
 				2C67D6A71E14EFEB00F95DB5 /* SharesController.swift in Sources */,
+				2C1294E21E53AB9300DBFE23 /* Node+CoreDataProperties.swift in Sources */,
 				2CD266E01E53012C00535F80 /* SMBConnection.m in Sources */,
 				2C67D6A91E14F02200F95DB5 /* AddShareController.swift in Sources */,
 				2C67D6B51E1510A700F95DB5 /* ShareCell.swift in Sources */,
@@ -935,6 +971,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = "armv7 arm64";
@@ -1142,6 +1179,17 @@
 /* End XCConfigurationList section */
 
 /* Begin XCVersionGroup section */
+		2C1294DC1E53AB1D00DBFE23 /* WDContentTV.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				2C1294DD1E53AB1D00DBFE23 /* WDContentTV.xcdatamodel */,
+			);
+			currentVersion = 2C1294DD1E53AB1D00DBFE23 /* WDContentTV.xcdatamodel */;
+			name = WDContentTV.xcdatamodeld;
+			path = Model/WDContentTV.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
 		2CA88713187EA87F0074B73E /* ContentModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (

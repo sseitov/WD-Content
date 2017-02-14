@@ -12,21 +12,12 @@
 
 NSString* const DataModelDidChangeNotification = @"DataModelDidChangeNotification";
 
-#ifdef TV
-@interface DataModel () {
-	
-	NSCondition* _mutex;
-}
-
-@end
-#else
 @interface DataModel () <KxSMBProviderDelegate> {
 	
 	NSCondition* _mutex;
 }
 
 @end
-#endif
 
 @implementation DataModel
 
@@ -52,10 +43,8 @@ NSString * const kDataManagerAuthName = @"Auth.plist";
 	self = [super init];
 	if (self) {
 		_mutex = [[NSCondition alloc] init];
-#ifndef TV
 		_provider = [KxSMBProvider sharedSmbProvider];
 		_provider.delegate = self;
-#endif
 	}
 	return self;
 }
@@ -129,11 +118,7 @@ NSString * const kDataManagerAuthName = @"Auth.plist";
 		return _mainObjectContext;
 	}
 	
-#ifdef TV
-	_mainObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
-#else
 	_mainObjectContext = [[NSManagedObjectContext alloc] init];
-#endif
 	[_mainObjectContext setPersistentStoreCoordinator:self.persistentStoreCoordinator];
 	
 	return _mainObjectContext;
@@ -171,11 +156,7 @@ NSString * const kDataManagerAuthName = @"Auth.plist";
 
 - (NSManagedObjectContext*)managedObjectContext
 {
-#ifdef TV
-	NSManagedObjectContext *ctx = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
-#else
 	NSManagedObjectContext *ctx = [[NSManagedObjectContext alloc] init];
-#endif
 	[ctx setPersistentStoreCoordinator:self.persistentStoreCoordinator];
 	
 	return ctx;
@@ -244,9 +225,6 @@ NSString * const kDataManagerAuthName = @"Auth.plist";
 
 #pragma mark - update methods
 
-#ifdef TV
-
-#else
 - (Node*)newNodeForItem:(KxSMBItem*)item withParent:(Node*)parent
 {
 	Node *node = [self nodeByPath:item.path];
@@ -278,7 +256,6 @@ NSString * const kDataManagerAuthName = @"Auth.plist";
 	}
  	return node;
 }
-#endif
 
 - (void)deleteNode:(Node*)node
 {
@@ -338,11 +315,7 @@ NSString * const kDataManagerAuthName = @"Auth.plist";
 		return SharedDocumentsPath;
 	
 	// Compose a path to the <Library>/Database directory
-#ifdef TV
-	NSString *libraryPath = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-#else
 	NSString *libraryPath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-#endif
 	SharedDocumentsPath = [libraryPath stringByAppendingPathComponent:@"ContentModel"];
 	
 	// Ensure the database directory exists
@@ -508,7 +481,6 @@ NSString * const kDataManagerAuthName = @"Auth.plist";
 
 #pragma mark - KxSmbProvider delegate
 
-#ifndef TV
 - (nullable KxSMBAuth *) smbRequestAuthServer:(nonnull NSString *)server
 										share:(nonnull NSString *)share
 									workgroup:(nonnull NSString *)workgroup
@@ -524,7 +496,5 @@ NSString * const kDataManagerAuthName = @"Auth.plist";
 	}
 	return nil;
 }
-
-#endif
 
 @end
