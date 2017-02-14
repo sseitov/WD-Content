@@ -14,22 +14,7 @@ class DeviceController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-		self.title = target?.name
-		
-		let contentPath = "http://\(self.target!.host):\(self.target!.port)"
-		if let url = URL(string:contentPath) {
-			let urlSession = URLSession(configuration: URLSessionConfiguration.default) //, delegate: self, delegateQueue: OperationQueue.main)
-			let task = urlSession.dataTask(with: url, completionHandler: { data, response, error in
-				print(error)
-				print(response)
-				print(data)
-				if data != nil {
-					let str = String(data: data!, encoding: .utf8)
-					print(str)
-				}
-			})
-			task.resume()
-		}
+		self.title = target?.name		
     }
 
     override func didReceiveMemoryWarning() {

@@ -31,19 +31,19 @@ class AddShareController: UITableViewController {
         super.viewDidLoad()
 		self.title = "Devices"
 		serviceBrowser.delegate = self
-		serviceBrowser.searchForServices(ofType: "_http._tcp.", inDomain: "local")
+		serviceBrowser.searchForServices(ofType: "_smb._tcp.", inDomain: "local")
     }
 	
 	func updateInterface () {
 		for service in self.services {
 			if service.port == -1 {
-				print("service \(service.name) of type \(service.type)" +
-					" not yet resolved")
+//				print("service \(service.name) of type \(service.type)" +
+//					" not yet resolved")
 				service.delegate = self
 				service.resolve(withTimeout:10)
 			} else {
-				print("service \(service.name) of type \(service.type)," +
-					"port \(service.port), addresses \(service.addresses)")
+//				print("service \(service.name) of type \(service.type)," +
+//					"port \(service.port), addresses \(service.addresses)")
 				if let addresses = service.addresses {
 					var ips: String = ""
 					for address in addresses {
@@ -58,12 +58,23 @@ class AddShareController: UITableViewController {
 							}
 						}
 					}
-					hosts.append(ServiceHost(name: service.name, host: ips, port: service.port))
+					if !hostInList(address: ips) {
+						hosts.append(ServiceHost(name: service.name, host: ips, port: service.port))
+					}
 					tableView.reloadData()
-//					service.stop()
+					service.stop()
 				}
 			}
 		}
+	}
+	
+	func hostInList(address:String) -> Bool {
+		for host in hosts {
+			if host.host == address {
+				return true
+			}
+		}
+		return false
 	}
 	
     // MARK: - Table view data source
@@ -96,7 +107,6 @@ class AddShareController: UITableViewController {
 			controller.target = sender as? ServiceHost
 		}
     }
-
 }
 
 // MARK: - NSNetServiceDelegate
@@ -106,11 +116,6 @@ extension AddShareController:NetServiceDelegate {
 	func netServiceDidResolveAddress(_ sender: NetService) {
 		updateInterface()
 		sender.startMonitoring()
-	}
-	
-	func netService(_ sender: NetService, didUpdateTXTRecord data: Data) {
-		let info = NetService.dictionary(fromTXTRecord: data)
-		print(info)
 	}
 }
 
