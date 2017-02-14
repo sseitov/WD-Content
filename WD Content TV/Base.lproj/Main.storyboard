@@ -72,7 +72,7 @@
                     </collectionView>
                     <navigationItem key="navigationItem" id="Wds-DU-CKc"/>
                     <connections>
-                        <segue destination="Qr0-SX-sMb" kind="presentation" identifier="addShare" modalPresentationStyle="formSheet" modalTransitionStyle="crossDissolve" id="ZUK-O8-Fmg"/>
+                        <segue destination="Qr0-SX-sMb" kind="presentation" identifier="addShare" modalPresentationStyle="pageSheet" modalTransitionStyle="crossDissolve" id="ZUK-O8-Fmg"/>
                     </connections>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mq4-Qz-FXf" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -86,16 +86,6 @@
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="66" sectionHeaderHeight="66" sectionFooterHeight="66" id="LDe-rI-QAc">
                         <rect key="frame" x="0.0" y="0.0" width="1920" height="1080"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="Mqu-eU-Bjj">
-                                <rect key="frame" x="0.0" y="66" width="1920" height="66"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Mqu-eU-Bjj" id="Bmq-8Z-fIn">
-                                    <rect key="frame" x="0.0" y="0.0" width="1904" height="66"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                </tableViewCellContentView>
-                            </tableViewCell>
-                        </prototypes>
                         <connections>
                             <outlet property="dataSource" destination="Afk-lf-ZNe" id="XfE-Xy-S1G"/>
                             <outlet property="delegate" destination="Afk-lf-ZNe" id="r9o-lt-0Ee"/>
@@ -117,16 +107,6 @@
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="66" sectionHeaderHeight="66" sectionFooterHeight="66" id="63l-ms-0vy">
                         <rect key="frame" x="0.0" y="0.0" width="1920" height="1080"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="1xz-UP-RiZ">
-                                <rect key="frame" x="0.0" y="66" width="1920" height="66"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="1xz-UP-RiZ" id="0hk-B8-D1F">
-                                    <rect key="frame" x="0.0" y="0.0" width="1904" height="66"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                </tableViewCellContentView>
-                            </tableViewCell>
-                        </prototypes>
                         <connections>
                             <outlet property="dataSource" destination="Cpf-uI-e62" id="lpM-6D-0oD"/>
                             <outlet property="delegate" destination="Cpf-uI-e62" id="eEL-Hf-v8m"/>

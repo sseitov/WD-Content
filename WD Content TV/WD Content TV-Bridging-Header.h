@@ -3,3 +3,6 @@
 //
 
 #import "DataModel.h"
+#import "SMBConnection.h"
+#import "SMBFile.h"
+#import "SVProgressHUD.h"

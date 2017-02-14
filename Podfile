@@ -6,6 +6,6 @@ target "WD Content" do
 end
 
 target "WD Content TV" do
-    use_frameworks!
+    pod 'SVProgressHUD'
     pod 'AFNetworking'
 end

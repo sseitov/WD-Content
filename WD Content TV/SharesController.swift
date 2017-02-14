@@ -14,7 +14,7 @@ class SharesController: UICollectionViewController {
 	
     override func viewDidLoad() {
         super.viewDidLoad()
-		self.title = "Share List"
+		self.title = "Folders"
 		rootNodes = DataModel.sharedInstance().nodes(byRoot: nil) as! [Node]
     }
 

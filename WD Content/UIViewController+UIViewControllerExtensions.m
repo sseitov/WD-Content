@@ -14,7 +14,9 @@
 	
 	UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 200, 44)];
 	label.textAlignment = NSTextAlignmentCenter;
+#ifndef TV
 	label.font = [UIFont fontWithName:@"HelveticaNeue-CondensedBold" size:15];
+#endif
 	label.text = text;
 	label.textColor = [UIColor whiteColor];
 	label.numberOfLines = 0;
