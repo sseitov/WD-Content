@@ -2,7 +2,7 @@
 //  Node+CoreDataProperties.swift
 //  WD Content
 //
-//  Created by Сергей Сейтов on 15.02.17.
+//  Created by Сергей Сейтов on 17.02.17.
 //  Copyright © 2017 Sergey Seitov. All rights reserved.
 //
 
@@ -21,8 +21,9 @@ extension Node {
     @NSManaged public var path: String?
     @NSManaged public var size: Int64
     @NSManaged public var uid: String?
-    @NSManaged public var parent: Node?
     @NSManaged public var childs: NSSet?
+    @NSManaged public var parent: Node?
+    @NSManaged public var connection: Connection?
 
 }
 

@@ -43,7 +43,7 @@
     }
 }
 
-- (bool)connectTo:(NSString*)host port:(int)port {
+- (bool)connectTo:(NSString*)host port:(int)port user:(NSString*)user password:(NSString*)password {
     
     if (_session != nil) {
         smb_session_destroy(_session);
@@ -67,25 +67,12 @@
     }
     if (smb_session_is_guest(_session) >= 0) {
         return true;
-	} else if (_delegate != nil) {
-		[_delegate requestAuth:^(NSString *user, NSString* password) {
-			if (user != nil && password != nil) {
-				//Attempt a login. Even if we're downgraded to guest, the login call will succeed
-				smb_session_set_creds(_session, hostName.UTF8String, user.UTF8String, password.UTF8String);
-				if (smb_session_login(_session) != 0) {
-					[self disconnect];
-				}
-			} else {
-				[self disconnect];
-			}
-		}];
-		return true;
 	} else {
-		return false;
+		//Attempt a login. Even if we're downgraded to guest, the login call will succeed
+		smb_session_set_creds(_session, hostName.UTF8String, user.UTF8String, password.UTF8String);
+		int result = smb_session_login(_session);
+		return ( result >= 0);
 	}
-		
-
-    return true;
 }
 
 - (void)disconnect {

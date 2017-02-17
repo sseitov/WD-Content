@@ -10,42 +10,43 @@ import UIKit
 
 let refreshNotification = Notification.Name("REFRESH")
 
-class DeviceController: UITableViewController, SMBConnectionDelegate {
+class DeviceController: UITableViewController {
 
 	var target:ServiceHost?
-	var connection:SMBConnection?
-	var content:[SMBFile] = []
+	
+	private var connection = SMBConnection()
+	private var cashedConnection:Connection?
+	private var content:[SMBFile] = []
 	
     override func viewDidLoad() {
         super.viewDidLoad()
 		self.title = target?.name
-		
-		connection = SMBConnection()
-		connection?.delegate = self
-		
-		SVProgressHUD.show(withStatus: "Connect")
-		DispatchQueue.global().async {
-			if let connected = self.connection?.connect(to: self.target!.host, port: Int32(self.target!.port)) {
-				DispatchQueue.main.async {
-					SVProgressHUD.dismiss()
-					if connected {
-						self.content = self.connection!.folderContents(at: "/") as! [SMBFile]
-						self.tableView.reloadData()
-					} else {
-						self.showMessage("Can not connect.", messageType: .error, messageHandler: {
-							self.goBack()
-						})
-					}
-				}
-			} else {
-				self.showMessage("Can not connect.", messageType: .error, messageHandler: {
-					self.goBack()
-				})
+
+		cashedConnection = Model.shared.getConnection(target!.host)
+		var connected = false
+		if cashedConnection != nil {
+			connected = connection.connect(to: cashedConnection!.ip!,
+			                   port: Int32(cashedConnection!.port),
+			                   user: cashedConnection!.user!,
+			                   password: cashedConnection?.password!)
+		} else {
+			connected = connection.connect(to: target!.host,
+			                               port: Int32(target!.port),
+			                               user: "",
+			                               password: "")
+		}
+		if !connected {
+			requestAuth()
+		} else {
+			if cashedConnection == nil {
+				cashedConnection = Model.shared.addConnection(ip: self.target!.host, port: Int16(self.target!.port), user: "", password: "")
 			}
+			content = self.connection.folderContents(at: "/") as! [SMBFile]
+			self.tableView.reloadData()
 		}
     }
 
-	func requestAuth(_ auth: ((String?, String?) -> Void)!) {
+	func requestAuth() {
 		let alert = UIAlertController(title: target?.name, message: "Input credentials", preferredStyle: .alert)
 		var userField:UITextField?
 		var passwordField:UITextField?
@@ -63,9 +64,13 @@ class DeviceController: UITableViewController, SMBConnectionDelegate {
 			passwordField = textField
 		})
 		alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { _ in
-			auth(userField?.text, passwordField?.text)
-			if self.connection!.isConnected() {
-				self.content = self.connection!.folderContents(at: "/") as! [SMBFile]
+			if self.connection.connect(to: self.target!.host,
+			                           port: Int32(self.target!.port),
+			                           user: userField!.text!,
+			                           password: passwordField!.text!) {
+				
+				self.cashedConnection = Model.shared.addConnection(ip: self.target!.host, port: Int16(self.target!.port), user: userField!.text!, password: passwordField!.text!)
+				self.content = self.connection.folderContents(at: "/") as! [SMBFile]
 				self.tableView.reloadData()
 			} else {
 				self.showMessage("Can not connect.", messageType: .error, messageHandler: {
@@ -74,7 +79,6 @@ class DeviceController: UITableViewController, SMBConnectionDelegate {
 			}
 		}))
 		alert.addAction(UIAlertAction(title: "Cancel", style: .destructive, handler: { _ in
-			auth(nil, nil)
 			self.goBack()
 		}))
 		present(alert, animated: true, completion: nil)
@@ -98,7 +102,7 @@ class DeviceController: UITableViewController, SMBConnectionDelegate {
 
 	override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 		let folder = content[indexPath.row];
-		Model.shared.addNode(folder, parent: nil)
+		Model.shared.addNode(folder, parent: nil, connection: cashedConnection!)
 		dismiss(animated: true, completion: {
 			NotificationCenter.default.post(name: refreshNotification, object: nil)
 		})

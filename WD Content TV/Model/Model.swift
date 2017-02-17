@@ -63,15 +63,42 @@ class Model: NSObject {
 		}
 	}
 	
+	// MARK: - Connection table
+
+	func addConnection(ip:String, port:Int16, user:String, password:String) -> Connection {
+		var connection = getConnection(ip)
+		if connection == nil {
+			connection = NSEntityDescription.insertNewObject(forEntityName: "Connection", into: managedObjectContext) as? Connection
+			connection!.ip = ip
+		}
+		connection!.port = port
+		connection!.user = user
+		connection!.password = password
+		saveContext()
+		return connection!
+	}
+	
+	func getConnection(_ address:String) -> Connection? {
+		let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Connection")
+		fetchRequest.predicate = NSPredicate(format: "ip == %@", address)
+		if let connection = try? managedObjectContext.fetch(fetchRequest).first as? Connection {
+			return connection
+		} else {
+			return nil
+		}
+	}
+	
 	// MARK: - Node table
 	
-	func addNode(_ file:SMBFile, parent:Node?) {
+	func addNode(_ file:SMBFile, parent:Node?, connection:Connection) {
         let node = NSEntityDescription.insertNewObject(forEntityName: "Node", into: managedObjectContext) as! Node
 		node.uid = generateUDID()
 		node.name = file.name
 		node.path = file.filePath
 		node.size = Int64(file.fileSize)
 		node.isFile = !file.directory
+		node.connection = connection
+		connection.addToNodes(node)
 		if parent != nil {
 			node.parent = parent
 			parent?.addToChilds(node)
