@@ -12,6 +12,7 @@
 @interface SMBFile : NSObject
 
 @property (retain, nonatomic, readonly) NSString* name;     // The name of the file
+@property (retain, nonatomic, readonly) NSString* extension;     // The extension of the file
 @property (nonatomic, readonly) NSString *filePath;         // The filepath of this file, excluding the share name.
 @property (nonatomic, readonly) bool directory;             // Whether this file is a directory or not
 @property (nonatomic, readonly) uint64_t fileSize;          // The file size, in bytes of this folder (0 if it's a folder)
@@ -23,5 +24,6 @@
 
 - (instancetype)initWithShareName:(NSString*)name;
 - (instancetype)initWithStat:(smb_stat)stat parentDirectoryPath:(NSString *)path;
+- (bool)isValidFileType;
 
 @end

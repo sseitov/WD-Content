@@ -22,11 +22,7 @@ class Model: NSObject {
 	}
 	
 	lazy var applicationDocumentsDirectory: URL = {
-		#if TV
-			let urls = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)
-		#else
-			let urls = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-		#endif
+		let urls = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)
 		return urls[urls.count-1]
 	}()
 	
@@ -90,22 +86,29 @@ class Model: NSObject {
 	
 	// MARK: - Node table
 	
-	func addNode(_ file:SMBFile, parent:Node?, connection:Connection) {
+	func addNode(_ file:SMBFile, parent:Node?, connection:Connection? = nil) -> Node {
         let node = NSEntityDescription.insertNewObject(forEntityName: "Node", into: managedObjectContext) as! Node
 		node.uid = generateUDID()
-		node.name = file.name
+		if file.directory {
+			node.name = file.name
+		} else {
+			node.name = (file.name as NSString).deletingPathExtension
+		}
 		node.path = file.filePath
 		node.size = Int64(file.fileSize)
 		node.isFile = !file.directory
-		node.connection = connection
-		connection.addToNodes(node)
 		if parent != nil {
 			node.parent = parent
 			parent?.addToChilds(node)
+			node.connection = parent!.connection
+			parent!.connection?.addToNodes(node)
 		} else {
 			node.parent = nil
+			node.connection = connection
+			connection?.addToNodes(node)
 		}
 		saveContext()
+		return node
 	}
 	
 	func nodes(byRoot:Node?) -> [Node] {
@@ -119,20 +122,44 @@ class Model: NSObject {
 		let descr2 = NSSortDescriptor(key: "name", ascending: true)
 		fetchRequest.sortDescriptors = [descr1, descr2]
 		
-		if let nodes = try? managedObjectContext.fetch(fetchRequest) as! [Node] {
+		if var nodes = try? managedObjectContext.fetch(fetchRequest) as! [Node] {
+			if nodes.count == 0 && byRoot != nil {
+				let connection = SMBConnection()
+				if connection.connect(to: byRoot!.connection!.ip!,
+				                      port: Int32(byRoot!.connection!.port),
+				                      user: byRoot!.connection!.user!,
+				                      password: byRoot!.connection!.password!) {
+					let content = connection.folderContents(at: byRoot!.path!) as! [SMBFile]
+					for file in content {
+						let node = addNode(file, parent: byRoot)
+						nodes.append(node)
+					}
+				}
+			}
 			return nodes
 		} else {
 			return []
 		}
 	}
 	
-	func nodeByPath(path:String) -> Node? {
+	func node(byPath:String) -> Node? {
 		let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Node")
-		fetchRequest.predicate = NSPredicate(format: "path == %@", path)
+		fetchRequest.predicate = NSPredicate(format: "path == %@", byPath)
 		if let node = try? managedObjectContext.fetch(fetchRequest).first as? Node {
 			return node
 		} else {
 			return nil
 		}
+	}
+	
+	func deleteNode(_ node:Node) {
+		node.connection?.removeFromNodes(node)
+		if let childs = node.childs?.allObjects as? [Node] {
+			for child in childs {
+				deleteNode(child)
+			}
+		}
+		managedObjectContext.delete(node)
+		saveContext()
 	}
 }

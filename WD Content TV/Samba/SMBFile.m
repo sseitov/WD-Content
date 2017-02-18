@@ -34,6 +34,8 @@
         _fileSize = smb_stat_get(stat, SMB_STAT_SIZE);
         _allocationSize = smb_stat_get(stat, SMB_STAT_ALLOC_SIZE);
         _directory = (smb_stat_get(stat, SMB_STAT_ISDIR) != 0);
+		if (!_directory)
+			_extension = _name.pathExtension;
         uint64_t modificationTimestamp = smb_stat_get(stat, SMB_STAT_MTIME);
         uint64_t creationTimestamp = smb_stat_get(stat, SMB_STAT_CTIME);
         uint64_t accessTimestamp = smb_stat_get(stat, SMB_STAT_ATIME);
@@ -66,6 +68,15 @@
     NSDate *finalDate = [baseDate dateByAddingTimeInterval:newTimestamp];
     
     return finalDate;
+}
+
+- (bool)isValidFileType {
+	if (_directory) {
+		return true;
+	} else {
+		NSArray* movieExtensions = @[@"mkv", @"avi", @"iso", @"ts", @"mov", @"m4v", @"mpg", @"mpeg", @"wmv", @"mp4"];
+		return [movieExtensions containsObject:_extension];
+	}
 }
 
 @end

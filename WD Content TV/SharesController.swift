@@ -8,40 +8,65 @@
 
 import UIKit
 
-class SharesController: UICollectionViewController {
+class SharesController: UICollectionViewController, UIGestureRecognizerDelegate {
 
-	var rootNodes:[Node] = []
+	var parentNode:Node?
+	var nodes:[Node] = []
+	
+	private var focusedIndexPath:IndexPath?
 	
     override func viewDidLoad() {
         super.viewDidLoad()
-		self.title = "My Shares"
 		NotificationCenter.default.addObserver(self,
-		                                       selector: #selector(self.refresh(_:)),
+		                                       selector: #selector(self.refresh),
 		                                       name: refreshNotification,
 		                                       object: nil)
-		rootNodes = Model.shared.nodes(byRoot: nil)
-		if rootNodes.count == 0 {
+		refresh()
+		
+		let longTap = UILongPressGestureRecognizer(target: self, action: #selector(self.pressLongTap(tap:)))
+		longTap.delegate = self
+		collectionView?.addGestureRecognizer(longTap)
+    }
+
+	func pressLongTap(tap:UILongPressGestureRecognizer) {
+		if tap.state == .began {
+			if focusedIndexPath != nil, focusedIndexPath!.row > 0 {
+				let node = nodes[focusedIndexPath!.row - 1]
+				let alert = UIAlertController(title: "Attention!", message: "Do you want to delete \(node.name!)", preferredStyle: .alert)
+				alert.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: { _ in
+					Model.shared.deleteNode(node)
+					self.nodes.remove(at: self.focusedIndexPath!.row - 1)
+					self.collectionView?.deleteItems(at: [self.focusedIndexPath!])
+				}))
+				alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+				present(alert, animated: true, completion: nil)
+			}
+		}
+	}
+	
+	override func viewDidAppear(_ animated: Bool) {
+		super.viewDidAppear(animated)
+		nodes = Model.shared.nodes(byRoot: nil)
+		if parentNode == nil && nodes.count == 0 {
 			performSegue(withIdentifier: "addShare", sender: nil)
 		} else {
 			collectionView?.reloadData()
 		}
-    }
-
-	func refresh(_ notify:Notification) {
-		rootNodes = Model.shared.nodes(byRoot: nil)
-		collectionView?.reloadData()
 	}
 	
-    // MARK: - Navigation
-/*
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-		if segue.identifier == "showDevice" {
-			let controller = segue.destination as! DeviceController
-			controller.address = sender as? String
+	func refresh() {
+		self.title = parentNode == nil ? "My Shares" : parentNode!.name!
+		nodes.removeAll()
+		SVProgressHUD.show(withStatus: "Refresh...")
+		DispatchQueue.global().async {
+			self.nodes = Model.shared.nodes(byRoot: self.parentNode)
+			DispatchQueue.main.async {
+				SVProgressHUD.dismiss()
+				self.collectionView?.reloadData()
+			}
 		}
-    }
-*/
+	}
+
     // MARK: UICollectionViewDataSource
 
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -50,57 +75,53 @@ class SharesController: UICollectionViewController {
 
 
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return rootNodes.count + 1
+		return parentNode == nil ? nodes.count + 1 : nodes.count
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "share", for: indexPath) as! ShareCell
-		if indexPath.row == 0 {
+		if indexPath.row == 0 && parentNode == nil {
 			cell.imageView.image = UIImage(named: "addShare")
 			cell.textView.text = ""
 		} else {
-			let node = rootNodes[indexPath.row-1]
-			cell.imageView.image = UIImage(named: "sharedFolder")
+			let node = parentNode == nil ? nodes[indexPath.row-1] : nodes[indexPath.row]
+			cell.imageView.image = node.isFile ? UIImage(named: "movie") : UIImage(named: "sharedFolder")
 			cell.textView.text = node.name
 		}
         return cell
     }
 
+	override func pressesEnded(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+		if presses.first != nil && presses.first!.type == .menu {
+			if parentNode != nil {
+				parentNode = parentNode!.parent
+				refresh()
+			} else {
+				super.pressesEnded(presses, with: event)
+			}
+		}
+	}
+
+	override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+	}
+
     // MARK: UICollectionViewDelegate
 	
 	override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-		if indexPath.row == 0 {
+		if parentNode == nil && indexPath.row == 0 {
 			performSegue(withIdentifier: "addShare", sender: nil)
+		} else  {
+			let node = parentNode == nil ? nodes[indexPath.row-1] : nodes[indexPath.row]
+			if !node.isFile {
+				parentNode = node
+				refresh()
+			}
 		}
 	}
-	
-    /*
-    // Uncomment this method to specify if the specified item should be highlighted during tracking
-    override func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-    */
 
-    /*
-    // Uncomment this method to specify if the specified item should be selected
-    override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-    */
-
-    /*
-    // Uncomment these methods to specify if an action menu should be displayed for the specified item, and react to actions performed on the item
-    override func collectionView(_ collectionView: UICollectionView, shouldShowMenuForItemAt indexPath: IndexPath) -> Bool {
-        return false
-    }
-
-    override func collectionView(_ collectionView: UICollectionView, canPerformAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) -> Bool {
-        return false
-    }
-
-    override func collectionView(_ collectionView: UICollectionView, performAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) {
-    
-    }
-    */
+	override func collectionView(_ collectionView: UICollectionView, shouldUpdateFocusIn context: UICollectionViewFocusUpdateContext) -> Bool {
+		focusedIndexPath = context.nextFocusedIndexPath
+		return true
+	}
 
 }

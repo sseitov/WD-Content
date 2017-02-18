@@ -103,7 +103,7 @@
         
         for (NSInteger i = 0; i < shareCount; i++) {
             const char *shareName = smb_share_list_at(list, i);
-            
+			
             //Skip system shares suffixed by '$'
             if (shareName[strlen(shareName)-1] == '$')
                 continue;
@@ -115,7 +115,7 @@
         
         smb_share_list_destroy(list);
         
-        return shareList;
+		return [shareList sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES]]];
     }
     
     //-----------------------------------------------------------------------------
@@ -161,11 +161,21 @@
     for (NSInteger i = 0; i < listCount; i++) {
         smb_stat item = smb_stat_list_at(statList, i);
         const char* name = smb_stat_name(item);
-        if (name[0] == '.') { //skip hidden files
+		
+		if (strcmp(name, "$RECYCLE.BIN") == 0)
+			continue;
+		if (strcmp(name, "System Volume Information") == 0)
+			continue;
+		if (strstr(name, "HFS+ Private") != nil)
+			continue;
+		
+		//Skip hidden files
+        if (name[0] == '.')
             continue;
-        }
+		
         SMBFile *file = [[SMBFile alloc] initWithStat:item parentDirectoryPath:path];
-        [fileList addObject:file];
+		if (file.isValidFileType)
+			[fileList addObject:file];
     }
     smb_stat_list_destroy(statList);
     smb_tree_disconnect(self.session, shareID);
