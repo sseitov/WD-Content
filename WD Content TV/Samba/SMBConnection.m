@@ -231,4 +231,34 @@
     return path;
 }
 
+- (smb_fd)openFile:(NSString*)path {
+	smb_tid treeID = 0;
+	smb_fd fileID = 0;
+	
+	NSString *shareName = [self shareNameFromPath:path];
+
+	smb_tree_connect(_session, shareName.UTF8String, &treeID);
+	if (!treeID)
+		return 0;
+	
+	NSString *formattedPath = [self filePathExcludingSharePathFromPath:path];
+	formattedPath = [NSString stringWithFormat:@"\\%@",formattedPath];
+	formattedPath = [formattedPath stringByReplacingOccurrencesOfString:@"/" withString:@"\\\\"];
+
+	smb_fopen(_session, treeID, formattedPath.UTF8String, SMB_MOD_RO, &fileID);
+	return fileID;
+}
+
+- (void)closeFile:(smb_fd)file {
+	smb_fclose(_session, file);
+}
+
+- (int)readFile:(smb_fd)file buffer:(void*)buffer size:(size_t)size {
+	return (int)smb_fread(_session, file, buffer, size);
+}
+
+- (int)seekFile:(smb_fd)file offset:(off_t)offset whence:(int)whence {
+	return (int)smb_fseek(_session, file, offset, whence);
+}
+
 @end

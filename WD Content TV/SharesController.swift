@@ -21,11 +21,17 @@ class SharesController: UICollectionViewController, UIGestureRecognizerDelegate 
 		                                       selector: #selector(self.refresh),
 		                                       name: refreshNotification,
 		                                       object: nil)
-		refresh()
 		
 		let longTap = UILongPressGestureRecognizer(target: self, action: #selector(self.pressLongTap(tap:)))
 		longTap.delegate = self
 		collectionView?.addGestureRecognizer(longTap)
+		
+		nodes = Model.shared.nodes(byRoot: nil)
+		if parentNode == nil && nodes.count == 0 {
+			performSegue(withIdentifier: "addShare", sender: nil)
+		} else {
+			refresh()
+		}
     }
 
 	func pressLongTap(tap:UILongPressGestureRecognizer) {
@@ -41,16 +47,6 @@ class SharesController: UICollectionViewController, UIGestureRecognizerDelegate 
 				alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
 				present(alert, animated: true, completion: nil)
 			}
-		}
-	}
-	
-	override func viewDidAppear(_ animated: Bool) {
-		super.viewDidAppear(animated)
-		nodes = Model.shared.nodes(byRoot: nil)
-		if parentNode == nil && nodes.count == 0 {
-			performSegue(withIdentifier: "addShare", sender: nil)
-		} else {
-			collectionView?.reloadData()
 		}
 	}
 	
@@ -112,7 +108,9 @@ class SharesController: UICollectionViewController, UIGestureRecognizerDelegate 
 			performSegue(withIdentifier: "addShare", sender: nil)
 		} else  {
 			let node = parentNode == nil ? nodes[indexPath.row-1] : nodes[indexPath.row]
-			if !node.isFile {
+			if node.isFile {
+				performSegue(withIdentifier: "showMovie", sender: node)
+			} else {
 				parentNode = node
 				refresh()
 			}
@@ -122,6 +120,18 @@ class SharesController: UICollectionViewController, UIGestureRecognizerDelegate 
 	override func collectionView(_ collectionView: UICollectionView, shouldUpdateFocusIn context: UICollectionViewFocusUpdateContext) -> Bool {
 		focusedIndexPath = context.nextFocusedIndexPath
 		return true
+	}
+	
+	// MARK: - Navigation
+	
+	override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+		if segue.identifier == "showDevice" {
+			let controller = segue.destination as! DeviceController
+			controller.target = sender as? ServiceHost
+		} else if segue.identifier == "showMovie" {
+			let controller = segue.destination as! MovieController
+			controller.movie = sender as? Node
+		}
 	}
 
 }

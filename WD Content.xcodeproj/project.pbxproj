@@ -34,6 +34,26 @@
 		2C378CEB19EA802D00C69ADA /* list.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C378CE819EA802D00C69ADA /* list.png */; };
 		2C410BC31E10FC3400133C3E /* UIViewController+UIViewControllerExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C410BC21E10FC3400133C3E /* UIViewController+UIViewControllerExtensions.m */; };
 		2C4D610A1A98C4E900E0A365 /* Decoder.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2C4D61091A98C4E900E0A365 /* Decoder.mm */; };
+		2C5252711E58BB0800658FD9 /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C5252691E58BB0800658FD9 /* libavcodec.a */; };
+		2C5252721E58BB0800658FD9 /* libavdevice.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C52526A1E58BB0800658FD9 /* libavdevice.a */; };
+		2C5252731E58BB0800658FD9 /* libavfilter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C52526B1E58BB0800658FD9 /* libavfilter.a */; };
+		2C5252741E58BB0800658FD9 /* libavformat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C52526C1E58BB0800658FD9 /* libavformat.a */; };
+		2C5252751E58BB0800658FD9 /* libavutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C52526D1E58BB0800658FD9 /* libavutil.a */; };
+		2C5252761E58BB0800658FD9 /* libfdk-aac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C52526E1E58BB0800658FD9 /* libfdk-aac.a */; };
+		2C5252771E58BB0800658FD9 /* libswresample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C52526F1E58BB0800658FD9 /* libswresample.a */; };
+		2C5252781E58BB0800658FD9 /* libswscale.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C5252701E58BB0800658FD9 /* libswscale.a */; };
+		2C52527A1E58BDDB00658FD9 /* MovieController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C5252791E58BDDB00658FD9 /* MovieController.swift */; };
+		2C52527D1E58BEF700658FD9 /* MovieDemuxer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2C52527C1E58BEF700658FD9 /* MovieDemuxer.mm */; };
+		2C5252801E58C15300658FD9 /* libdsm_tvos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C52527E1E58C15300658FD9 /* libdsm_tvos.a */; };
+		2C5252811E58C15300658FD9 /* libtansl_tvos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C52527F1E58C15300658FD9 /* libtansl_tvos.a */; };
+		2C5252831E58C1D900658FD9 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C5252821E58C1D900658FD9 /* libz.tbd */; };
+		2C5252851E58C1F100658FD9 /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C5252841E58C1F000658FD9 /* libbz2.tbd */; };
+		2C52528C1E58EC8900658FD9 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C52528B1E58EC8900658FD9 /* AVFoundation.framework */; };
+		2C52528E1E58EC9400658FD9 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C52528D1E58EC9400658FD9 /* AudioToolbox.framework */; };
+		2C52528F1E58EF2200658FD9 /* AudioOutput.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2C605E4E1A6BC08000736968 /* AudioOutput.mm */; };
+		2C5252901E58EF2200658FD9 /* AudioRingBuffer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2C605E501A6BC08000736968 /* AudioRingBuffer.mm */; };
+		2C5252911E58EF2200658FD9 /* AudioDecoder.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2C58753C1A6AF7DC0069F3F1 /* AudioDecoder.mm */; };
+		2C5252921E58EF2200658FD9 /* Decoder.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2C4D61091A98C4E900E0A365 /* Decoder.mm */; };
 		2C5875031A6AC25D0069F3F1 /* VideoViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2C5875011A6AC25D0069F3F1 /* VideoViewController.mm */; };
 		2C58751F1A6AC3E80069F3F1 /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C5875161A6AC3E80069F3F1 /* libavcodec.a */; };
 		2C5875201A6AC3E80069F3F1 /* libavdevice.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C5875171A6AC3E80069F3F1 /* libavdevice.a */; };
@@ -82,8 +102,6 @@
 		2CAEE6D419C8C7C000B5DDD7 /* Node.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CAEE6D319C8C7C000B5DDD7 /* Node.m */; };
 		2CB99EC51E13AAE600ABC91F /* DropboxSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CB99EC41E13AAE600ABC91F /* DropboxSDK.framework */; };
 		2CD030DB1A640ED7003B22CA /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CD030D91A640ED7003B22CA /* LaunchScreen.xib */; };
-		2CD266D21E52FF7100535F80 /* libdsm_tvos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CD266D01E52FF7100535F80 /* libdsm_tvos.a */; };
-		2CD266D31E52FF7100535F80 /* libtansl_tvos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CD266D11E52FF7100535F80 /* libtansl_tvos.a */; };
 		2CD266E01E53012C00535F80 /* SMBConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD266D61E53012C00535F80 /* SMBConnection.m */; };
 		2CD266E11E53012C00535F80 /* SMBFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD266D81E53012C00535F80 /* SMBFile.m */; };
 		2CD266E21E53012C00535F80 /* TONetBIOSNameService.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD266DA1E53012C00535F80 /* TONetBIOSNameService.m */; };
@@ -139,6 +157,23 @@
 		2C410BC21E10FC3400133C3E /* UIViewController+UIViewControllerExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+UIViewControllerExtensions.m"; sourceTree = "<group>"; };
 		2C4D61081A98C4E900E0A365 /* Decoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Decoder.h; sourceTree = "<group>"; };
 		2C4D61091A98C4E900E0A365 /* Decoder.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Decoder.mm; sourceTree = "<group>"; };
+		2C5252691E58BB0800658FD9 /* libavcodec.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavcodec.a; path = tv_depends/libs/lib/libavcodec.a; sourceTree = "<group>"; };
+		2C52526A1E58BB0800658FD9 /* libavdevice.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavdevice.a; path = tv_depends/libs/lib/libavdevice.a; sourceTree = "<group>"; };
+		2C52526B1E58BB0800658FD9 /* libavfilter.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavfilter.a; path = tv_depends/libs/lib/libavfilter.a; sourceTree = "<group>"; };
+		2C52526C1E58BB0800658FD9 /* libavformat.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavformat.a; path = tv_depends/libs/lib/libavformat.a; sourceTree = "<group>"; };
+		2C52526D1E58BB0800658FD9 /* libavutil.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavutil.a; path = tv_depends/libs/lib/libavutil.a; sourceTree = "<group>"; };
+		2C52526E1E58BB0800658FD9 /* libfdk-aac.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libfdk-aac.a"; path = "tv_depends/libs/lib/libfdk-aac.a"; sourceTree = "<group>"; };
+		2C52526F1E58BB0800658FD9 /* libswresample.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libswresample.a; path = tv_depends/libs/lib/libswresample.a; sourceTree = "<group>"; };
+		2C5252701E58BB0800658FD9 /* libswscale.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libswscale.a; path = tv_depends/libs/lib/libswscale.a; sourceTree = "<group>"; };
+		2C5252791E58BDDB00658FD9 /* MovieController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MovieController.swift; sourceTree = "<group>"; };
+		2C52527B1E58BEF700658FD9 /* MovieDemuxer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MovieDemuxer.h; sourceTree = "<group>"; };
+		2C52527C1E58BEF700658FD9 /* MovieDemuxer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MovieDemuxer.mm; sourceTree = "<group>"; };
+		2C52527E1E58C15300658FD9 /* libdsm_tvos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdsm_tvos.a; path = libdsm/libdsm_tvos.a; sourceTree = "<group>"; };
+		2C52527F1E58C15300658FD9 /* libtansl_tvos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtansl_tvos.a; path = libdsm/libtansl_tvos.a; sourceTree = "<group>"; };
+		2C5252821E58C1D900658FD9 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS10.1.sdk/usr/lib/libz.tbd; sourceTree = DEVELOPER_DIR; };
+		2C5252841E58C1F000658FD9 /* libbz2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.tbd; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS10.1.sdk/usr/lib/libbz2.tbd; sourceTree = DEVELOPER_DIR; };
+		2C52528B1E58EC8900658FD9 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS10.1.sdk/System/Library/Frameworks/AVFoundation.framework; sourceTree = DEVELOPER_DIR; };
+		2C52528D1E58EC9400658FD9 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS10.1.sdk/System/Library/Frameworks/AudioToolbox.framework; sourceTree = DEVELOPER_DIR; };
 		2C5875001A6AC25D0069F3F1 /* VideoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoViewController.h; sourceTree = "<group>"; };
 		2C5875011A6AC25D0069F3F1 /* VideoViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = VideoViewController.mm; sourceTree = "<group>"; };
 		2C5875161A6AC3E80069F3F1 /* libavcodec.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavcodec.a; path = depends/libs/lib/libavcodec.a; sourceTree = "<group>"; };
@@ -206,8 +241,6 @@
 		2CAEE6D319C8C7C000B5DDD7 /* Node.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Node.m; sourceTree = "<group>"; };
 		2CB99EC41E13AAE600ABC91F /* DropboxSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = DropboxSDK.framework; sourceTree = "<group>"; };
 		2CD030DA1A640ED7003B22CA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = "WD Content/Base.lproj/LaunchScreen.xib"; sourceTree = "<group>"; };
-		2CD266D01E52FF7100535F80 /* libdsm_tvos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdsm_tvos.a; path = "WD Content TV/libdsm/libdsm_tvos.a"; sourceTree = "<group>"; };
-		2CD266D11E52FF7100535F80 /* libtansl_tvos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtansl_tvos.a; path = "WD Content TV/libdsm/libtansl_tvos.a"; sourceTree = "<group>"; };
 		2CD266D51E53012C00535F80 /* SMBConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SMBConnection.h; path = Samba/SMBConnection.h; sourceTree = "<group>"; };
 		2CD266D61E53012C00535F80 /* SMBConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SMBConnection.m; path = Samba/SMBConnection.m; sourceTree = "<group>"; };
 		2CD266D71E53012C00535F80 /* SMBFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SMBFile.h; path = Samba/SMBFile.h; sourceTree = "<group>"; };
@@ -274,9 +307,21 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2C52528E1E58EC9400658FD9 /* AudioToolbox.framework in Frameworks */,
+				2C52528C1E58EC8900658FD9 /* AVFoundation.framework in Frameworks */,
+				2C5252851E58C1F100658FD9 /* libbz2.tbd in Frameworks */,
+				2C5252831E58C1D900658FD9 /* libz.tbd in Frameworks */,
+				2C5252801E58C15300658FD9 /* libdsm_tvos.a in Frameworks */,
+				2C5252811E58C15300658FD9 /* libtansl_tvos.a in Frameworks */,
+				2C5252711E58BB0800658FD9 /* libavcodec.a in Frameworks */,
+				2C5252721E58BB0800658FD9 /* libavdevice.a in Frameworks */,
+				2C5252731E58BB0800658FD9 /* libavfilter.a in Frameworks */,
+				2C5252741E58BB0800658FD9 /* libavformat.a in Frameworks */,
+				2C5252751E58BB0800658FD9 /* libavutil.a in Frameworks */,
+				2C5252761E58BB0800658FD9 /* libfdk-aac.a in Frameworks */,
+				2C5252771E58BB0800658FD9 /* libswresample.a in Frameworks */,
+				2C5252781E58BB0800658FD9 /* libswscale.a in Frameworks */,
 				2CD266EC1E53073000535F80 /* libiconv.tbd in Frameworks */,
-				2CD266D21E52FF7100535F80 /* libdsm_tvos.a in Frameworks */,
-				2CD266D31E52FF7100535F80 /* libtansl_tvos.a in Frameworks */,
 				1043F6F4E03096E8B0E4BB1B /* libPods-WD Content TV.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -309,12 +354,24 @@
 		2C125EA81848C74B00406FC3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				2C52528D1E58EC9400658FD9 /* AudioToolbox.framework */,
+				2C52528B1E58EC8900658FD9 /* AVFoundation.framework */,
+				2C5252841E58C1F000658FD9 /* libbz2.tbd */,
+				2C5252821E58C1D900658FD9 /* libz.tbd */,
+				2C52527E1E58C15300658FD9 /* libdsm_tvos.a */,
+				2C52527F1E58C15300658FD9 /* libtansl_tvos.a */,
+				2C5252691E58BB0800658FD9 /* libavcodec.a */,
+				2C52526A1E58BB0800658FD9 /* libavdevice.a */,
+				2C52526B1E58BB0800658FD9 /* libavfilter.a */,
+				2C52526C1E58BB0800658FD9 /* libavformat.a */,
+				2C52526D1E58BB0800658FD9 /* libavutil.a */,
+				2C52526E1E58BB0800658FD9 /* libfdk-aac.a */,
+				2C52526F1E58BB0800658FD9 /* libswresample.a */,
+				2C5252701E58BB0800658FD9 /* libswscale.a */,
 				2CD266EB1E53073000535F80 /* libiconv.tbd */,
 				2CD266E91E53062D00535F80 /* libresolv.tbd */,
 				2CD266E71E53061500535F80 /* libz.tbd */,
 				2CD266E51E53060900535F80 /* libiconv.tbd */,
-				2CD266D01E52FF7100535F80 /* libdsm_tvos.a */,
-				2CD266D11E52FF7100535F80 /* libtansl_tvos.a */,
 				2CB99EC41E13AAE600ABC91F /* DropboxSDK.framework */,
 				2C718E7C1DA26F110065DE2B /* libbz2.tbd */,
 				2C718E7A1DA26EDA0065DE2B /* libfdk-aac.a */,
@@ -474,6 +531,9 @@
 				2C67D6B41E1510A700F95DB5 /* ShareCell.swift */,
 				2C67D6A81E14F02200F95DB5 /* AddShareController.swift */,
 				2C67D6DE1E156D0D00F95DB5 /* DeviceController.swift */,
+				2C5252791E58BDDB00658FD9 /* MovieController.swift */,
+				2C52527B1E58BEF700658FD9 /* MovieDemuxer.h */,
+				2C52527C1E58BEF700658FD9 /* MovieDemuxer.mm */,
 				2C1294B01E5399B900DBFE23 /* UIViewControllerExtensions.swift */,
 				2C1294AD1E5398FF00DBFE23 /* Resources */,
 			);
@@ -837,12 +897,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2C52527A1E58BDDB00658FD9 /* MovieController.swift in Sources */,
 				2C67D69A1E14EF2600F95DB5 /* AppDelegate.swift in Sources */,
+				2C5252901E58EF2200658FD9 /* AudioRingBuffer.mm in Sources */,
 				2C1294B11E5399B900DBFE23 /* UIViewControllerExtensions.swift in Sources */,
 				2CD266E41E53012C00535F80 /* TOSMBConstants.m in Sources */,
 				2C1294E11E53AB9300DBFE23 /* Node+CoreDataClass.swift in Sources */,
+				2C52528F1E58EF2200658FD9 /* AudioOutput.mm in Sources */,
 				2C1294B41E53A2F800DBFE23 /* Model.swift in Sources */,
 				2C1294DE1E53AB1D00DBFE23 /* WDContentTV.xcdatamodeld in Sources */,
+				2C52527D1E58BEF700658FD9 /* MovieDemuxer.mm in Sources */,
 				2CD266E21E53012C00535F80 /* TONetBIOSNameService.m in Sources */,
 				2C67D6A71E14EFEB00F95DB5 /* SharesController.swift in Sources */,
 				2C1294E21E53AB9300DBFE23 /* Node+CoreDataProperties.swift in Sources */,
@@ -850,9 +914,11 @@
 				2C7039A21E578B3100FAB81D /* Connection+CoreDataProperties.swift in Sources */,
 				2C67D6A91E14F02200F95DB5 /* AddShareController.swift in Sources */,
 				2C67D6B51E1510A700F95DB5 /* ShareCell.swift in Sources */,
+				2C5252911E58EF2200658FD9 /* AudioDecoder.mm in Sources */,
 				2C67D6DF1E156D0D00F95DB5 /* DeviceController.swift in Sources */,
 				2C7039A11E578B3100FAB81D /* Connection+CoreDataClass.swift in Sources */,
 				2CD266E31E53012C00535F80 /* TONetBIOSNameServiceEntry.m in Sources */,
+				2C5252921E58EF2200658FD9 /* Decoder.mm in Sources */,
 				2CD266E11E53012C00535F80 /* SMBFile.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1090,13 +1156,15 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/WD\\ Content\\ TV/libdsm/include",
+					"$(PROJECT_DIR)/libdsm/include",
+					"$(PROJECT_DIR)/tv_depends/libs/include",
 				);
 				INFOPLIST_FILE = "WD Content TV/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/WD\\ Content\\ TV/libdsm",
+					"$(PROJECT_DIR)/tv_depends/libs/lib",
+					"$(PROJECT_DIR)/libdsm",
 				);
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.vchannel.WD-Content-TV";
@@ -1132,13 +1200,15 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/WD\\ Content\\ TV/libdsm/include",
+					"$(PROJECT_DIR)/libdsm/include",
+					"$(PROJECT_DIR)/tv_depends/libs/include",
 				);
 				INFOPLIST_FILE = "WD Content TV/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/WD\\ Content\\ TV/libdsm",
+					"$(PROJECT_DIR)/tv_depends/libs/lib",
+					"$(PROJECT_DIR)/libdsm",
 				);
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.vchannel.WD-Content-TV";

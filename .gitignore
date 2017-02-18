@@ -40,3 +40,11 @@ depends/samba
 depends/tmp
 depends/kxsmb/samba
 depends/kxsmb/tmp
+
+tv_depends/fdk-aac
+tv_depends/ffmpeg-3.0.2
+tv_depends/libs
+tv_depends/fdk-scratch
+tv_depends/fdk-thin
+tv_depends/ffmpeg-scratch
+tv_depends/ffmpeg-thin

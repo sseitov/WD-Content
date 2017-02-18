@@ -73,6 +73,7 @@
                     <navigationItem key="navigationItem" id="Wds-DU-CKc"/>
                     <connections>
                         <segue destination="Qr0-SX-sMb" kind="presentation" identifier="addShare" modalPresentationStyle="pageSheet" modalTransitionStyle="crossDissolve" id="ZUK-O8-Fmg"/>
+                        <segue destination="lz0-6r-B1m" kind="show" identifier="showMovie" id="NMd-fN-Yj8"/>
                     </connections>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mq4-Qz-FXf" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -132,6 +133,24 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="k5q-YH-eQr" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="4020" y="-1826"/>
+        </scene>
+        <!--Movie Controller-->
+        <scene sceneID="Tx3-TJ-Z3L">
+            <objects>
+                <viewController id="lz0-6r-B1m" customClass="MovieController" customModule="WD_Content_TV" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="0kC-od-g34"/>
+                        <viewControllerLayoutGuide type="bottom" id="D4h-tp-B3X"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="MAE-Eq-vYt">
+                        <rect key="frame" x="0.0" y="0.0" width="1920" height="1080"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="54E-a3-fZg" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4010" y="-178"/>
         </scene>
     </scenes>
 </document>

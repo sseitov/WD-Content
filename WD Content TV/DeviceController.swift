@@ -102,7 +102,7 @@ class DeviceController: UITableViewController {
 
 	override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 		let folder = content[indexPath.row];
-		Model.shared.addNode(folder, parent: nil, connection: cashedConnection!)
+		_ = Model.shared.addNode(folder, parent: nil, connection: cashedConnection!)
 		dismiss(animated: true, completion: {
 			NotificationCenter.default.post(name: refreshNotification, object: nil)
 		})
