@@ -1,12 +1,5 @@
 #!/bin/sh
 
-echo "Pulling lib_fdk ..."
-git clone git://github.com/mstorsjo/fdk-aac.git
-
-cd fdk-aac
-./autogen.sh
-cd ..
-
 CONFIGURE_FLAGS="--enable-static --with-pic=yes --disable-shared"
 
 ARCHS="arm64 x86_64"
@@ -21,6 +14,8 @@ THIN=`pwd`/"fdk-thin"
 
 COMPILE="y"
 LIPO="y"
+
+DEPLOYMENT_TARGET="9.0"
 
 if [ "$*" ]
 then
@@ -40,6 +35,36 @@ fi
 
 if [ "$COMPILE" ]
 then
+	if [ ! `which yasm` ]
+	then
+		echo 'Yasm not found'
+		if [ ! `which brew` ]
+		then
+			echo 'Homebrew not found. Trying to install...'
+                        ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" \
+				|| exit 1
+		fi
+		echo 'Trying to install Yasm...'
+		brew install yasm || exit 1
+	fi
+	if [ ! `which gas-preprocessor.pl` ]
+	then
+		echo 'gas-preprocessor.pl not found. Trying to install...'
+		(curl -L https://github.com/libav/gas-preprocessor/raw/master/gas-preprocessor.pl \
+			-o /usr/local/bin/gas-preprocessor.pl \
+			&& chmod +x /usr/local/bin/gas-preprocessor.pl) \
+			|| exit 1
+	fi
+
+	if [ ! -r $SOURCE ]
+	then
+		echo 'fdk-aac source not found. Pulling lib_fdk ...'
+		git clone git://github.com/mstorsjo/fdk-aac.git
+		cd fdk-aac
+		./autogen.sh
+		cd ..
+	fi
+
 	CWD=`pwd`
 	for ARCH in $ARCHS
 	do
@@ -52,12 +77,12 @@ then
 		if [ "$ARCH" = "x86_64" ]
 		then
 		    PLATFORM="AppleTVSimulator"
-		    CFLAGS="$CFLAGS -fembed-bitcode"
+		    CFLAGS="$CFLAGS -mtvos-simulator-version-min=$DEPLOYMENT_TARGET -fembed-bitcode"
 		    HOST="--host=x86_64-apple-darwin"
 		    CPU=
 		else
 		    PLATFORM="AppleTVOS"
-		    CFLAGS="$CFLAGS -fembed-bitcode"
+		    CFLAGS="$CFLAGS -mtvos-version-min=$DEPLOYMENT_TARGET -fembed-bitcode"
 		    HOST="--host=arm-apple-darwin"
 		    CPU="--with-cpu=arm64"
 		fi

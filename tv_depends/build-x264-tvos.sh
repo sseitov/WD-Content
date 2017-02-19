@@ -1,35 +1,19 @@
 #!/bin/sh
 
-# directories
-SOURCE="ffmpeg-3.0.2"
-FAT="libs"
-
-SCRATCH="ffmpeg-scratch"
-# must be an absolute path
-THIN=`pwd`/"ffmpeg-thin"
-
-# absolute path to libraries
-X264=`pwd`/libs
-FDK_AAC=`pwd`/libs
-
-CONFIGURE_FLAGS="--enable-cross-compile --disable-debug --disable-programs \
-                 --disable-doc --enable-pic --disable-indev=avfoundation \
-                 --extra-cflags=-fembed-bitcode --extra-cxxflags=-fembed-bitcode"
-
-if [ "$X264" ]
-then
-	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-gpl --enable-nonfree --enable-libx264"
-fi
-
-if [ "$FDK_AAC" ]
-then
-	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-libfdk-aac"
-fi
-
-# avresample
-#CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-avresample"
+CONFIGURE_FLAGS="--enable-static --enable-pic --disable-cli"
 
 ARCHS="arm64 x86_64"
+
+# directories
+SOURCE="x264"
+FAT="libs"
+
+SCRATCH="x264-scratch"
+# must be an absolute path
+THIN=`pwd`/"x264-thin"
+
+# the one included in x264 does not work; specify full path to working one
+GAS_PREPROCESSOR=/usr/local/bin/gas-preprocessor.pl
 
 COMPILE="y"
 LIPO="y"
@@ -77,9 +61,8 @@ then
 
 	if [ ! -r $SOURCE ]
 	then
-		echo 'FFmpeg source not found. Trying to download...'
-		curl http://www.ffmpeg.org/releases/$SOURCE.tar.bz2 | tar xj \
-			|| exit 1
+		echo 'x264 source not found. Pulling x264 ...'
+		git clone -b stable git://git.videolan.org/x264.git
 	fi
 
 	CWD=`pwd`
@@ -88,46 +71,45 @@ then
 		echo "building $ARCH..."
 		mkdir -p "$SCRATCH/$ARCH"
 		cd "$SCRATCH/$ARCH"
-
 		CFLAGS="-arch $ARCH"
+        ASFLAGS=
+
 		if [ "$ARCH" = "x86_64" ]
 		then
 		    PLATFORM="AppleTVSimulator"
-		    CFLAGS="$CFLAGS -mtvos-simulator-version-min=$DEPLOYMENT_TARGET"
+		    CFLAGS="$CFLAGS -mtvos-simulator-version-min=$DEPLOYMENT_TARGET -fembed-bitcode"
+		    HOST="--host=x86_64-apple-darwin"
 		else
 		    PLATFORM="AppleTVOS"
-		    CFLAGS="$CFLAGS -mtvos-version-min=$DEPLOYMENT_TARGET"
-		    EXPORT="GASPP_FIX_XCODE5=1"
+		    CFLAGS="$CFLAGS -mtvos-version-min=$DEPLOYMENT_TARGET -fembed-bitcode"
+		    HOST="--host=aarch64-apple-darwin"
+			XARCH="-arch aarch64"
+            ASFLAGS="$CFLAGS"
 		fi
 
 		XCRUN_SDK=`echo $PLATFORM | tr '[:upper:]' '[:lower:]'`
 		CC="xcrun -sdk $XCRUN_SDK clang"
-		AR="xcrun -sdk $XCRUN_SDK ar"
+		if [ $PLATFORM = "AppleTVOS" ]
+		then
+		    export AS="gas-preprocessor.pl $XARCH -- $CC"
+		else
+		    export -n AS
+		fi
 		CXXFLAGS="$CFLAGS"
 		LDFLAGS="$CFLAGS"
-		if [ "$X264" ]
-		then
-			CFLAGS="$CFLAGS -I$X264/include"
-			LDFLAGS="$LDFLAGS -L$X264/lib"
-		fi
-		if [ "$FDK_AAC" ]
-		then
-			CFLAGS="$CFLAGS -I$FDK_AAC/include"
-			LDFLAGS="$LDFLAGS -L$FDK_AAC/lib"
-		fi
 
-		TMPDIR=${TMPDIR/%\/} $CWD/$SOURCE/configure \
-		    --target-os=darwin \
-		    --arch=$ARCH \
-		    --cc="$CC" \
-		    --ar="$AR" \
+		CC=$CC $CWD/$SOURCE/configure \
 		    $CONFIGURE_FLAGS \
+		    $HOST \
 		    --extra-cflags="$CFLAGS" \
+		    --extra-asflags="$ASFLAGS" \
 		    --extra-ldflags="$LDFLAGS" \
-		    --prefix="$THIN/`basename $PWD`" \
-		|| exit 1
+		    --prefix="$THIN/$ARCH" || exit 1
 
-		xcrun -sdk $XCRUN_SDK make -j3 install $EXPORT || exit 1
+		mkdir extras
+		ln -s $GAS_PREPROCESSOR extras
+
+		make -j3 install || exit 1
 		cd $CWD
 	done
 fi
@@ -142,12 +124,9 @@ then
 	for LIB in *.a
 	do
 		cd $CWD
-		echo lipo -create `find $THIN -name $LIB` -output $FAT/lib/$LIB 1>&2
-		lipo -create `find $THIN -name $LIB` -output $FAT/lib/$LIB || exit 1
+		lipo -create `find $THIN -name $LIB` -output $FAT/lib/$LIB
 	done
 
 	cd $CWD
 	cp -rf $THIN/$1/include $FAT
 fi
-
-echo Done

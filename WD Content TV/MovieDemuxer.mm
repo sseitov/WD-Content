@@ -8,8 +8,10 @@
 
 #import "MovieDemuxer.h"
 #import "SMBConnection.h"
+#import "YUVTexture.h"
 
 #import "AudioDecoder.h"
+#import "VideoDecoder.h"
 #include "ConditionLock.h"
 #include <mutex>
 
@@ -18,6 +20,7 @@ extern "C" {
 #include <libavformat/avformat.h>
 #include <libavformat/avio.h>
 };
+#import <GLKit/GLKit.h>
 
 static const int kBufferSize = 4 * 1024;
 
@@ -26,6 +29,7 @@ static const int kBufferSize = 4 * 1024;
 	unsigned char*		_ioBuffer;
 	AVIOContext*		_ioContext;
 	AVFormatContext*	_mediaContext;
+	std::mutex			_audioMutex;
 }
 
 @property (strong, nonatomic, readonly) SMBConnection* connection;
@@ -33,12 +37,13 @@ static const int kBufferSize = 4 * 1024;
 
 @property (atomic) int audioIndex;
 @property (nonatomic) int videoIndex;
-//@property (strong, nonatomic) VTDecoder *videoDecoder;
+@property (strong, nonatomic) VideoDecoder *videoDecoder;
 @property (strong, nonatomic) AudioDecoder *audioDecoder;
 @property (strong, nonatomic) NSCondition *demuxerState;
 @property (strong, nonatomic) NSConditionLock *threadState;
 @property (atomic) BOOL stopped;
 @property (atomic) BOOL buffering;
+@property (nonatomic) BOOL textureCreated;
 
 @end
 
@@ -68,12 +73,12 @@ static int64_t seekContext(void *opaque, int64_t offset, int whence) {
 		
 		_audioDecoder = [[AudioDecoder alloc] init];
 		_audioDecoder.delegate = self;
-//		_videoDecoder = [[VTDecoder alloc] init];
-//		_videoDecoder.delegate = self;
+		_videoDecoder = [[VideoDecoder alloc] init];
 		
 		_connection = [[SMBConnection alloc] init];
 
 		_networkQueue = dispatch_queue_create("com.vchannel.WD-Content.SMBNetwork", DISPATCH_QUEUE_SERIAL);
+		_textureCreated = false;
 	}
 	return self;
 }
@@ -122,15 +127,86 @@ static int64_t seekContext(void *opaque, int64_t offset, int whence) {
 			[audioChannels addObject:@{@"channel" : [NSNumber numberWithInt:i],
 									   @"codec" : [NSString stringWithFormat:@"%s, %d channels", enc->codec_descriptor->long_name, enc->channels]}];
 		} else if (enc->codec_type == AVMEDIA_TYPE_VIDEO) {
-//			if ([_videoDecoder openWithContext:enc]) {
+			if (_videoIndex < 0 && [_videoDecoder openWithContext:enc]) {
 				_videoIndex = i;
-//			}
+			}
 		}
 	}
 	
 	return (_videoIndex >= 0);
+}
 
-	return true;
+- (BOOL)play:(int)audioCahnnel
+{
+	AVCodecContext* enc = _mediaContext->streams[audioCahnnel]->codec;
+	if (![_audioDecoder openWithContext:enc]) {
+		return NO;
+	}
+	
+	self.audioIndex = audioCahnnel;
+ 
+	self.stopped = NO;
+	
+	[_audioDecoder start];
+	
+	_threadState = [[NSConditionLock alloc] initWithCondition:ThreadStillWorking];
+	av_read_play(_mediaContext);
+	
+	dispatch_async(_networkQueue, ^() {
+		while (!self.stopped) {
+			AVPacket nextPacket;
+			if (av_read_frame(_mediaContext, &nextPacket) < 0) { // eof
+				break;
+			}
+			
+			std::unique_lock<std::mutex> lock(_audioMutex);
+
+			if (nextPacket.stream_index == _audioIndex) {
+				[_audioDecoder push:&nextPacket];
+			} else if (nextPacket.stream_index == _videoIndex) {
+				[_videoDecoder decodePacket:&nextPacket];
+			} else {
+				av_packet_unref(&nextPacket);
+			}
+		}
+		[_threadState lock];
+		[_threadState unlockWithCondition:ThreadIsDone];
+	});
+	return YES;
+}
+
+- (void)close
+{
+	if (self.stopped)
+		return;
+	self.stopped = YES;
+	
+	[_audioDecoder stop];
+	[_audioDecoder close];
+	[_videoDecoder close];
+	
+	[_threadState lockWhenCondition:ThreadIsDone];
+	[_threadState unlock];
+	
+	avformat_close_input(&_mediaContext);
+}
+
+- (void)takeVideo {
+	
+	if (self.buffering || _audioDecoder.currentTime < 0) {
+		return;
+	} else {
+		AVFrame* frame = [_videoDecoder take];//[_videoDecoder takeWithTime:_audioDecoder.currentTime];
+		if (frame != nil) {
+			if (_textureCreated) {
+				texture->update(frame);
+			} else {
+				_textureCreated = true;
+				texture->create(frame);
+			}
+			av_frame_free(&frame);
+		}
+	}
 }
 
 - (void)decoder:(Decoder*)decoder changeState:(enum DecoderState)state

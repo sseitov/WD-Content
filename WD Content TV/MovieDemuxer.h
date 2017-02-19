@@ -10,6 +10,7 @@
 
 @class SMBConnection;
 @class MovieDemuxer;
+class YUVTexture;
 
 @protocol MovieDemuxerDelegate <NSObject>
 
@@ -17,10 +18,15 @@
 
 @end
 
-@interface MovieDemuxer : NSObject
+@interface MovieDemuxer : NSObject {
+	@public YUVTexture* texture;
+}
 
 @property (weak, nonatomic) id<MovieDemuxerDelegate> delegate;
 
 - (bool)load:(NSString*)host port:(int)port user:(NSString*)user password:(NSString*)password file:(NSString*)filePath  audioChannels:(NSMutableArray*) audioChannels;
+- (void)close;
+- (BOOL)play:(int)audioCahnnel;
+- (void)takeVideo;
 
 @end

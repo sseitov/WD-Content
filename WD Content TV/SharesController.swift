@@ -129,8 +129,14 @@ class SharesController: UICollectionViewController, UIGestureRecognizerDelegate 
 			let controller = segue.destination as! DeviceController
 			controller.target = sender as? ServiceHost
 		} else if segue.identifier == "showMovie" {
-			let controller = segue.destination as! MovieController
-			controller.movie = sender as? Node
+			let controller = segue.destination as! VideoController
+			if let node = sender as? Node {
+				controller.host = node.connection!.ip!
+				controller.port = Int32(node.connection!.port)
+				controller.user = node.connection!.user!
+				controller.password = node.connection!.password!
+				controller.filePath = node.path!
+			}
 		}
 	}
 
