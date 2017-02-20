@@ -137,7 +137,7 @@
         <!--GLKit View Controller-->
         <scene sceneID="UqR-Ol-gAq">
             <objects>
-                <glkViewController preferredFramesPerSecond="30" id="gFN-8B-5CI" customClass="VideoController" sceneMemberID="viewController">
+                <glkViewController preferredFramesPerSecond="30" id="gFN-8B-5CI" customClass="VideoOutput" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="6aA-p9-qqp"/>
                         <viewControllerLayoutGuide type="bottom" id="wPi-k9-Nf5"/>
@@ -145,6 +145,7 @@
                     <glkView key="view" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" drawableDepthFormat="24" enableSetNeedsDisplay="NO" id="vKq-gg-WDS">
                         <rect key="frame" x="0.0" y="0.0" width="1920" height="1080"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                         <connections>
                             <outlet property="delegate" destination="gFN-8B-5CI" id="evg-uW-hML"/>
                         </connections>

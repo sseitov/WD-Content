@@ -129,7 +129,7 @@ class SharesController: UICollectionViewController, UIGestureRecognizerDelegate 
 			let controller = segue.destination as! DeviceController
 			controller.target = sender as? ServiceHost
 		} else if segue.identifier == "showMovie" {
-			let controller = segue.destination as! VideoController
+			let controller = segue.destination as! VideoOutput
 			if let node = sender as? Node {
 				controller.host = node.connection!.ip!
 				controller.port = Int32(node.connection!.port)

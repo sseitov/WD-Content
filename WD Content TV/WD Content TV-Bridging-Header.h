@@ -5,4 +5,4 @@
 #import "SMBConnection.h"
 #import "SMBFile.h"
 #import "SVProgressHUD.h"
-#import "VideoController.h"
+#import "VideoOutput.h"
