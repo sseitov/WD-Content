@@ -109,7 +109,20 @@ class SharesController: UICollectionViewController, UIGestureRecognizerDelegate 
 		} else  {
 			let node = parentNode == nil ? nodes[indexPath.row-1] : nodes[indexPath.row]
 			if node.isFile {
-				performSegue(withIdentifier: "showMovie", sender: node)
+				let alert = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+				alert.addAction(UIAlertAction(title: "Preview moview", style: .default, handler: { _ in
+					self.performSegue(withIdentifier: "showMovie", sender: node)
+				}))
+				let title = node.info == nil ? "Show info" : node.info!.original_title!
+				alert.addAction(UIAlertAction(title: title, style: .destructive, handler: { _ in
+					if node.info == nil {
+						self.performSegue(withIdentifier: "searchInfo", sender: node.name)
+					} else {
+						self.performSegue(withIdentifier: "info", sender: node.info)
+					}
+				}))
+				alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+				present(alert, animated: true, completion: nil)
 			} else {
 				parentNode = node
 				refresh()
@@ -137,6 +150,11 @@ class SharesController: UICollectionViewController, UIGestureRecognizerDelegate 
 				controller.password = node.connection!.password!
 				controller.filePath = node.path!
 			}
+		} else if segue.identifier == "searchInfo" {
+			let nav = segue.destination as! UINavigationController
+			let next = nav.topViewController as! SearchInfoController
+			next.searchFile = sender as? String
+		} else if segue.identifier == "info" {
 		}
 	}
 

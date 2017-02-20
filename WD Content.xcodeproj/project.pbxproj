@@ -105,6 +105,12 @@
 		2CAEDB571E5AE6040046E219 /* Util.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2CAEDB501E5AE6040046E219 /* Util.mm */; };
 		2CAEDB581E5AE6040046E219 /* VideoOutput.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2CAEDB521E5AE6040046E219 /* VideoOutput.mm */; };
 		2CAEDB5E1E5AED300046E219 /* Renderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2CAEDB5D1E5AED300046E219 /* Renderer.mm */; };
+		2CAEDB611E5B27540046E219 /* InfoController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CAEDB601E5B27540046E219 /* InfoController.swift */; };
+		2CAEDB631E5B29D80046E219 /* SearchInfoController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CAEDB621E5B29D80046E219 /* SearchInfoController.swift */; };
+		2CAEDB651E5B4C370046E219 /* SearchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CAEDB641E5B4C370046E219 /* SearchCell.swift */; };
+		2CAEDB661E5B53070046E219 /* TMDB.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2194A019C9A9690053C8B3 /* TMDB.m */; };
+		2CAEDB691E5B58DB0046E219 /* MetaInfo+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CAEDB671E5B58DB0046E219 /* MetaInfo+CoreDataClass.swift */; };
+		2CAEDB6A1E5B58DB0046E219 /* MetaInfo+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CAEDB681E5B58DB0046E219 /* MetaInfo+CoreDataProperties.swift */; };
 		2CAEE6D419C8C7C000B5DDD7 /* Node.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CAEE6D319C8C7C000B5DDD7 /* Node.m */; };
 		2CB99EC51E13AAE600ABC91F /* DropboxSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CB99EC41E13AAE600ABC91F /* DropboxSDK.framework */; };
 		2CD030DB1A640ED7003B22CA /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CD030D91A640ED7003B22CA /* LaunchScreen.xib */; };
@@ -259,6 +265,11 @@
 		2CAEDB521E5AE6040046E219 /* VideoOutput.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = VideoOutput.mm; path = Video/VideoOutput.mm; sourceTree = "<group>"; };
 		2CAEDB5C1E5AED300046E219 /* Renderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Renderer.h; path = Video/Renderer.h; sourceTree = "<group>"; };
 		2CAEDB5D1E5AED300046E219 /* Renderer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Renderer.mm; path = Video/Renderer.mm; sourceTree = "<group>"; };
+		2CAEDB601E5B27540046E219 /* InfoController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InfoController.swift; sourceTree = "<group>"; };
+		2CAEDB621E5B29D80046E219 /* SearchInfoController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchInfoController.swift; sourceTree = "<group>"; };
+		2CAEDB641E5B4C370046E219 /* SearchCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchCell.swift; sourceTree = "<group>"; };
+		2CAEDB671E5B58DB0046E219 /* MetaInfo+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "MetaInfo+CoreDataClass.swift"; path = "Model/MetaInfo+CoreDataClass.swift"; sourceTree = "<group>"; };
+		2CAEDB681E5B58DB0046E219 /* MetaInfo+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "MetaInfo+CoreDataProperties.swift"; path = "Model/MetaInfo+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		2CAEE6D219C8C7C000B5DDD7 /* Node.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Node.h; sourceTree = "<group>"; };
 		2CAEE6D319C8C7C000B5DDD7 /* Node.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Node.m; sourceTree = "<group>"; };
 		2CB99EC41E13AAE600ABC91F /* DropboxSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = DropboxSDK.framework; sourceTree = "<group>"; };
@@ -475,6 +486,8 @@
 			isa = PBXGroup;
 			children = (
 				2C1294DC1E53AB1D00DBFE23 /* WDContentTV.xcdatamodeld */,
+				2CAEDB671E5B58DB0046E219 /* MetaInfo+CoreDataClass.swift */,
+				2CAEDB681E5B58DB0046E219 /* MetaInfo+CoreDataProperties.swift */,
 				2C70399F1E578B3100FAB81D /* Connection+CoreDataClass.swift */,
 				2C7039A01E578B3100FAB81D /* Connection+CoreDataProperties.swift */,
 				2C1294DF1E53AB9300DBFE23 /* Node+CoreDataClass.swift */,
@@ -569,6 +582,9 @@
 				2C67D6B41E1510A700F95DB5 /* ShareCell.swift */,
 				2C67D6A81E14F02200F95DB5 /* AddShareController.swift */,
 				2C67D6DE1E156D0D00F95DB5 /* DeviceController.swift */,
+				2CAEDB601E5B27540046E219 /* InfoController.swift */,
+				2CAEDB641E5B4C370046E219 /* SearchCell.swift */,
+				2CAEDB621E5B29D80046E219 /* SearchInfoController.swift */,
 				2C1294B01E5399B900DBFE23 /* UIViewControllerExtensions.swift */,
 				2C1294AD1E5398FF00DBFE23 /* Resources */,
 			);
@@ -957,20 +973,26 @@
 			buildActionMask = 2147483647;
 			files = (
 				2C67D69A1E14EF2600F95DB5 /* AppDelegate.swift in Sources */,
+				2CAEDB631E5B29D80046E219 /* SearchInfoController.swift in Sources */,
 				2C1294B11E5399B900DBFE23 /* UIViewControllerExtensions.swift in Sources */,
 				2CAEDB571E5AE6040046E219 /* Util.mm in Sources */,
 				2CD266E41E53012C00535F80 /* TOSMBConstants.m in Sources */,
 				2C1294E11E53AB9300DBFE23 /* Node+CoreDataClass.swift in Sources */,
 				2CAEDB531E5AE6040046E219 /* AudioOutput.mm in Sources */,
 				2C1294B41E53A2F800DBFE23 /* Model.swift in Sources */,
+				2CAEDB661E5B53070046E219 /* TMDB.m in Sources */,
 				2C1294DE1E53AB1D00DBFE23 /* WDContentTV.xcdatamodeld in Sources */,
 				2CAEDB561E5AE6040046E219 /* TextureItem.mm in Sources */,
 				2CD266E21E53012C00535F80 /* TONetBIOSNameService.m in Sources */,
 				2C67D6A71E14EFEB00F95DB5 /* SharesController.swift in Sources */,
 				2CAEDB551E5AE6040046E219 /* Decoder.mm in Sources */,
+				2CAEDB651E5B4C370046E219 /* SearchCell.swift in Sources */,
 				2C1294E21E53AB9300DBFE23 /* Node+CoreDataProperties.swift in Sources */,
 				2CD266E01E53012C00535F80 /* SMBConnection.m in Sources */,
+				2CAEDB611E5B27540046E219 /* InfoController.swift in Sources */,
+				2CAEDB6A1E5B58DB0046E219 /* MetaInfo+CoreDataProperties.swift in Sources */,
 				2C7039A21E578B3100FAB81D /* Connection+CoreDataProperties.swift in Sources */,
+				2CAEDB691E5B58DB0046E219 /* MetaInfo+CoreDataClass.swift in Sources */,
 				2CAEDB581E5AE6040046E219 /* VideoOutput.mm in Sources */,
 				2C67D6A91E14F02200F95DB5 /* AddShareController.swift in Sources */,
 				2CAEDB541E5AE6040046E219 /* AudioRingBuffer.mm in Sources */,
@@ -1218,6 +1240,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/libdsm/include",
 					"$(PROJECT_DIR)/tv_depends/libs/include",
+					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = "WD Content TV/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1263,6 +1286,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/libdsm/include",
 					"$(PROJECT_DIR)/tv_depends/libs/include",
+					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = "WD Content TV/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

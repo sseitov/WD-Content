@@ -7,6 +7,18 @@
         <attribute name="user" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="nodes" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Node" inverseName="connection" inverseEntity="Node" syncable="YES"/>
     </entity>
+    <entity name="MetaInfo" representedClassName=".MetaInfo" syncable="YES">
+        <attribute name="cast" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="director" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="genre" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="original_title" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="overview" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="poster" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="release_date" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="runtime" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="node" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Node" inverseName="info" inverseEntity="Node" syncable="YES"/>
+    </entity>
     <entity name="Node" representedClassName=".Node" syncable="YES">
         <attribute name="isFile" optional="YES" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
@@ -15,10 +27,12 @@
         <attribute name="uid" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="childs" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Node" inverseName="parent" inverseEntity="Node" syncable="YES"/>
         <relationship name="connection" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Connection" inverseName="nodes" inverseEntity="Connection" syncable="YES"/>
+        <relationship name="info" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MetaInfo" inverseName="node" inverseEntity="MetaInfo" syncable="YES"/>
         <relationship name="parent" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Node" inverseName="childs" inverseEntity="Node" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Node" positionX="-5265" positionY="-207" width="128" height="163"/>
         <element name="Connection" positionX="-5454" positionY="-207" width="128" height="118"/>
+        <element name="Node" positionX="-5265" positionY="-207" width="128" height="178"/>
+        <element name="MetaInfo" positionX="-5024" positionY="-157" width="128" height="193"/>
     </elements>
 </model>
