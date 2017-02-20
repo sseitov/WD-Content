@@ -32,6 +32,8 @@ Podfile.lock
 ApiKeys.h
 
 depends/fdk-aac
+depends/fdk-scratch
+depends/fdk-thin
 depends/ffmpeg-3.0.2
 depends/libs
 depends/scratch

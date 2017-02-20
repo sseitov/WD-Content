@@ -6,28 +6,28 @@ echo "Pulling ..."
 
 CONFIGURE_FLAGS="--enable-cross-compile --enable-pthreads --disable-ffserver --disable-ffmpeg \
 		 --disable-ffprobe --disable-encoders --enable-neon --enable-swscale --enable-avfilter \
-		 --disable-zlib --disable-bzlib --disable-debug --enable-gpl --enable-optimizations --enable-pic \
+		 --disable-zlib --disable-bzlib --disable-debug --enable-optimizations --enable-pic \
 		 --extra-cflags=-fembed-bitcode --extra-cxxflags=-fembed-bitcode"
 
 LIBS="libavcodec libavformat libavutil libswscale libavdevice libavfilter \
       libpostproc libswresample"
 
-ARCHS="armv7 arm64" # i386 x86_64"
+ARCHS="armv7 arm64"
 
 # directories
 SOURCE="ffmpeg-3.0.2"
-#SOURCE="ffmpeg"
 FAT="libs"
 SCRIPT_DIR=$( (cd -P $(dirname $0) && pwd) )
 
 SCRATCH="scratch"
 # must be an absolute path
 THIN=`pwd`/"thin"
+FDK_AAC=`pwd`/"libs"
 
 COMPILE="y"
 LIPO="y"
 
-DEPLOYMENT_TARGET="10.2"
+DEPLOYMENT_TARGET="9.0"
 
 if [ "$*" ]
 then
@@ -96,7 +96,7 @@ then
 		CC="xcrun -sdk $XCRUN_SDK clang"
 		CXXFLAGS="$CFLAGS"
 		LDFLAGS="$CFLAGS"
-
+		
 		# Add smbclient if exists
 		SMB_LIB="$SCRIPT_DIR/samba/source3/bin/$ARCH"
 		SMB_INC="$SCRIPT_DIR/libs/include"
@@ -106,6 +106,10 @@ then
 		
 		ln -s $SMB_LIB/libsmbclient.dylib.0 $SMB_LIB/libsmbclient.dylib
 		ln -s $SMB_LIB/libwbclient.dylib.0 $SMB_LIB/libwbclient.dylib
+		
+		CONFIGURE_OPTIONS="$CONFIGURE_OPTIONS --enable-gpl --enable-nonfree --enable-libfdk-aac"
+		CFLAGS="$CFLAGS -I$FDK_AAC/include"
+		LDFLAGS="$LDFLAGS -L$FDK_AAC/lib"
 		
 		$CWD/$SOURCE/configure \
 		    --target-os=darwin \
