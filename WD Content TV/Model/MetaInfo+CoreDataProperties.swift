@@ -21,10 +21,11 @@ extension MetaInfo {
     @NSManaged public var genre: String?
     @NSManaged public var original_title: String?
     @NSManaged public var overview: String?
+    @NSManaged public var poster: String?
     @NSManaged public var release_date: String?
     @NSManaged public var runtime: String?
-    @NSManaged public var poster: String?
     @NSManaged public var title: String?
+    @NSManaged public var uid: String?
     @NSManaged public var node: Node?
 
 }

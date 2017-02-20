@@ -162,4 +162,29 @@ class Model: NSObject {
 		managedObjectContext.delete(node)
 		saveContext()
 	}
+	
+	// MARK: - MetaInfo table
+	
+	func createInfo(_ uid:String) -> MetaInfo {
+		var info = getInfo(uid)
+		if info == nil {
+			info = NSEntityDescription.insertNewObject(forEntityName: "MetaInfo", into: managedObjectContext) as? MetaInfo
+			info!.uid = uid
+		}
+		return info!
+	}
+	
+	func getInfo(_ uid:String) -> MetaInfo? {
+		let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "MetaInfo")
+		fetchRequest.predicate = NSPredicate(format: "uid == %@", uid)
+		if let info = try? managedObjectContext.fetch(fetchRequest).first as? MetaInfo {
+			return info
+		} else {
+			return nil
+		}
+	}
+	
+	func clearInfo(_ info:MetaInfo) {
+		managedObjectContext.delete(info)
+	}
 }

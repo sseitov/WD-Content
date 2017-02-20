@@ -81,8 +81,7 @@ class SharesController: UICollectionViewController, UIGestureRecognizerDelegate 
 			cell.textView.text = ""
 		} else {
 			let node = parentNode == nil ? nodes[indexPath.row-1] : nodes[indexPath.row]
-			cell.imageView.image = node.isFile ? UIImage(named: "movie") : UIImage(named: "sharedFolder")
-			cell.textView.text = node.name
+			cell.node = node
 		}
         return cell
     }
@@ -113,12 +112,11 @@ class SharesController: UICollectionViewController, UIGestureRecognizerDelegate 
 				alert.addAction(UIAlertAction(title: "Preview moview", style: .default, handler: { _ in
 					self.performSegue(withIdentifier: "showMovie", sender: node)
 				}))
-				let title = node.info == nil ? "Show info" : node.info!.original_title!
-				alert.addAction(UIAlertAction(title: title, style: .destructive, handler: { _ in
+				alert.addAction(UIAlertAction(title: "Show info", style: .destructive, handler: { _ in
 					if node.info == nil {
-						self.performSegue(withIdentifier: "searchInfo", sender: node.name)
+						self.performSegue(withIdentifier: "searchInfo", sender: node)
 					} else {
-						self.performSegue(withIdentifier: "info", sender: node.info)
+						self.performSegue(withIdentifier: "info", sender: node.info!)
 					}
 				}))
 				alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
@@ -153,8 +151,11 @@ class SharesController: UICollectionViewController, UIGestureRecognizerDelegate 
 		} else if segue.identifier == "searchInfo" {
 			let nav = segue.destination as! UINavigationController
 			let next = nav.topViewController as! SearchInfoController
-			next.searchFile = sender as? String
+			next.node = sender as? Node
 		} else if segue.identifier == "info" {
+			let nav = segue.destination as! UINavigationController
+			let next = nav.topViewController as! InfoController
+			next.metainfo = sender as? MetaInfo
 		}
 	}
 

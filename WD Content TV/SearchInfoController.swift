@@ -10,15 +10,18 @@ import UIKit
 
 class SearchInfoController: UITableViewController {
 
-	var searchFile:String?
+	var node:Node?
 	var results:[Any] = []
 	
-	private var imagesBaseURL:String?
+	private var imagesBaseURL:String!
+	private var searchFile:String!
 	
     override func viewDidLoad() {
         super.viewDidLoad()
 		self.title = "Search Info"
 		SVProgressHUD.show()
+		searchFile = node!.name!
+		
 		TMDB.sharedInstance().get(kMovieDBConfiguration, parameters: nil, block: { result, err in
 			SVProgressHUD.dismiss()
 			if err == nil {
@@ -120,19 +123,20 @@ class SearchInfoController: UITableViewController {
 			present(alert, animated: true, completion: nil)
 		} else {
 			if let movie = results[indexPath.row] as? [String:Any] {
-				print(movie)
+				performSegue(withIdentifier: "editInfo", sender: movie)
 			}
 		}
 	}
 
-    /*
     // MARK: - Navigation
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+		if segue.identifier == "editInfo" {
+			let next = segue.destination as! InfoController
+			next.imageBaseURL = imagesBaseURL
+			next.info = sender as? [String:Any]
+			next.node = node
+		}
     }
-    */
 
 }

@@ -12,6 +12,28 @@ class ShareCell: UICollectionViewCell {
     
 	@IBOutlet weak var imageView: UIImageView!
 	@IBOutlet weak var textView: UILabel!
+
+	var node:Node? {
+		didSet {
+			if node!.isFile {
+				if node!.info == nil {
+					textView.text = node!.name!
+					imageView.image = UIImage(named: "movie")
+				} else {
+					textView.text = node!.info!.title!
+					if node!.info!.poster != nil {
+						let url = URL(string: node!.info!.poster!)
+						imageView.sd_setImage(with: url, placeholderImage: UIImage(named: "movie"))
+					} else {
+						imageView.image = UIImage(named: "movie")
+					}
+				}
+			} else {
+				textView.text = node!.name!
+				imageView.image = UIImage(named: "sharedFolder")
+			}
+		}
+	}
 	
 	override func awakeFromNib() {
 		super.awakeFromNib()
