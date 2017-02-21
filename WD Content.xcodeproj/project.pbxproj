@@ -1250,7 +1250,7 @@
 					"$(PROJECT_DIR)/libdsm",
 				);
 				MTL_ENABLE_DEBUG_INFO = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.vchannel.WD-Content-TV";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.vchannel.wd-content";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "e260b7d3-27db-41b3-aff9-3239ff1ad691";
 				PROVISIONING_PROFILE_SPECIFIER = "WD Content TV Development";
@@ -1296,7 +1296,7 @@
 					"$(PROJECT_DIR)/libdsm",
 				);
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.vchannel.WD-Content-TV";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.vchannel.wd-content";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "030972ca-9563-4b8a-bdf4-820c27fcdccd";
 				PROVISIONING_PROFILE_SPECIFIER = "WD Content TV AppStore";
