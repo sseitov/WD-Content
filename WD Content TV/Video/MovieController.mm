@@ -169,9 +169,19 @@ extern "C" {
 					}];
 					[alert addAction:action];
 					[self presentViewController:alert animated:YES completion:nil];
-				} else {
-					int channel = [[[audioChannels objectAtIndex:0] objectForKey:@"channel"] intValue];
+				} else if (audioChannels.count == 1) {
+					NSDictionary* audio = [audioChannels objectAtIndex:0];
+					int channel = [[audio objectForKey:@"channel"] intValue];
 					[self play: channel];
+				} else {
+					UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
+																				   message:@"Can not play this file."
+																			preferredStyle:UIAlertControllerStyleActionSheet];
+					UIAlertAction *action = [UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
+						[self.navigationController popViewControllerAnimated:true];
+					}];
+					[alert addAction:action];
+					[self presentViewController:alert animated:YES completion:nil];
 				}
 			} else {
 				UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
