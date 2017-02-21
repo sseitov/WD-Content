@@ -90,13 +90,15 @@ public:
 @property (strong, nonatomic)	NSConditionLock *videoDecoderState;
 
 @property (readwrite, atomic)	int64_t latestVideoPTS;
-@property (atomic)				int	maxQueuesSize;
 
 @property (strong, nonatomic) NSConditionLock *threadState;
 @property (atomic) BOOL stopped;
+@property (strong, nonatomic) NSCondition *pause;
+@property (atomic) BOOL paused;
 
 @end
 
+static const int kMaxQueuesSize = 256;
 static const int kBufferSize = 4 * 1024;
 
 extern "C" {
@@ -138,6 +140,8 @@ extern "C" {
 	_networkQueue = dispatch_queue_create("com.vchannel.WD-Content.SMBNetwork", DISPATCH_QUEUE_SERIAL);
 	_ioBuffer = new unsigned char[kBufferSize];
 	_ioContext = avio_alloc_context((unsigned char*)_ioBuffer, kBufferSize, 0, (__bridge void*)self, readContext, NULL, seekContext);
+	
+	_pause = [[NSCondition alloc] init];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -263,6 +267,7 @@ extern "C" {
 	
 	dispatch_async(_networkQueue, ^() {
 		while (!self.stopped) {
+			[self checkQueues];
 			AVPacket nextPacket;
 			if (av_read_frame(_mediaContext, &nextPacket) < 0) { // eof
 				break;
@@ -298,6 +303,7 @@ extern "C" {
 			}
 			[_screen pushPacket:&packet];
 			av_packet_unref(&packet);
+			[self checkQueues];
 		}
 		[_videoDecoderState lock];
 		[_videoDecoderState unlockWithCondition:DecoderIsFlashed];
@@ -322,8 +328,6 @@ extern "C" {
 
 - (void)start
 {
-	self.maxQueuesSize = 2500;
-	
 	_audioQueue->start();
 	[NSThread detachNewThreadSelector:@selector(audioDecodeThread) toTarget:self withObject:nil];
 	
@@ -363,9 +367,15 @@ extern "C" {
 - (void)close {
 	if (self.stopped)
 		return;
-	self.stopped = YES;
 	
 	[self stop];
+	
+	self.stopped = YES;
+	if (!_paused) {
+		[_pause lock];
+		[_pause signal];
+		[_pause unlock];
+	}
 	
 	[_threadState lockWhenCondition:ThreadIsDone];
 	[_threadState unlock];
@@ -381,14 +391,22 @@ extern "C" {
 		av_free(_ioContext);					// AVIOContext is released by av_free
 }
 
-- (void)analyzeQueues:(int64_t)pts
-{
-	if (_videoQueue->size() > self.maxQueuesSize) {
-		_videoQueue->flush(pts);
-		_audioQueue->flush(pts);
-		[_screen flush:pts];
-		[_audio flush:pts];
-		NSLog(@"Queues overflow, performing technical flush");
+- (void)checkQueues {
+	if (!_paused) {
+		_paused = _videoQueue->size() > kMaxQueuesSize;
+		if (_paused) {
+			[_pause lock];
+			[_pause wait];
+			_paused = false;
+			[_pause unlock];
+		}
+	} else {
+		_paused = _videoQueue->size() > kMaxQueuesSize;
+		if (!_paused) {
+			[_pause lock];
+			[_pause signal];
+			[_pause unlock];
+		}
 	}
 }
 
@@ -397,9 +415,6 @@ extern "C" {
 	static bool wasFlush = false;
 	static int64_t flushAudioTo = AV_NOPTS_VALUE;
 	if (packet->stream_index == _videoIndex) {
-		if (packet->flags & AV_PKT_FLAG_KEY) {
-			[self analyzeQueues:packet->pts];
-		}
 		if (flush) {
 			_videoQueue->flush(packet->pts);
 			[_screen flush:packet->pts];

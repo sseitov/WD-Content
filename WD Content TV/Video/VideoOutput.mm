@@ -219,8 +219,8 @@ public:
 	
 	counter++;
 	if (counter == 100) {
-		NSString* msg = [NSString stringWithFormat:@"DECODE %.2f, PUSH %.2f", decodeTimeInterval*(-10), pushTimeInterval*(-10)];
-		NSLog(@"%@", msg);
+//		NSString* msg = [NSString stringWithFormat:@"DECODE %.2f, PUSH %.2f", decodeTimeInterval*(-10), pushTimeInterval*(-10)];
+//		NSLog(@"%@", msg);
 		pushTimeInterval = 0.0;
 		decodeTimeInterval = 0.0;
 		counter = 0;
