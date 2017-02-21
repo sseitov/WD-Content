@@ -61,7 +61,7 @@ class Model: NSObject {
 	
 	// MARK: - Connection table
 
-	func addConnection(ip:String, port:Int16, user:String, password:String) -> Connection {
+	func addConnection(ip:String, port:Int32, user:String, password:String) -> Connection {
 		var connection = getConnection(ip)
 		if connection == nil {
 			connection = NSEntityDescription.insertNewObject(forEntityName: "Connection", into: managedObjectContext) as? Connection
@@ -126,7 +126,7 @@ class Model: NSObject {
 			if nodes.count == 0 && byRoot != nil {
 				let connection = SMBConnection()
 				if connection.connect(to: byRoot!.connection!.ip!,
-				                      port: Int32(byRoot!.connection!.port),
+				                      port: byRoot!.connection!.port,
 				                      user: byRoot!.connection!.user!,
 				                      password: byRoot!.connection!.password!) {
 					let content = connection.folderContents(at: byRoot!.path!) as! [SMBFile]

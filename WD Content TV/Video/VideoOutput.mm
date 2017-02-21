@@ -9,8 +9,6 @@
 #import "VideoOutput.h"
 #include "TextureItem.h"
 #include "SynchroQueue.h"
-#include "Renderer.h"
-#include <SVProgressHUD.h>
 #import <AVFoundation/AVUtilities.h>
 
 #undef DEBUG_VIDEO
@@ -57,25 +55,25 @@ public:
 	PTSTexture* _currentTexture;
 }
 
-@property (retain, nonatomic) Renderer* renderer;
-
 @end
 
 @implementation VideoOutput
 
 @synthesize decoder, started, lastFlushPTS, lateFrameCounter;
 
-- (void)awakeFromNib {
-	[super awakeFromNib];
+- (instancetype)initWithDelegate:(id<GLKViewControllerDelegate>)delegate {
 	
-	self.preferredFramesPerSecond = 60;
-	_context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
-	_textureContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2 sharegroup:_context.sharegroup];
-	self.decoder = [[VideoDecoder alloc] init];
-	Sampler[0] = Sampler[1] = Sampler[2] = -1;
-	_renderer = [[Renderer alloc] initWithScreen:self];
-	self.delegate = _renderer;
-	self.started = false;
+	self = [super init];
+	if (self){
+		self.preferredFramesPerSecond = 60;
+		self.delegate = delegate;
+		_context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
+		_textureContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2 sharegroup:_context.sharegroup];
+		self.decoder = [[VideoDecoder alloc] init];
+		Sampler[0] = Sampler[1] = Sampler[2] = -1;
+		self.started = false;
+	}
+	return self;
 }
 
 - (UIView*)glView
@@ -117,59 +115,6 @@ public:
 	NSLog(@"VideoOutput dealloc");
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-	[super viewDidAppear:animated];
-	dispatch_queue_t queue = dispatch_queue_create("com.vchannel.WD-Content.Movie", DISPATCH_QUEUE_SERIAL);
-	[SVProgressHUD showWithStatus:@"Load..."];
-	dispatch_async(queue, ^{
-		NSMutableArray* audioChannels = [NSMutableArray array];
-		bool success = [_renderer load:_host port:_port user:_user password:_password file:_filePath audioChannels:audioChannels];
-		dispatch_async(dispatch_get_main_queue(), ^{
-			[SVProgressHUD dismiss];
-			if (success) {
-				if (audioChannels.count > 1) {
-					UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
-																				   message:@"Choose audio channel"
-																			preferredStyle:UIAlertControllerStyleActionSheet];
-					for (NSDictionary *channel in audioChannels) {
-						UIAlertAction *action = [UIAlertAction actionWithTitle:[channel objectForKey:@"codec"]
-																		 style:UIAlertActionStyleDefault
-																	   handler:^(UIAlertAction *action) {
-																		   int num = [[channel objectForKey:@"channel"] intValue];
-																		   [_renderer play:num];
-																	   }];
-						[alert addAction:action];
-					}
-					UIAlertAction *action = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
-						[self.navigationController popViewControllerAnimated:true];
-					}];
-					[alert addAction:action];
-					[self presentViewController:alert animated:YES completion:nil];
-				} else {
-					int channel = [[[audioChannels objectAtIndex:0] objectForKey:@"channel"] intValue];
-					[_renderer play: channel];
-				}
-			} else {
-				UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
-																			   message:@"Can not load file."
-																		preferredStyle:UIAlertControllerStyleActionSheet];
-				UIAlertAction *action = [UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
-					[self.navigationController popViewControllerAnimated:true];
-				}];
-				[alert addAction:action];
-				[self presentViewController:alert animated:YES completion:nil];
-			}
-		});
-	});
-}
-
-- (void)pressesBegan:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event {
-	if (presses.anyObject.type == UIPressTypeMenu) {
-		[self close];
-	}
-	[super pressesBegan:presses withEvent:event];
-}
-
 - (void)start:(AVFrame*)frame
 {
 	_texPool.start();
@@ -198,8 +143,8 @@ public:
 
 - (void)close
 {
-	[_renderer close];
 	[self stop];
+	self.delegate = nil;
 	
 	[EAGLContext setCurrentContext:_context];
 	if (programObject) {
@@ -207,9 +152,6 @@ public:
 		programObject = 0;
 	}
 	[EAGLContext setCurrentContext:nil];
-	
-	self.delegate = nil;
-	_renderer = nil;
 	_context = nil;
 }
 
@@ -229,7 +171,7 @@ public:
 	_currentTexture = nil;
 }
 
-- (void)pushPacket:(AVPacket*)packet
+- (bool)pushPacket:(AVPacket*)packet
 {
 	static float pushTimeInterval;
 	static float decodeTimeInterval;
@@ -237,14 +179,14 @@ public:
 	static AVFrame frame;
 	
 	if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateActive) {
-		return;
+		return false;
 	}
 	
 	NSDate* startDecode = [NSDate date];
 	
 	if (![self.decoder decodePacket:packet toFrame:&frame]) {
 		NSLog(@"video decoder error");
-		return;
+		return false;
 	}
 	
 	if (!self.started) {
@@ -253,13 +195,13 @@ public:
 	
 	if (self.lastFlushPTS != AV_NOPTS_VALUE && frame.pts < self.lastFlushPTS) {
 		NSLog(@"Old video frame from decoder with pts %lld", frame.pts);
-		return;
+		return true;
 	}
 	
 	decodeTimeInterval += [startDecode timeIntervalSinceNow];
 
 	PTSTexture* item;
-	if (!_texPool.pop(&item)) return; // if device not started
+	if (!_texPool.pop(&item)) return true; // if device not started
 	
 	NSDate* startPush = [NSDate date];
 	
@@ -285,6 +227,7 @@ public:
 	} else {
 		pushTimeInterval += [startPush timeIntervalSinceNow];
 	}
+	return true;
 }
 
 -(int)updateQueueWithPTS:(int64_t)pts

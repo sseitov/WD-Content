@@ -85,6 +85,7 @@
 		2C718E811DA27F5A0065DE2B /* libtevent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C58752A1A6ACA850069F3F1 /* libtevent.a */; };
 		2C718E821DA27F5A0065DE2B /* libwbclient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C58752B1A6ACA850069F3F1 /* libwbclient.a */; };
 		2C7ABEC91E5C0FD900C72387 /* InfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7ABEC81E5C0FD900C72387 /* InfoViewController.swift */; };
+		2C7ABECC1E5C4AF200C72387 /* MovieController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2C7ABECB1E5C4AF200C72387 /* MovieController.mm */; };
 		2C7F0A051E3A57DB0004E1C3 /* TextFieldContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7F0A021E3A57DB0004E1C3 /* TextFieldContainer.swift */; };
 		2C7F0A061E3A57DB0004E1C3 /* UIColorExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7F0A031E3A57DB0004E1C3 /* UIColorExtensions.swift */; };
 		2C7F0A071E3A57DB0004E1C3 /* UIViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7F0A041E3A57DB0004E1C3 /* UIViewExtensions.swift */; };
@@ -105,7 +106,6 @@
 		2CAEDB561E5AE6040046E219 /* TextureItem.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2CAEDB4E1E5AE6040046E219 /* TextureItem.mm */; };
 		2CAEDB571E5AE6040046E219 /* Util.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2CAEDB501E5AE6040046E219 /* Util.mm */; };
 		2CAEDB581E5AE6040046E219 /* VideoOutput.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2CAEDB521E5AE6040046E219 /* VideoOutput.mm */; };
-		2CAEDB5E1E5AED300046E219 /* Renderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2CAEDB5D1E5AED300046E219 /* Renderer.mm */; };
 		2CAEDB631E5B29D80046E219 /* SearchInfoController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CAEDB621E5B29D80046E219 /* SearchInfoController.swift */; };
 		2CAEDB651E5B4C370046E219 /* SearchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CAEDB641E5B4C370046E219 /* SearchCell.swift */; };
 		2CAEDB661E5B53070046E219 /* TMDB.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2194A019C9A9690053C8B3 /* TMDB.m */; };
@@ -232,6 +232,8 @@
 		2C718E7C1DA26F110065DE2B /* libbz2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.tbd; path = usr/lib/libbz2.tbd; sourceTree = SDKROOT; };
 		2C7A10A51A9BEC9800E3900A /* ConditionLock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ConditionLock.h; sourceTree = "<group>"; };
 		2C7ABEC81E5C0FD900C72387 /* InfoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InfoViewController.swift; sourceTree = "<group>"; };
+		2C7ABECA1E5C4AF200C72387 /* MovieController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MovieController.h; path = Video/MovieController.h; sourceTree = "<group>"; };
+		2C7ABECB1E5C4AF200C72387 /* MovieController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = MovieController.mm; path = Video/MovieController.mm; sourceTree = "<group>"; };
 		2C7F0A021E3A57DB0004E1C3 /* TextFieldContainer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextFieldContainer.swift; sourceTree = "<group>"; };
 		2C7F0A031E3A57DB0004E1C3 /* UIColorExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIColorExtensions.swift; sourceTree = "<group>"; };
 		2C7F0A041E3A57DB0004E1C3 /* UIViewExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewExtensions.swift; sourceTree = "<group>"; };
@@ -264,8 +266,6 @@
 		2CAEDB501E5AE6040046E219 /* Util.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Util.mm; path = Video/Util.mm; sourceTree = "<group>"; };
 		2CAEDB511E5AE6040046E219 /* VideoOutput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VideoOutput.h; path = Video/VideoOutput.h; sourceTree = "<group>"; };
 		2CAEDB521E5AE6040046E219 /* VideoOutput.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = VideoOutput.mm; path = Video/VideoOutput.mm; sourceTree = "<group>"; };
-		2CAEDB5C1E5AED300046E219 /* Renderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Renderer.h; path = Video/Renderer.h; sourceTree = "<group>"; };
-		2CAEDB5D1E5AED300046E219 /* Renderer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Renderer.mm; path = Video/Renderer.mm; sourceTree = "<group>"; };
 		2CAEDB621E5B29D80046E219 /* SearchInfoController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchInfoController.swift; sourceTree = "<group>"; };
 		2CAEDB641E5B4C370046E219 /* SearchCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchCell.swift; sourceTree = "<group>"; };
 		2CAEDB671E5B58DB0046E219 /* MetaInfo+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "MetaInfo+CoreDataClass.swift"; path = "Model/MetaInfo+CoreDataClass.swift"; sourceTree = "<group>"; };
@@ -661,8 +661,8 @@
 				2CAEDB501E5AE6040046E219 /* Util.mm */,
 				2CAEDB511E5AE6040046E219 /* VideoOutput.h */,
 				2CAEDB521E5AE6040046E219 /* VideoOutput.mm */,
-				2CAEDB5C1E5AED300046E219 /* Renderer.h */,
-				2CAEDB5D1E5AED300046E219 /* Renderer.mm */,
+				2C7ABECA1E5C4AF200C72387 /* MovieController.h */,
+				2C7ABECB1E5C4AF200C72387 /* MovieController.mm */,
 			);
 			name = Video;
 			sourceTree = "<group>";
@@ -989,6 +989,7 @@
 				2CAEDB551E5AE6040046E219 /* Decoder.mm in Sources */,
 				2CAEDB651E5B4C370046E219 /* SearchCell.swift in Sources */,
 				2C1294E21E53AB9300DBFE23 /* Node+CoreDataProperties.swift in Sources */,
+				2C7ABECC1E5C4AF200C72387 /* MovieController.mm in Sources */,
 				2CD266E01E53012C00535F80 /* SMBConnection.m in Sources */,
 				2CAEDB6A1E5B58DB0046E219 /* MetaInfo+CoreDataProperties.swift in Sources */,
 				2C7039A21E578B3100FAB81D /* Connection+CoreDataProperties.swift in Sources */,
@@ -997,7 +998,6 @@
 				2C67D6A91E14F02200F95DB5 /* AddShareController.swift in Sources */,
 				2CAEDB541E5AE6040046E219 /* AudioRingBuffer.mm in Sources */,
 				2C67D6B51E1510A700F95DB5 /* ShareCell.swift in Sources */,
-				2CAEDB5E1E5AED300046E219 /* Renderer.mm in Sources */,
 				2C67D6DF1E156D0D00F95DB5 /* DeviceController.swift in Sources */,
 				2C7039A11E578B3100FAB81D /* Connection+CoreDataClass.swift in Sources */,
 				2CD266E31E53012C00535F80 /* TONetBIOSNameServiceEntry.m in Sources */,

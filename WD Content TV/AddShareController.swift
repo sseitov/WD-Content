@@ -11,9 +11,9 @@ import UIKit
 class ServiceHost : NSObject {
 	var name:String = ""
 	var host:String = ""
-	var port:Int = 0
+	var port:Int32 = 0
 	
-	init(name:String, host:String, port:Int) {
+	init(name:String, host:String, port:Int32) {
 		super.init()
 		self.name = name
 		self.host = host
@@ -59,7 +59,7 @@ class AddShareController: UITableViewController {
 						}
 					}
 					if !hostInList(address: ips) {
-						hosts.append(ServiceHost(name: service.name, host: ips, port: service.port))
+						hosts.append(ServiceHost(name: service.name, host: ips, port: Int32(service.port)))
 					}
 					tableView.reloadData()
 					service.stop()

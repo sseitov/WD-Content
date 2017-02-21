@@ -16,12 +16,6 @@ struct AVFrame;
 
 @interface VideoOutput : GLKViewController
 
-@property (retain, nonatomic)	NSString*	host;
-@property (nonatomic)			int			port;
-@property (retain, nonatomic)	NSString*	user;
-@property (retain, nonatomic)	NSString*	password;
-@property (retain, nonatomic)	NSString*	filePath;
-
 @property (readwrite, atomic) BOOL started;
 @property (strong, nonatomic) id<Decoder> decoder;
 
@@ -29,9 +23,11 @@ struct AVFrame;
 @property (readwrite, atomic) int64_t lastFlushPTS;
 @property (readwrite, atomic) int lateFrameCounter;
 
+- (instancetype)initWithDelegate:(id<GLKViewControllerDelegate>)delegate;
 - (void)stop;
+- (void)close;
 - (void)flush:(int64_t)pts;
-- (void)pushPacket:(struct AVPacket*)packet;
+- (bool)pushPacket:(struct AVPacket*)packet;
 - (int64_t)updateWithPTS:(int64_t)pts updated:(int*)updated;
 - (UIView*)glView;
 

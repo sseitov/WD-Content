@@ -26,12 +26,12 @@ class DeviceController: UITableViewController {
 		var connected = false
 		if cashedConnection != nil {
 			connected = connection.connect(to: cashedConnection!.ip!,
-			                   port: Int32(cashedConnection!.port),
+			                   port: cashedConnection!.port,
 			                   user: cashedConnection!.user!,
 			                   password: cashedConnection?.password!)
 		} else {
 			connected = connection.connect(to: target!.host,
-			                               port: Int32(target!.port),
+			                               port: target!.port,
 			                               user: "",
 			                               password: "")
 		}
@@ -39,7 +39,7 @@ class DeviceController: UITableViewController {
 			requestAuth()
 		} else {
 			if cashedConnection == nil {
-				cashedConnection = Model.shared.addConnection(ip: self.target!.host, port: Int16(self.target!.port), user: "", password: "")
+				cashedConnection = Model.shared.addConnection(ip: self.target!.host, port: self.target!.port, user: "", password: "")
 			}
 			content = self.connection.folderContents(at: "/") as! [SMBFile]
 			self.tableView.reloadData()
@@ -65,11 +65,11 @@ class DeviceController: UITableViewController {
 		})
 		alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { _ in
 			if self.connection.connect(to: self.target!.host,
-			                           port: Int32(self.target!.port),
+			                           port: self.target!.port,
 			                           user: userField!.text!,
 			                           password: passwordField!.text!) {
 				
-				self.cashedConnection = Model.shared.addConnection(ip: self.target!.host, port: Int16(self.target!.port), user: userField!.text!, password: passwordField!.text!)
+				self.cashedConnection = Model.shared.addConnection(ip: self.target!.host, port: self.target!.port, user: userField!.text!, password: passwordField!.text!)
 				self.content = self.connection.folderContents(at: "/") as! [SMBFile]
 				self.tableView.reloadData()
 			} else {

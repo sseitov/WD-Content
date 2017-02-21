@@ -5,7 +5,7 @@
 #import "SMBConnection.h"
 #import "SMBFile.h"
 #import "SVProgressHUD.h"
-#import "VideoOutput.h"
+#import "MovieController.h"
 #import "TMDB.h"
 #import "ApiKeys.h"
 #import <SDWebImage/SDWebImageManager.h>

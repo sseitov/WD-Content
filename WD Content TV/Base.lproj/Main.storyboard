@@ -82,9 +82,9 @@
                     <navigationItem key="navigationItem" id="Wds-DU-CKc"/>
                     <connections>
                         <segue destination="Qr0-SX-sMb" kind="presentation" identifier="addShare" modalPresentationStyle="pageSheet" modalTransitionStyle="crossDissolve" id="ZUK-O8-Fmg"/>
-                        <segue destination="gFN-8B-5CI" kind="show" identifier="showMovie" id="eG9-vF-scY"/>
                         <segue destination="bFe-fI-qlt" kind="presentation" identifier="info" modalTransitionStyle="flipHorizontal" id="UE9-Yp-NCc"/>
                         <segue destination="QVr-ef-9B5" kind="presentation" identifier="searchInfo" modalTransitionStyle="flipHorizontal" id="ODS-yF-qEO"/>
+                        <segue destination="BwU-4O-wFo" kind="presentation" identifier="showMovie" modalTransitionStyle="flipHorizontal" id="Wdm-kV-OmT"/>
                     </connections>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mq4-Qz-FXf" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -127,7 +127,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="H2j-OS-1VG" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="9066" y="-1826"/>
+            <point key="canvasLocation" x="8690" y="-1695"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="wh2-fg-voM">
@@ -145,26 +145,40 @@
             </objects>
             <point key="canvasLocation" x="3927" y="-1695"/>
         </scene>
-        <!--GLKit View Controller-->
-        <scene sceneID="UqR-Ol-gAq">
+        <!--Navigation Controller-->
+        <scene sceneID="zhw-ej-Ere">
             <objects>
-                <glkViewController preferredFramesPerSecond="30" id="gFN-8B-5CI" customClass="VideoOutput" sceneMemberID="viewController">
+                <navigationController id="BwU-4O-wFo" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="rzH-WY-749">
+                        <rect key="frame" x="0.0" y="0.0" width="1920" height="145"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="JDA-JX-e2b" kind="relationship" relationship="rootViewController" id="7lq-9i-672"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="s2a-Vr-ZXi" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3927" y="-169"/>
+        </scene>
+        <!--Movie Controller-->
+        <scene sceneID="Vsq-rb-mMe">
+            <objects>
+                <viewController id="JDA-JX-e2b" customClass="MovieController" sceneMemberID="viewController">
                     <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="6aA-p9-qqp"/>
-                        <viewControllerLayoutGuide type="bottom" id="wPi-k9-Nf5"/>
+                        <viewControllerLayoutGuide type="top" id="JaT-9f-oi4"/>
+                        <viewControllerLayoutGuide type="bottom" id="XR0-cU-hhs"/>
                     </layoutGuides>
-                    <glkView key="view" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" drawableDepthFormat="24" enableSetNeedsDisplay="NO" id="vKq-gg-WDS">
+                    <view key="view" contentMode="scaleToFill" id="G28-uk-f0R">
                         <rect key="frame" x="0.0" y="0.0" width="1920" height="1080"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
-                        <connections>
-                            <outlet property="delegate" destination="gFN-8B-5CI" id="evg-uW-hML"/>
-                        </connections>
-                    </glkView>
-                </glkViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="pLk-RA-2Wb" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="4FX-7I-2lh"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Q2R-Ro-3vu" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3927" y="-169"/>
+            <point key="canvasLocation" x="6215" y="-169"/>
         </scene>
         <!--Search Info Controller-->
         <scene sceneID="V8B-jD-ApT">

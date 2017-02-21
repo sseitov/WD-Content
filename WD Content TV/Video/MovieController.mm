@@ -1,18 +1,18 @@
 //
-//  Renderer.m
-//  vTV
+//  MovieController.m
+//  WD Content
 //
-//  Created by Sergey Seitov on 22.08.13.
-//  Copyright (c) 2013 V-Channel. All rights reserved.
+//  Created by Сергей Сейтов on 21.02.17.
+//  Copyright © 2017 Sergey Seitov. All rights reserved.
 //
 
-#import "Renderer.h"
-#import "Decoder.h"
+#import "MovieController.h"
 #import "AudioOutput.h"
 #import "VideoOutput.h"
 #include "SynchroQueue.h"
 #import "Util.h"
 #import "SMBConnection.h"
+#include <SVProgressHUD.h>
 
 enum {
 	DecoderStillWorking,
@@ -39,7 +39,7 @@ public:
 	{
 		av_packet_unref(packet);
 	}
-		
+	
 	virtual bool push(AVPacket* packet)
 	{
 		std::unique_lock<std::mutex> lock(_mutex);
@@ -67,10 +67,9 @@ public:
 	}
 };
 
-@interface Renderer () <AudioOutputDelegate> {
-	
-	PacketQueue*	_videoQueue;
-	PacketQueue*	_audioQueue;
+@interface MovieController () <AudioOutputDelegate> {
+	PacketQueue*		_videoQueue;
+	PacketQueue*		_audioQueue;
 	
 	dispatch_queue_t	_networkQueue;
 	unsigned char*		_ioBuffer;
@@ -87,12 +86,11 @@ public:
 @property (nonatomic) int		audioIndex;
 @property (atomic) AudioOutput*	audio;
 
-@property (weak, nonatomic)	id<Decoder> videoDecoder;
-@property (strong, nonatomic) NSConditionLock *audioDecoderState;
-@property (strong, nonatomic) NSConditionLock *videoDecoderState;
+@property (strong, nonatomic)	NSConditionLock *audioDecoderState;
+@property (strong, nonatomic)	NSConditionLock *videoDecoderState;
 
-@property (readwrite, atomic) int64_t latestVideoPTS;
-@property (atomic) int			maxQueuesSize;
+@property (readwrite, atomic)	int64_t latestVideoPTS;
+@property (atomic)				int	maxQueuesSize;
 
 @property (strong, nonatomic) NSConditionLock *threadState;
 @property (atomic) BOOL stopped;
@@ -104,49 +102,97 @@ static const int kBufferSize = 4 * 1024;
 extern "C" {
 	
 	static int readContext(void *opaque, unsigned char *buf, int buf_size) {
-		Renderer* demuxer = (__bridge Renderer *)(opaque);
+		MovieController* demuxer = (__bridge MovieController *)(opaque);
 		return [demuxer.connection readFile:demuxer.file buffer:buf size:buf_size];
 	}
 	
 	static int64_t seekContext(void *opaque, int64_t offset, int whence) {
-		Renderer* demuxer = (__bridge Renderer *)(opaque);
+		MovieController* demuxer = (__bridge MovieController *)(opaque);
 		return [demuxer.connection seekFile:demuxer.file offset:offset whence:whence];
 	}
 }
 
-@implementation Renderer
+@implementation MovieController
 
-- (id)initWithScreen:(VideoOutput*)screen
-{
-	self = [super init];
-	if (self) {
-		av_register_all();
-		avcodec_register_all();
-		int ret = avformat_network_init();
-		NSLog(@"avformat_network_init = %d", ret);
+- (void)viewDidLoad {
+    [super viewDidLoad];
+	
+	av_register_all();
+	avcodec_register_all();
+	int ret = avformat_network_init();
+	NSLog(@"avformat_network_init = %d", ret);
+	
+	_audio = [[AudioOutput alloc] init];
+	_audio.delegate = self;
+	
+	_screen = [[VideoOutput alloc] initWithDelegate:self];
+	[self addChildViewController: _screen];
+	_screen.view.frame = self.view.bounds;
+	[self.view addSubview:_screen.view];
+	[_screen didMoveToParentViewController:self];
+	
+	_videoQueue = new PacketQueue(VIDEO_QUEUE_SIZE);
+	_audioQueue = new PacketQueue(AUDIO_QUEUE_SIZE);
+	
+	_connection = [[SMBConnection alloc] init];
+	_networkQueue = dispatch_queue_create("com.vchannel.WD-Content.SMBNetwork", DISPATCH_QUEUE_SERIAL);
+	_ioBuffer = new unsigned char[kBufferSize];
+	_ioContext = avio_alloc_context((unsigned char*)_ioBuffer, kBufferSize, 0, (__bridge void*)self, readContext, NULL, seekContext);
+}
 
-		_audio = [[AudioOutput alloc] init];
-		_audio.delegate = self;
-		
-		_screen = screen;
-		
-		_videoQueue = new PacketQueue(VIDEO_QUEUE_SIZE);
-		_audioQueue = new PacketQueue(AUDIO_QUEUE_SIZE);
-		_videoDecoder = screen.decoder;
-		
-		_connection = [[SMBConnection alloc] init];
-		_networkQueue = dispatch_queue_create("com.vchannel.WD-Content.SMBNetwork", DISPATCH_QUEUE_SERIAL);
-		_ioBuffer = new unsigned char[kBufferSize];
-		_ioContext = avio_alloc_context((unsigned char*)_ioBuffer, kBufferSize, 0, (__bridge void*)self, readContext, NULL, seekContext);
+- (void)viewDidAppear:(BOOL)animated {
+	
+	[super viewDidAppear:animated];
+	dispatch_queue_t queue = dispatch_queue_create("com.vchannel.WD-Content.Movie", DISPATCH_QUEUE_SERIAL);
+	[SVProgressHUD showWithStatus:@"Load..."];
+	dispatch_async(queue, ^{
+		NSMutableArray* audioChannels = [NSMutableArray array];
+		bool success = [self load:_host port:_port user:_user password:_password file:_filePath audioChannels:audioChannels];
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[SVProgressHUD dismiss];
+			if (success) {
+				if (audioChannels.count > 1) {
+					UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
+																				   message:@"Choose audio channel"
+																			preferredStyle:UIAlertControllerStyleActionSheet];
+					for (NSDictionary *channel in audioChannels) {
+						UIAlertAction *action = [UIAlertAction actionWithTitle:[channel objectForKey:@"codec"]
+																		 style:UIAlertActionStyleDefault
+																	   handler:^(UIAlertAction *action) {
+																		   int num = [[channel objectForKey:@"channel"] intValue];
+																		   [self play:num];
+																	   }];
+						[alert addAction:action];
+					}
+					UIAlertAction *action = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
+						[self.navigationController popViewControllerAnimated:true];
+					}];
+					[alert addAction:action];
+					[self presentViewController:alert animated:YES completion:nil];
+				} else {
+					int channel = [[[audioChannels objectAtIndex:0] objectForKey:@"channel"] intValue];
+					[self play: channel];
+				}
+			} else {
+				UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
+																			   message:@"Can not load file."
+																		preferredStyle:UIAlertControllerStyleActionSheet];
+				UIAlertAction *action = [UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
+					[self.navigationController popViewControllerAnimated:true];
+				}];
+				[alert addAction:action];
+				[self presentViewController:alert animated:YES completion:nil];
+			}
+		});
+	});
+}
+
+- (void)pressesBegan:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event {
+	if (presses.anyObject.type == UIPressTypeMenu) {
+		[self close];
 	}
-	return self;
+	[super pressesBegan:presses withEvent:event];
 }
-
-- (void)dealloc
-{
-	NSLog(@"Renderer dealloc");
-}
-
 
 - (bool)load:(NSString*)host port:(int)port user:(NSString*)user password:(NSString*)password file:(NSString*)filePath  audioChannels:(NSMutableArray*) audioChannels {
 	
@@ -181,7 +227,7 @@ extern "C" {
 			[audioChannels addObject:@{@"channel" : [NSNumber numberWithInt:i],
 									   @"codec" : [NSString stringWithFormat:@"%s, %d channels", enc->codec_descriptor->long_name, enc->channels]}];
 		} else if (enc->codec_type == AVMEDIA_TYPE_VIDEO) {
-			if ([_videoDecoder openWithContext:enc]) {
+			if ([_screen.decoder openWithContext:enc]) {
 				_videoIndex = i;
 			}
 		}
@@ -217,67 +263,6 @@ extern "C" {
 		[_threadState unlockWithCondition:ThreadIsDone];
 	});
 	return YES;
-}
-
-- (void)start
-{
-	self.maxQueuesSize = 2500;
-	
-	_audioQueue->start();
-	[NSThread detachNewThreadSelector:@selector(audioDecodeThread) toTarget:self withObject:nil];
-	
-	_videoQueue->start();
-	[NSThread detachNewThreadSelector:@selector(videoDecodeThread) toTarget:self withObject:nil];
-}
-
-- (void)stop
-{
-	////////////////////////////////
-	// finish video
-	NSLog(@"stop video");
-	_videoQueue->stop();
-	[_screen flush:AV_NOPTS_VALUE];
-	[_videoDecoderState lockWhenCondition:DecoderIsFlashed];
-	[_videoDecoderState unlock];
-	
-	[_screen stop];
-	_videoIndex = -1;
-	NSLog(@"video stopped");
-	
-	////////////////////////////////
-	// finish audio
-	NSLog(@"stop audio");
-	_audioQueue->stop();
-	[_audio reset];
-	[_audioDecoderState lockWhenCondition:DecoderIsFlashed];
-	[_audioDecoderState unlock];
-	
-	[_audio stop];
-	_audioIndex = -1;
-	
-	NSLog(@"RENDERER STOPPED");
-}
-
-- (void)close
-{
-	if (self.stopped)
-		return;
-	self.stopped = YES;
-	
-	[self stop];
-	
-	[_threadState lockWhenCondition:ThreadIsDone];
-	[_threadState unlock];
-	
-	avformat_close_input(&_mediaContext);
-	
-	if (_file)
-		[_connection closeFile:_file];
-	[_connection disconnect];
-	if (_mediaContext)
-		avformat_close_input(&_mediaContext);	// AVFormatContext is released by avformat_close_input
-	if (_ioContext)
-		av_free(_ioContext);					// AVIOContext is released by av_free
 }
 
 - (void)videoDecodeThread
@@ -325,8 +310,65 @@ extern "C" {
 	}
 }
 
-- (void)audioOutput:(AudioOutput *)audioOutput encounteredError:(NSError *)error
+- (void)start
 {
+	self.maxQueuesSize = 2500;
+	
+	_audioQueue->start();
+	[NSThread detachNewThreadSelector:@selector(audioDecodeThread) toTarget:self withObject:nil];
+	
+	_videoQueue->start();
+	[NSThread detachNewThreadSelector:@selector(videoDecodeThread) toTarget:self withObject:nil];
+}
+
+- (void)stop
+{
+	////////////////////////////////
+	// finish video
+	NSLog(@"stop video");
+	_videoQueue->stop();
+	[_screen flush:AV_NOPTS_VALUE];
+	[_videoDecoderState lockWhenCondition:DecoderIsFlashed];
+	[_videoDecoderState unlock];
+	
+	[_screen stop];
+	_videoIndex = -1;
+	NSLog(@"video stopped");
+	
+	////////////////////////////////
+	// finish audio
+	NSLog(@"stop audio");
+	_audioQueue->stop();
+	[_audio reset];
+	[_audioDecoderState lockWhenCondition:DecoderIsFlashed];
+	[_audioDecoderState unlock];
+	
+	[_audio stop];
+	_audioIndex = -1;
+	
+	[_screen close];
+	NSLog(@"RENDERER STOPPED");
+}
+
+- (void)close {
+	if (self.stopped)
+		return;
+	self.stopped = YES;
+	
+	[self stop];
+	
+	[_threadState lockWhenCondition:ThreadIsDone];
+	[_threadState unlock];
+	
+	avformat_close_input(&_mediaContext);
+	
+	if (_file)
+		[_connection closeFile:_file];
+	[_connection disconnect];
+	if (_mediaContext)
+		avformat_close_input(&_mediaContext);	// AVFormatContext is released by avformat_close_input
+	if (_ioContext)
+		av_free(_ioContext);					// AVIOContext is released by av_free
 }
 
 - (void)analyzeQueues:(int64_t)pts
@@ -409,6 +451,11 @@ extern "C" {
 	return (_audioQueue->size() + [_audio decodedPacketCount]);
 }
 
+#pragma mark - AudioOutput delegate methods
+
+- (void)audioOutput:(AudioOutput *)audioOutput encounteredError:(NSError *)error
+{
+}
 
 #pragma mark - GLKViewController delegate methods
 
@@ -419,12 +466,6 @@ extern "C" {
 	[_audio currentPTS:&currasp withTime:&currast];
 	if (currasp == AV_NOPTS_VALUE)
 		return;
-/*
-	int64_t now = getUptimeInMilliseconds();
-	int64_t xx = (now - currast) / 1000.0 * 90000.0;
-	currasp = currasp + xx;
-	NSLog(@"audio_tune=%lld", xx);
-*/	
 	int updated = 0;
 	int64_t pts  = [_screen updateWithPTS:currasp updated:&updated];
 	if (pts == AV_NOPTS_VALUE || updated == 0)
