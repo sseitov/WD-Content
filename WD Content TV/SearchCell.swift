@@ -30,7 +30,7 @@ class SearchResultCell: UITableViewCell {
 			if let release_date = movie!["release_date"] as? String {
 				date.text = release_date
 			}
-			if let poster_url = movie!["poster_path"] as? String {
+			if let poster_url = movie!["poster_path"] as? String, imagesBaseURL != nil {
 				let url = URL(string: "\(imagesBaseURL!)\(poster_url)")
 				poster.sd_setImage(with: url, placeholderImage: UIImage(named: "movie"))
 			}

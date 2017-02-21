@@ -154,7 +154,7 @@ class SharesController: UICollectionViewController, UIGestureRecognizerDelegate 
 			next.node = sender as? Node
 		} else if segue.identifier == "info" {
 			let nav = segue.destination as! UINavigationController
-			let next = nav.topViewController as! InfoController
+			let next = nav.topViewController as! InfoViewController
 			next.metainfo = sender as? MetaInfo
 		}
 	}

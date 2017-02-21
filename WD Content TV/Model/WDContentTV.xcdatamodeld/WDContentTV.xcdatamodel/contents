@@ -13,6 +13,7 @@
         <attribute name="genre" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="overview" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="poster" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="rating" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="release_date" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="runtime" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
@@ -32,7 +33,7 @@
     </entity>
     <elements>
         <element name="Connection" positionX="-5454" positionY="-207" width="128" height="118"/>
-        <element name="MetaInfo" positionX="-5024" positionY="-157" width="128" height="195"/>
+        <element name="MetaInfo" positionX="-5024" positionY="-157" width="128" height="210"/>
         <element name="Node" positionX="-5265" positionY="-207" width="128" height="178"/>
     </elements>
 </model>

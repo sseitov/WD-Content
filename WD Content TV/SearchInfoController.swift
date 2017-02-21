@@ -13,7 +13,7 @@ class SearchInfoController: UITableViewController {
 	var node:Node?
 	var results:[Any] = []
 	
-	private var imagesBaseURL:String!
+	private var imagesBaseURL:String?
 	private var searchFile:String!
 	
     override func viewDidLoad() {
@@ -29,6 +29,10 @@ class SearchInfoController: UITableViewController {
 					if let imagesConfig = config["images"] as? [String:Any] {
 						if let url = imagesConfig["base_url"] as? String {
 							self.imagesBaseURL = "\(url)w185"
+						} else {
+							self.showMessage("Can not connect to TMDB", messageType: .error, messageHandler: {
+								_ = self.navigationController?.popViewController(animated: true)
+							})
 						}
 						return
 					}
@@ -100,7 +104,7 @@ class SearchInfoController: UITableViewController {
 			return cell
 		} else {
 			let cell = tableView.dequeueReusableCell(withIdentifier: "searchResult", for: indexPath) as! SearchResultCell
-			cell.imagesBaseURL = imagesBaseURL!
+			cell.imagesBaseURL = imagesBaseURL
 			cell.movie = results[indexPath.row] as? [String:Any]
 			return cell
 		}
@@ -132,7 +136,7 @@ class SearchInfoController: UITableViewController {
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
 		if segue.identifier == "editInfo" {
-			let next = segue.destination as! InfoController
+			let next = segue.destination as! InfoViewController
 			next.imageBaseURL = imagesBaseURL
 			next.info = sender as? [String:Any]
 			next.node = node

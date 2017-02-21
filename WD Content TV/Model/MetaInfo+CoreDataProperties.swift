@@ -2,7 +2,7 @@
 //  MetaInfo+CoreDataProperties.swift
 //  WD Content
 //
-//  Created by Сергей Сейтов on 20.02.17.
+//  Created by Сергей Сейтов on 21.02.17.
 //  Copyright © 2017 Sergey Seitov. All rights reserved.
 //
 
@@ -19,13 +19,13 @@ extension MetaInfo {
     @NSManaged public var cast: String?
     @NSManaged public var director: String?
     @NSManaged public var genre: String?
-    @NSManaged public var original_title: String?
     @NSManaged public var overview: String?
     @NSManaged public var poster: String?
     @NSManaged public var release_date: String?
     @NSManaged public var runtime: String?
     @NSManaged public var title: String?
     @NSManaged public var uid: String?
+    @NSManaged public var rating: String?
     @NSManaged public var node: Node?
 
 }
