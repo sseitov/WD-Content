@@ -12,6 +12,7 @@ class ShareCell: UICollectionViewCell {
     
 	@IBOutlet weak var imageView: UIImageView!
 	@IBOutlet weak var textView: UILabel!
+	@IBOutlet weak var textConstraint: NSLayoutConstraint!
 
 	var node:Node? {
 		didSet {
@@ -39,6 +40,7 @@ class ShareCell: UICollectionViewCell {
 		super.awakeFromNib()
 		imageView.adjustsImageWhenAncestorFocused = false
 		imageView.clipsToBounds = false
+		textView.clipsToBounds = false
 		textView.alpha = 0.3
 	}
 	
@@ -47,10 +49,12 @@ class ShareCell: UICollectionViewCell {
 		coordinator.addCoordinatedAnimations({
 			if self.isFocused {
 				self.textView.alpha = 1.0
+				self.textConstraint.constant = -40
 				self.imageView.adjustsImageWhenAncestorFocused = true
 			}
 			else {
 				self.textView.alpha = 0.3
+				self.textConstraint.constant = 0
 				self.imageView.adjustsImageWhenAncestorFocused = false
 			}
 		}, completion: nil)

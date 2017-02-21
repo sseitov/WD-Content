@@ -121,6 +121,7 @@ class SearchInfoController: UITableViewController {
 			})
 			alert.addAction(UIAlertAction(title: "Search", style: .destructive, handler: { _ in
 				self.searchFile = nameField?.text
+				self.tableView.reloadData()
 				self.search()
 			}))
 			alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))

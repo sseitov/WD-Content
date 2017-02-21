@@ -51,17 +51,25 @@
                                             <rect key="frame" x="0.0" y="0.0" width="200" height="200"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         </imageView>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ybk-BF-q8l">
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ybk-BF-q8l">
                                             <rect key="frame" x="0.0" y="200" width="200" height="80"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="80" id="p11-QB-p0I"/>
+                                            </constraints>
                                             <fontDescription key="fontDescription" name="HelveticaNeue-CondensedBold" family="Helvetica Neue" pointSize="27"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
                                 </view>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="bottom" secondItem="ybk-BF-q8l" secondAttribute="bottom" id="596-Bd-oKy"/>
+                                    <constraint firstItem="ybk-BF-q8l" firstAttribute="leading" secondItem="RtB-te-sUu" secondAttribute="leading" id="Pa9-jC-cF5"/>
+                                    <constraint firstAttribute="trailing" secondItem="ybk-BF-q8l" secondAttribute="trailing" id="RdC-8D-vfd"/>
+                                </constraints>
                                 <connections>
                                     <outlet property="imageView" destination="lY4-eX-v3O" id="Pu1-zO-Upa"/>
+                                    <outlet property="textConstraint" destination="596-Bd-oKy" id="MZa-cn-LET"/>
                                     <outlet property="textView" destination="ybk-BF-q8l" id="FNm-jN-TUd"/>
                                 </connections>
                             </collectionViewCell>
